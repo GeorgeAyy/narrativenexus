@@ -1,7 +1,6 @@
 const config = require('./config.json');
 const mongoose = require('mongoose') // import mongoose
-const Document = require('./Document') // import the document model
-
+const Document = require('./Document.js') // import the document model
 
 
 

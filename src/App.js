@@ -10,6 +10,7 @@ import {
 } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid";
 
+
 const ReactApp = () => {
   const [isMenuOpen, setMenuOpen] = useState(false);
 
@@ -65,7 +66,7 @@ const ReactApp = () => {
 
             />
             <div className="btn">
-              <a href="/dcouments"><button>Try it now</button></a>
+              <a href="/documents"><button>Try it now</button></a>
             </div>
             <Section
               id="section2"
@@ -87,12 +88,12 @@ const ReactApp = () => {
               }}
             />
             <div className="btn">
-              <a href="/dcouments"><button>Writing Assistant</button></a>
+              <a href="/documents"><button>Writing Assistant</button></a>
             </div>
           </div>
         </Route>
 
-        <Route exact path="/dcouments">
+        <Route exact path="/documents">
           <Redirect to={`/documents/ ${uuidv4()}`} />
         </Route>
 
