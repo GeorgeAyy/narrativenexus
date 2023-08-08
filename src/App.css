@@ -1,38 +1,251 @@
-.App {
-  text-align: center;
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;500&family=Roboto:wght@400;500&display=swap");
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Roboto', sans-serif;
+  
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
-}
+nav {
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
-
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
   align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
+  width: 100%;
+  padding: 30px 10px;
+  border-bottom: 1px solid black;
+  box-shadow: 0 2px 14px rgba(0, 0, 0, 0.2);
+}
+
+.logo a {
+  color: black;
+  text-decoration: none;
+  font-size: 16px;
+  font-weight: bold;
+  padding-right: 120px;
+}
+
+.section1 ,.section2,.section3{
+display: flex;
+flex-wrap:wrap ;
+padding:70px;
+margin-bottom: 50px;
+/* border: 1px solid black; */
+}
+
+.rightpart {
+
+width: 100%;
+padding-right: 30px;
+font-size: 20px;
+font-weight: 500;
+
+
+}
+
+.leftpart {
+
+width: 100%;
+padding-left: 30px;
+display: flex;
+justify-content: center;
+align-items: center;
+}
+/* Basic styling */
+
+
+ul {
+list-style-type: none;
+}
+a {
+color: #222;
+text-decoration: none;
+}
+a:hover {
+text-decoration: underline;
+}
+.logo a:hover {
+text-decoration: none;
+}
+.menu li {
+font-size: 16px;
+padding: 15px 5px;
+white-space: nowrap;
+}
+
+.toggle a {
+font-size: 20px;
+}
+.button.secondary {
+border-bottom: 1px #444 solid;
+}
+
+/* Mobile menu */
+.menu {
+display: flex;
+flex-wrap: wrap;
+justify-content: space-between;
+align-items: center;
+}
+.toggle {
+order: 1;
+}
+.item.button {
+order: 2;
+}
+.item {
+width: 100%;
+text-align: center;
+order: 3;
+display: none;
+}
+.item.active {
+display: block;
+
+}
+
+/* Navbar Toggle */
+.toggle {
+cursor:pointer;
+}
+.bars {
+background: #999;
+display: inline-block;
+height: 2px;
+position: relative;
+width: 18px;
+margin-right: 10px;
+}
+.bars:before,
+.bars:after {
+background: #999;
+content: '';
+display: block;
+height: 100%;
+position: absolute;
+transition: all .2s ease-out;
+width: 100%;
+}
+.bars:before {
+top: 5px;
+}
+.bars:after {
+top: -5px;
+}  
+.toggle.active .bars:before {
+  top: 0;
+  transform: rotate(45deg);
+  
+}
+.toggle.active .bars:after {
+  top: 0;
+  transform: rotate(-45deg);
+}
+.toggle.active .bars{
+  background:transparent;
+}
+
+/* Tablet menu */
+@media all and (min-width: 468px) {
+.menu {
+    justify-content: center;
+}
+
+.logo {
+    flex: 1;
+}
+
+.item.button {
+    width: auto;
+    order: 1;
+    display: block;
+}
+.toggle {
+    order: 2;
+}
+.button.secondary {
+    border: 0;
+}
+.button a {
+    padding: 10px 25px;
+    background: rgb(251, 249, 249);
+    border: 1px #0d0d0d solid;
+    border-radius:50px;
+   
+}
+
+.button a:hover {
+    text-decoration: none;
+    transition:all .25s;
+}
+
+.button.secondary a:hover,
+.button a:hover{
+   background-color: black;
+    color: #ddd;
+   
+} 
+}
+
+/* Desktop menu */
+@media all and (min-width: 768px) {
+.item {
+    display: block;
+    width: auto;
+}
+.toggle {
+    display: none;
+}
+.logo {
+    order: 0;
+}
+.item {
+    order: 1;
+}
+.button {
+    order: 2;
+}
+.menu li {
+    padding: 15px 10px;
+}
+.menu li.button {
+    padding-right: 0;
+}
+
+.rightpart{
+  flex: 0 0 auto;
+width: 80%;
+font-size: 30px;
+}
+
+.leftpart{
+  flex:0 0 auto;
+  width: 20%;
+}
+}
+
+.uppersection{
+margin-bottom: 20px;
+}
+ .btn a button{
+  background-color: black;
   color: white;
+  margin: 20px  0 20px 70px  ;
+  padding: 12px 30px;
+  border-radius: 25px;
+  cursor: pointer;
+  width: 400px;
+  font-size: 18px;
 }
+@media screen and (max-width: 786px) {
 
-.App-link {
-  color: #61dafb;
+.section1,.section2,.section3{
+flex-direction: column-reverse;
 }
-
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.leftpart{
+margin-bottom: 25px;
+}
+.btn a button{
+  width: 250px;
+}
 }
