@@ -1,0 +1,133 @@
+/* Custom font import */
+@import url('https://fonts.googleapis.com/css?family=Open+Sans:400,700&display=swap');
+
+/* Quill Editor Styles */
+.ql-picker.ql-font {
+    .ql-picker-item {
+        font-size: 0;
+
+        &:before {
+            content: attr(data-value) !important;
+            font-size: 14px;
+        }
+    }
+}
+
+.ql-picker.ql-font {
+    .ql-active {
+        &:before {
+            content: attr(data-value) !important;
+            font-size: 14px;
+        }
+    }
+}
+
+.ql-picker.ql-font .ql-picker-label[data-value="Arial"]::before,
+.ql-picker.ql-font .ql-picker-item[data-value="Arial"]::before {
+    font-family: "Arial", cursive;
+    ;
+    content: "Arial" !important;
+}
+
+
+
+.ql-picker.ql-font .ql-picker-label[data-value="Georgia"]::before,
+.ql-picker.ql-font .ql-picker-item[data-value="Georgia"]::before {
+    font-family: "Georgia", cursive;
+    ;
+    content: "Georgia" !important;
+}
+
+
+.ql-picker.ql-font .ql-picker-label[data-value="Verdana"]::before,
+.ql-picker.ql-font .ql-picker-item[data-value="Verdana"]::before {
+    font-family: "Verdana", cursive;
+    ;
+    content: "Verdana" !important;
+}
+
+.ql-picker.ql-font .ql-picker-label[data-value="Courier"]::before,
+.ql-picker.ql-font .ql-picker-item[data-value="Courier"]::before {
+    font-family: "Courier", cursive;
+    ;
+    content: "Courier" !important;
+}
+
+
+/* Set content font-families */
+.ql-font-Arial {
+    font-family: "Arial";
+}
+
+.ql-font-Georgia {
+    font-family: "Georgia";
+}
+
+.ql-font-Verdana {
+    font-family: "Verdana";
+}
+
+.ql-font-Courier {
+    font-family: "Courier";
+}
+
+/* Rest of your CSS styles */
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+body {
+    background-color: #f3f3f3;
+    margin: 0;
+}
+
+.container .ql-editor {
+    width: 8.5in;
+    min-height: 11in;
+    padding: 1in;
+    margin: 1rem;
+    box-shadow: 0 0 5px 0 rgba(0, 0, 0, 0.5);
+    background-color: white;
+}
+
+.container .ql-container.ql-snow {
+    border: none;
+    display: flex;
+    justify-content: center;
+}
+
+.container .ql-toolbar.ql-snow {
+    display: flex;
+    justify-content: center;
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    background-color: #f3f3f3;
+    border: none;
+    box-shadow: 0 0 5px 0 rgba(0, 0, 0, 0.5);
+}
+
+@page {
+    margin: 1in;
+}
+
+@media print {
+    body {
+        background: none;
+    }
+
+    .container .ql-editor {
+        width: 6.5in;
+        height: 9in;
+        padding: 0;
+        margin: 0;
+        box-shadow: none;
+        align-self: flex-start;
+    }
+
+    .container .ql-toolbar.ql-snow {
+        display: none;
+    }
+}
