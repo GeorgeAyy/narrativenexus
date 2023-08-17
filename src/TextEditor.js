@@ -124,6 +124,7 @@ export default function TextEditor() {
                     } else if (method === "addToDictionary") {
                         // Add word to dictionary here
                         success();
+
                     }
                 }
             }}
