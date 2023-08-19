@@ -140,6 +140,7 @@ export default function TextEditor() {
         // get the previous data
         socket.once('load-document', document => {
             console.log(`the document is ${document}`)
+            editorInstance.execCommand('mceInsertContent', false, document)
 
         })
 
@@ -156,7 +157,9 @@ export default function TextEditor() {
                 height: 500,
                 plugins: 'link image code, spellchecker', // Include the spellchecker plugin
                 toolbar: 'undo redo | bold italic | alignleft aligncenter alignright | code | image',
-
+                setup: (editor) => {
+                    setEditorInstance(editor);
+                }
 
 
             }}
