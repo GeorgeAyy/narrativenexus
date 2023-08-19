@@ -21,10 +21,12 @@ const io = require('socket.io')(3001, {
 const defaultValue = '' // default value for the document
 
 io.on('connection', (socket) => {
+    console.log('connected')
     socket.on('get-document', async documentId => {  // this takes in a document id)
         const document = await findOrCreateDocument(documentId) // get document from database
         socket.join(documentId) // join the room for the document
         socket.emit('load-document', document.data) // send the document to the client
+
 
 
         socket.on('send-changes', (delta) => { // the delta is passed in
@@ -32,7 +34,9 @@ io.on('connection', (socket) => {
         })
 
         socket.on('save-document', async data => { // save the document to the database
+            console.log('saved')
             await Document.findByIdAndUpdate(documentId, { data }) // find the document by id and update it with the data
+
         })
     })
 

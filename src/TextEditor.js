@@ -1,30 +1,46 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
-
+import Quill from 'quill'
 import { io } from 'socket.io-client'
 import { useParams } from 'react-router-dom'
 import { Editor } from '@tinymce/tinymce-react';
 
 
-
+const TOOLBAR_OPTIONS = [
+    'undo redo',            // Undo and Redo buttons
+    'bold italic underline', // Basic text formatting
+    'alignleft aligncenter alignright alignjustify', // Text alignment
+    'bullist numlist',      // Lists (bullet and numbered)
+    'link unlink',          // Insert and remove links
+    'image',                // Insert images
+    'table',                // Insert tables
+    'formatselect',         // Format styles (headings, paragraphs, etc.)
+    'fullscreen',           // Toggle fullscreen mode
+];
 
 
 
 const SAAVE_INTERVAL_MS = 2000 // save every 2 seconds
 
 
-
-
 export default function TextEditor() {
     const { id: documentId } = useParams() // this id is the same name as the one in the url and here we rename it to document id
     const [socket, setSocket] = useState()
-    const [quill, setTiny] = useState()
+    const [tiny, setTiny] = useState()
+    const [editorContent, setEditorContent] = useState() // this is the content of the document
+    const [editorInstance, setEditorInstance] = useState(null);
+    const [quill, setQuill] = useState()
+    const editorRef = useRef(null); // Create a ref to hold the editor instance
+
 
     // to svae the document
     useEffect(() => {
-        if (socket == null || quill == null) return
+        console.log('saving document')
+        if (socket == null || editorContent == null) return
 
         const interval = setInterval(() => {
-            socket.emit('save-document', quill.getContents())
+            console.log(editorContent)
+            socket.emit('save-document', editorContent)
+
         }, SAAVE_INTERVAL_MS)
 
         return () => {
@@ -33,22 +49,21 @@ export default function TextEditor() {
 
 
 
-    }, [socket, quill]) // we want to run this when the socket and quill changes
+    }, [socket, editorContent]) // we want to run this when the socket and quill changes
 
 
     useEffect(() => {
-        if (socket == null || quill == null) return // if socket or quill is null then we dont want to do anything
+        if (socket == null || tiny == null) return // if socket or quill is null then we dont want to do anything
 
 
         //listening to the event once, will automatically clean up the event after listening once
         socket.once('load-document', document => {
-            quill.setContents(document)      // so that we can load up our text editor
-            quill.enable()                   // enable the editor bec we disabled it when we are  loading the document
+            // enable the editor bec we disabled it when we are  loading the document
         })
 
 
         socket.emit('get-document', documentId) // sending to the server they document id to attach us to the room for the document or send us the one document if it is present?
-    }, [socket, quill, documentId])
+    }, [socket, tiny, documentId])
 
 
 
@@ -97,12 +112,42 @@ export default function TextEditor() {
         }
     }, [socket, quill]) // we want to run this when the socket and quill changes
 
-    const wrapperRef = useCallback((wrapper) => {                        // using callback and passing it to our ref
-        // disable the editor until we load the document
+    // const wrapperRef = useCallback((wrapper) => {                        // using callback and passing it to our ref
+    //     if (wrapper == null) return                                     // if wrapper is null then we dont want to do anything
+    //     wrapper.innerHTML = ''                                          //every time we run this we want to reset this
+    //     const editor = document.createElement('div')
+    //     wrapper.append(editor)                                          //current to get the current ref
+    //     const q = new Quill(editor, { theme: 'snow', modules: { toolbar: TOOLBAR_OPTIONS } })                            // quill will be using the editor
+    //     q.disable()                                                  // disable the editor until we load the document
+    //     q.setText('loading...')                                               // disable the editor until we load the document
+    //     setQuill(q)
 
 
 
-    }, [])
+    // }, [])
+
+
+
+
+    const handleEditorChange = (content, editor) => {
+        console.log('Content was updated:', content);
+        // editorRef.current = editor; // Store the editor instance
+        setTiny(editor);
+        setEditorContent(content)
+    };
+
+    const handleEditorInit = (editor) => {
+        // get the previous data
+        socket.once('load-document', document => {
+            console.log(`the document is ${document}`)
+
+        })
+
+        // set the initial contents of the editor
+
+    };
+
+
     return (<div>
         <h1>TinyMCE Text Editor</h1>
         <Editor
@@ -111,23 +156,13 @@ export default function TextEditor() {
                 height: 500,
                 plugins: 'link image code, spellchecker', // Include the spellchecker plugin
                 toolbar: 'undo redo | bold italic | alignleft aligncenter alignright | code | image',
-                // Other TinyMCE configurations
 
-                spellchecker_callback: function (method, text, success, failure) {
-                    var words = text.match(this.getWordCharPattern());
-                    if (method === "spellcheck") {
-                        var suggestions = {};
-                        for (var i = 0; i < words.length; i++) {
-                            suggestions[words[i]] = ["First", "Second"];
-                        }
-                        success({ words: suggestions, dictionary: [] });
-                    } else if (method === "addToDictionary") {
-                        // Add word to dictionary here
-                        success();
 
-                    }
-                }
+
             }}
+            onEditorChange={handleEditorChange}
+            onInit={handleEditorInit}
         />
     </div>)
 }
+
