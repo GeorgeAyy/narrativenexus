@@ -3,6 +3,8 @@ import Quill from 'quill'
 import { io } from 'socket.io-client'
 import { useParams } from 'react-router-dom'
 import { Editor } from '@tinymce/tinymce-react';
+import { set } from 'mongoose';
+
 
 
 const TOOLBAR_OPTIONS = [
@@ -27,9 +29,11 @@ export default function TextEditor() {
     const [socket, setSocket] = useState()
     const [tiny, setTiny] = useState()
     const [editorContent, setEditorContent] = useState() // this is the content of the document
-    const [editorInstance, setEditorInstance] = useState(null);
+    const [editorInstance, setEditorInstance] = useState();
     const [quill, setQuill] = useState()
     const editorRef = useRef(null); // Create a ref to hold the editor instance
+    const [editorLoad, setEditorLoad] = useState()
+    let loaded = false;
 
 
     // to svae the document
@@ -38,7 +42,7 @@ export default function TextEditor() {
         if (socket == null || editorContent == null) return
 
         const interval = setInterval(() => {
-            console.log(editorContent)
+            console.log("saved" + editorContent)
             socket.emit('save-document', editorContent)
 
         }, SAAVE_INTERVAL_MS)
@@ -112,60 +116,61 @@ export default function TextEditor() {
         }
     }, [socket, quill]) // we want to run this when the socket and quill changes
 
-    // const wrapperRef = useCallback((wrapper) => {                        // using callback and passing it to our ref
-    //     if (wrapper == null) return                                     // if wrapper is null then we dont want to do anything
-    //     wrapper.innerHTML = ''                                          //every time we run this we want to reset this
-    //     const editor = document.createElement('div')
-    //     wrapper.append(editor)                                          //current to get the current ref
-    //     const q = new Quill(editor, { theme: 'snow', modules: { toolbar: TOOLBAR_OPTIONS } })                            // quill will be using the editor
-    //     q.disable()                                                  // disable the editor until we load the document
-    //     q.setText('loading...')                                               // disable the editor until we load the document
-    //     setQuill(q)
 
+    const handleEditorChange = async (content, editor) => {
 
+        if (loaded) {
+            console.log('Content was updated:', content);
+            // \editorRef.current = editor; // Store the editor instance
+            setTiny(editor);
+            setEditorContent(content)
+        }
+        else {
+            console.log('entered handle editor change');
+            socket.once('load-document', document => {
 
-    // }, [])
+                console.log(`the document is ${document}`)
+                // editor.setContent(document)
+                setEditorLoad(document)
+            })
 
+            loaded = true;
 
-
-
-    const handleEditorChange = (content, editor) => {
-        console.log('Content was updated:', content);
-        // editorRef.current = editor; // Store the editor instance
-        setTiny(editor);
-        setEditorContent(content)
+        }
     };
 
-    const handleEditorInit = (editor) => {
-        // get the previous data
-        socket.once('load-document', document => {
-            console.log(`the document is ${document}`)
-            editorInstance.execCommand('mceInsertContent', false, document)
+    // const handleEditorInit = (editor) => {
+    //     // get the previous data
 
-        })
 
-        // set the initial contents of the editor
+    //     // set the initial contents of the editor
 
-    };
+    // };
 
 
     return (<div>
         <h1>TinyMCE Text Editor</h1>
         <Editor
             apiKey="bw59pp70ggqha1u9xgyiva27d1vrdvvdar1elkcj2gd51r3q"
+
+            onEditorChange={handleEditorChange}
+
+            initialValue={editorLoad}
             init={{
                 height: 500,
-                plugins: 'link image code, spellchecker', // Include the spellchecker plugin
+                plugins: 'link image code', // Include the spellchecker plugin
                 toolbar: 'undo redo | bold italic | alignleft aligncenter alignright | code | image',
+
                 setup: (editor) => {
-                    setEditorInstance(editor);
+
                 }
 
 
             }}
-            onEditorChange={handleEditorChange}
-            onInit={handleEditorInit}
+
+
         />
+
     </div>)
 }
 
