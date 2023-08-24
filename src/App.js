@@ -1,6 +1,10 @@
 import TextEditor from "./TextEditor";
 import SumAndPar from "./sumandpar";
-import React from "react";
+import SignUp from './signup';
+import React, { useState, useEffect } from "react";
+import Navbar from "./components/Navbar";
+import Section from "./components/Section";
+import { useHistory } from 'react-router-dom';
 import Home from './Home';
 import {
   BrowserRouter as Router,
@@ -11,7 +15,7 @@ import {
 import { v4 as uuidv4 } from "uuid";
 
 const ReactApp = () => {
-  
+
 
   return (
     <Router>
@@ -30,6 +34,9 @@ const ReactApp = () => {
         
         <Route path="/sumandpar">
           <SumAndPar />
+        </Route>
+        <Route path="/signup">
+          <SignUp />
         </Route>
         
         
