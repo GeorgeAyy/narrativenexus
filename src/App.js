@@ -1,8 +1,10 @@
 import TextEditor from "./TextEditor";
 import SumAndPar from "./sumandpar";
+import SignUp from './signup';
 import React, { useState, useEffect } from "react";
 import Navbar from "./components/Navbar";
 import Section from "./components/Section";
+import { useHistory } from 'react-router-dom';
 import {
   BrowserRouter as Router,
   Switch,
@@ -12,6 +14,7 @@ import {
 import { v4 as uuidv4 } from "uuid";
 
 const ReactApp = () => {
+  const history = useHistory();
   const [isMenuOpen, setMenuOpen] = useState(false);
 
   const handleToggleClick = () => {
@@ -31,7 +34,7 @@ const ReactApp = () => {
       event.preventDefault();
       scrollToSection(sectionId);
     };
-
+    
     const links = [
       { selector: ".item a[href='#section3']", id: "section3" },
       { selector: ".item a[href='#section2']", id: "section2" },
@@ -50,6 +53,14 @@ const ReactApp = () => {
         };
       }
     });
+    const signup = document.querySelector(".item button secondary a[href='#signup']");
+    if (signup) {
+      signup.addEventListener("click", (event) => {
+        event.preventDefault();
+        history.push('/signup');
+      }
+      );
+    }
   }, []);
 
   return (
@@ -120,6 +131,9 @@ const ReactApp = () => {
         
         <Route path="/sumandpar">
           <SumAndPar />
+        </Route>
+        <Route path="/signup">
+          <SignUp />
         </Route>
         
         
