@@ -31,6 +31,7 @@ const io = require('socket.io')(3001, {
 const defaultValue = '';
 
 io.on('connection', (socket) => {
+
     console.log(`[SOCKET] User connected`);
 
     socket.on('get-document', async (documentId) => {
@@ -52,6 +53,7 @@ io.on('connection', (socket) => {
         console.log(`[SOCKET] Document data saved`);
     });
 });
+
 
 async function findOrCreateDocument(id) {
     if (id == null) return;
