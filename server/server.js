@@ -14,7 +14,7 @@ const corsOptions = {
     allowedHeaders: ['Content-Type'],
     optionsSuccessStatus: 200, // Return a successful response
     credentials: true, // Enable cookies
-  };
+};
 app.use(cors(corsOptions));
 
 mongoose.connect(config.mongoURI)
@@ -40,19 +40,22 @@ io.on('connection', (socket) => {
         console.log(`[SOCKET] Document loaded:`, document);
         socket.join(documentId);
         socket.emit('load-document', document.data);
-    });
 
-    socket.on('send-changes', (delta) => {
-        console.log(`[SOCKET] Received changes:`, delta);
-        socket.broadcast.to(documentId).emit('receive-changes', delta);
-    });
 
-    socket.on('save-document', async (data) => {
-        console.log(`[SOCKET] Saving document data:`, data);
-        await Document.findByIdAndUpdate(documentId, { data });
-        console.log(`[SOCKET] Document data saved`);
+        socket.on('send-changes', (delta) => {
+            console.log(`[SOCKET] Received changes:`, delta);
+            socket.broadcast.to(documentId).emit('receive-changes', delta);
+        });
+
+        socket.on('save-document', async (data) => {
+            console.log(`[SOCKET] Saving document data:`, data);
+            await Document.findByIdAndUpdate(documentId, { data });
+            console.log(`[SOCKET] Document data saved`);
+        });
     });
 });
+
+
 
 
 async function findOrCreateDocument(id) {
@@ -76,7 +79,7 @@ app.post('/signup', async (req, res) => {
         console.log(`[SIGNUP] Received signup request with data:`, req.body);
         const newUser = new User({
             name: username,
-            email: email, 
+            email: email,
             password: password,
         });
         console.log(`[SIGNUP] Creating new user:`, newUser);
