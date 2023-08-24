@@ -34,7 +34,7 @@ io.on('connection', (socket) => {
         })
 
         socket.on('save-document', async data => { // save the document to the database
-            console.log('saved')
+            console.log('saved' + data)
             await Document.findByIdAndUpdate(documentId, { data }) // find the document by id and update it with the data
 
         })
