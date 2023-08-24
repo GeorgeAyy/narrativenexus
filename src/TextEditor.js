@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import Quill from 'quill';
 import "quill/dist/quill.snow.css"; // the styles for the editor
 import { io } from 'socket.io-client'
