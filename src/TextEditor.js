@@ -24,153 +24,80 @@ const TOOLBAR_OPTIONS = [
 const SAAVE_INTERVAL_MS = 2000 // save every 2 seconds
 
 
+// ...
+
 export default function TextEditor() {
-    const { id: documentId } = useParams() // this id is the same name as the one in the url and here we rename it to document id
-    const [socket, setSocket] = useState()
-    const [tiny, setTiny] = useState()
-    const [editorContent, setEditorContent] = useState() // this is the content of the document
-    const [editorInstance, setEditorInstance] = useState();
-    const [quill, setQuill] = useState()
-    const editorRef = useRef(null); // Create a ref to hold the editor instance
-    const [editorLoad, setEditorLoad] = useState()
-    let loaded = false;
+    const { id: documentId } = useParams();
+    const [socket, setSocket] = useState();
+    const [editorContent, setEditorContent] = useState();
+    const [editorLoad, setEditorLoad] = useState('');
+    const [editorInstance, setEditorInstance] = useState(null);
 
+    // Function to load the document
+    const loadDocument = useCallback(() => {
+        if (socket == null) return;
 
-    // to svae the document
+        socket.once('load-document', document => {
+            console.log(`Loaded document: ${document}`);
+            setEditorLoad(document);
+        });
+    }, [socket]);
+
     useEffect(() => {
-        console.log('saving document')
-        if (socket == null || editorContent == null) return
+        const s = io('http://localhost:3001');
+        setSocket(s);
+
+        return () => {
+            s.disconnect();
+        }
+    }, []);
+
+    useEffect(() => {
+        if (socket == null) return;
+
+        socket.emit('get-document', documentId);
+        loadDocument(); // Load the document immediately when socket is available
+    }, [socket, documentId, loadDocument]);
+
+    useEffect(() => {
+        console.log('saving document');
+        if (socket == null || editorContent == null) return;
 
         const interval = setInterval(() => {
-            console.log("saved" + editorContent)
-            socket.emit('save-document', editorContent)
-
-        }, SAAVE_INTERVAL_MS)
-
-        return () => {
-            clearInterval(interval) // clear the interval when we are done
-        }
-
-
-
-    }, [socket, editorContent]) // we want to run this when the socket and quill changes
-
-
-    useEffect(() => {
-        if (socket == null || tiny == null) return // if socket or quill is null then we dont want to do anything
-
-
-        //listening to the event once, will automatically clean up the event after listening once
-        socket.once('load-document', document => {
-            // enable the editor bec we disabled it when we are  loading the document
-        })
-
-
-        socket.emit('get-document', documentId) // sending to the server they document id to attach us to the room for the document or send us the one document if it is present?
-    }, [socket, tiny, documentId])
-
-
-
-
-
-    useEffect(() => {
-        const s = io('http://localhost:3001') // this is the url of the server.  here we connect
-        setSocket(s)
+            console.log("saved" + editorContent);
+            socket.emit('save-document', editorContent);
+        }, SAAVE_INTERVAL_MS);
 
         return () => {
-            s.disconnect() // disconnect when we are done
+            clearInterval(interval); // clear the interval when we are done
         }
+    }, [socket, editorContent]);
 
-    }, []) // the [] I think is to make sure it only runs once
-
-    useEffect(() => {
-        if (socket == null || quill == null) return             // if socket or quill is null then we dont want to do anything
-
-        const handler = (delta) => {
-            quill.updateContents(delta)                 // update the quill with the delta
-        }
-        socket.on('receive-changes', handler)
-        // send the changes to the server
-
-
-        return () => {
-            socket.off('receive-changes', handler) // remove the listener when we are done
-
-        }
-    }, [socket, quill]) // we want to run this when the socket and quill changes
-
-    useEffect(() => {
-        if (socket == null || quill == null) return // if socket or quill is null then we dont want to do anything
-
-        const handler = (delta, oldDelta, source) => {
-            if (source !== 'user') return // only want to track the user made
-            socket.emit('send-changes', delta)
-        }
-        quill.on('text-change', handler) // this is a listener for the text change event
-        // send the changes to the server
-
-
-        return () => {
-            quill.off('text-change', handler) // remove the listener when we are done
-
-        }
-    }, [socket, quill]) // we want to run this when the socket and quill changes
-
-
-    const handleEditorChange = async (content, editor) => {
-
-        if (loaded) {
-            console.log('Content was updated:', content);
-            // \editorRef.current = editor; // Store the editor instance
-            setTiny(editor);
-            setEditorContent(content)
-        }
-        else {
-            console.log('entered handle editor change');
-            socket.once('load-document', document => {
-
-                console.log(`the document is ${document}`)
-                // editor.setContent(document)
-                setEditorLoad(document)
-            })
-
-            loaded = true;
-
-        }
+    const handleEditorChange = (content) => {
+        console.log('Content was updated:', content);
+        setEditorContent(content);
     };
 
-    // const handleEditorInit = (editor) => {
-    //     // get the previous data
+    const handleEditorInit = (editor) => {
+        setEditorInstance(editor);
+        // Load the document once the editor is initialized
+        loadDocument();
+    };
 
-
-    //     // set the initial contents of the editor
-
-    // };
-
-
-    return (<div>
-        <h1>TinyMCE Text Editor</h1>
-        <Editor
-            apiKey="bw59pp70ggqha1u9xgyiva27d1vrdvvdar1elkcj2gd51r3q"
-
-            onEditorChange={handleEditorChange}
-
-            initialValue={editorLoad}
-            init={{
-                height: 500,
-                plugins: 'link image code', // Include the spellchecker plugin
-                toolbar: 'undo redo | bold italic | alignleft aligncenter alignright | code | image',
-
-                setup: (editor) => {
-
-                }
-
-
-            }}
-
-
-        />
-
-    </div>)
+    return (
+        <div>
+            <h1>TinyMCE Text Editor</h1>
+            <Editor
+                apiKey="bw59pp70ggqha1u9xgyiva27d1vrdvvdar1elkcj2gd51r3q"
+                initialValue={editorLoad}
+                onEditorChange={handleEditorChange}
+                onInit={handleEditorInit}
+                init={{
+                    height: 500,
+                    plugins: 'link image code',
+                    toolbar: 'undo redo | bold italic | alignleft aligncenter alignright | code | image',
+                }}
+            />
+        </div>
+    );
 }
-
