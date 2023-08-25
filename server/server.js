@@ -53,29 +53,24 @@ const io = require("socket.io")(3001, {
 
 const defaultValue = "";
 
-io.on("connection", (socket) => {
-  console.log(`[SOCKET] User connected`);
+io.on('connection', (socket) => {
+    socket.on('get-document', async documentId => {  // this takes in a document id)
+        const document = await findOrCreateDocument(documentId) // get document from database
+        socket.join(documentId) // join the room for the document
+        socket.emit('load-document', document.data) // send the document to the client
 
-  socket.on("get-document", async (documentId) => {
-    console.log(`[SOCKET] Getting document for ID: ${documentId}`);
-    const document = await findOrCreateDocument(documentId);
-    console.log(`[SOCKET] Document loaded:`, document);
-    socket.join(documentId);
-    socket.emit("load-document", document.data);
-  });
 
-  socket.on("send-changes", (delta) => {
-    console.log(`[SOCKET] Received changes:`, delta);
-    socket.broadcast.to(documentId).emit("receive-changes", delta);
-  });
+        socket.on('send-changes', (delta) => { // the delta is passed in
+            socket.broadcast.to(documentId).emit('receive-changes', delta) // broadcast to everyone else  recive changes is a function name?
+        })
 
-  socket.on("save-document", async (data) => {
-    console.log(`[SOCKET] Saving document data:`, data);
-    await Document.findByIdAndUpdate(documentId, { data });
-    console.log(`[SOCKET] Document data saved`);
-  });
-});
+        socket.on('save-document', async data => { // save the document to the database
+            await Document.findByIdAndUpdate(documentId, { data }) // find the document by id and update it with the data
+        })
+    })
 
+
+})
 
 
 async function findOrCreateDocument(id) {
