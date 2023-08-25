@@ -1,14 +1,10 @@
-import TextEditor from "./TextEditor";
-import SumAndPar from "./sumandpar";
-import SignUp from './signup';
+import TextEditor from "./pages/TextEditor";
+import SumAndPar from "./pages/sumandpar";
+import SignUp from "./pages/signup";
 import React, { useState, useEffect } from "react";
-import LogIn from './login';
-import NotFound from './notfound';
-import TestPage from './testpage';
-import Navbar from "./components/Navbar";
-import Section from "./components/Section";
-import { useHistory } from 'react-router-dom';
-import Home from './Home';
+import LogIn from "./pages/login";
+import NotFound from "./pages/notfound";
+import Home from "./pages/Home";
 import {
   BrowserRouter as Router,
   Switch,
@@ -18,13 +14,11 @@ import {
 import { v4 as uuidv4 } from "uuid";
 
 const ReactApp = () => {
-
-
   return (
     <Router>
       <Switch>
         <Route exact path="/">
-         <Home />
+          <Home />
         </Route>
 
         <Route exact path="/documents">
@@ -34,26 +28,21 @@ const ReactApp = () => {
         <Route path="/documents/:id">
           <TextEditor />
         </Route>
-        
+
         <Route path="/sumandpar">
           <SumAndPar />
         </Route>
         <Route path="/signup">
           <SignUp />
         </Route>
-        
+
         <Route path="/login">
           <LogIn />
-        </Route>
-
-        <Route path="/testpage">
-          <TestPage />
         </Route>
 
         <Route path="*">
           <NotFound />
         </Route>
-
       </Switch>
     </Router>
   );

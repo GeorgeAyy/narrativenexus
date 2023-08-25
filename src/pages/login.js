@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import "./styles/login.css"; // Import your custom CSS
+import "../styles/login.css"; // Import your custom CSS
 import axios from "axios";
 import { useHistory } from "react-router-dom";
 import { useCookies } from "react-cookie";
