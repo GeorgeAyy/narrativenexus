@@ -25,7 +25,7 @@ const Navbar = ({ isMenuOpen, handleToggleClick, scrollToSection }) => {
           </a>
         </li>
         <li className={`item button ${getItemClassName()}`}>
-          <a href="#">Log In</a>
+          <a href="login">Log In</a>
         </li>
         <li className={`item button secondary ${getItemClassName()}`} onClick={handleToggleClick}>
           <a href="signup">Sign Up</a>
