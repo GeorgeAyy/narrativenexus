@@ -249,3 +249,7 @@ margin-bottom: 25px;
   width: 250px;
 }
 }
+
+li a{
+  cursor:pointer;
+}

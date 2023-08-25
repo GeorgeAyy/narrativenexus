@@ -2,6 +2,9 @@ import TextEditor from "./TextEditor";
 import SumAndPar from "./sumandpar";
 import SignUp from './signup';
 import React, { useState, useEffect } from "react";
+import LogIn from './login';
+import NotFound from './notfound';
+import TestPage from './testpage';
 import Navbar from "./components/Navbar";
 import Section from "./components/Section";
 import { useHistory } from 'react-router-dom';
@@ -39,9 +42,18 @@ const ReactApp = () => {
           <SignUp />
         </Route>
         
-        
+        <Route path="/login">
+          <LogIn />
+        </Route>
 
-        
+        <Route path="/testpage">
+          <TestPage />
+        </Route>
+
+        <Route path="*">
+          <NotFound />
+        </Route>
+
       </Switch>
     </Router>
   );
