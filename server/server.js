@@ -17,10 +17,10 @@ app.use(
   })
 );
 const corsOptions = {
-  origin: "http://localhost:3000", // Allow requests only from this origin
-  allowedHeaders: ["Content-Type"],
-  optionsSuccessStatus: 200, // Return a successful response
-  credentials: true, // Enable cookies
+    origin: 'http://localhost:3000', // Allow requests only from this origin
+    allowedHeaders: ['Content-Type'],
+    optionsSuccessStatus: 200, // Return a successful response
+    credentials: true, // Enable cookies
 };
 app.use(cors(corsOptions));
 
@@ -32,6 +32,7 @@ mongoose
   const authRouter = require("./routes/auth.js");
     app.use("/auth", authRouter);
 
+
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
@@ -42,6 +43,7 @@ const io = require("socket.io")(3001, {
     origin: "http://localhost:3000",
     methods: ["GET", "POST"],
   },
+
 });
 
 const defaultValue = "";
@@ -69,6 +71,8 @@ io.on("connection", (socket) => {
   });
 });
 
+
+
 async function findOrCreateDocument(id) {
   if (id == null) return;
 
@@ -81,3 +85,4 @@ async function findOrCreateDocument(id) {
   console.log(`[MONGO] Document created:`, newDocument);
   return newDocument;
 }
+
