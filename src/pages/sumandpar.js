@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
 import TextForm from "./TextForm";
-import Output from "./Output";
+import Output from "../components/Output";
 import axios from "axios";
-import Navbar from "./components/Navbar";
-import './styles/sumandpar.css';
+import Navbar from "../components/Navbar";
+import "../styles/sumandpar.css";
 export default function SumAndPar() {
   const [isMenuOpen, setMenuOpen] = useState(false);
 
@@ -59,7 +59,6 @@ export default function SumAndPar() {
   };
 
   return (
-    
     <div className="app">
       <Navbar
         isMenuOpen={isMenuOpen}

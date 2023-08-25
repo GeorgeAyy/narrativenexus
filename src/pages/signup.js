@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import './styles/signup.css'; // Import your custom CSS
+import '../styles/signup.css'; // Import your custom CSS
 import axios from 'axios';
 const SignUp = () => {
     const [name, setName] = useState('');
