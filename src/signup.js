@@ -47,40 +47,57 @@ const SignUp = () => {
       if (isValid) {
         try {
           const data = {
-            username: name,
+            name: name,
             email: email,
-            password:password,
+            password: password,
           };
-            // Create the user using the UserService
-            fetch('http://localhost:5000/signup', {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(data),
-                }).then((response) => {
-                return response.json();
-                }).then((data) => {
-                console.log(data);
-                });
-            // Log success message
-            console.log('User successfully registered: ', data);
       
-            // Optionally, you can redirect the user to a different page
-            // or display a success message in your component.
+          // Create the user using the UserService
+          fetch('http://localhost:5000/auth/signup', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data),
+          })
+            .then((response) => {
+              if (!response.ok) {
+                throw new Error('Registration failed. Please try again.');
+              }
+              return response.json();
+            })
+            .then((data) => {
+              console.log(data);
       
-            // Reset the form fields (as shown in comments).
-            setName('');
-            setEmail('');
-            setPassword('');
-          } catch (error) {
-            // Handle database save error (e.g., duplicate email)
-            setEmailError(error.message);
+              // Optionally, you can redirect the user to a different page
+              // or display a success message in your component.
       
-            // You can set an error state here and display an error message
-            // to the user, e.g., setError('Registration failed. Please try again.');
-          }
-        
+              // Reset the form fields (as shown in comments).
+              setName('');
+              setEmail('');
+              setPassword('');
+            })
+            .catch((error) => {
+              // Handle registration error and set the corresponding error state
+              if (error.message === 'Name must be at least 5 characters.') {
+                setNameError(error.message);
+              } else if (error.message === 'Invalid email format.') {
+                setEmailError(error.message);
+              } else if (
+                error.message === 'Password must be at least 8 characters.' ||
+                error.message === 'Password must include at least one capital letter.' ||
+                error.message === 'Password must include at least one number.'
+              ) {
+                setPasswordError(error.message);
+              } else {
+                // Handle other errors, if needed
+                setEmailError('Email already taken.');
+              }
+            });
+        } catch (error) {
+          // Handle other errors, if needed
+          setEmailError('Email already taken.');
+        }
       }
     };
 
