@@ -6,7 +6,7 @@ const bodyParser = require("body-parser");
 const cors = require("cors");
 const app = express();
 const session = require("express-session");
-
+const cookieParser = require("cookie-parser");
 app.use(express.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(
@@ -14,8 +14,13 @@ app.use(
     secret: "secretcode",
     resave: true,
     saveUninitialized: true,
+    cookie: {
+      maxAge: 3600000, // Session duration in milliseconds
+    },
   })
 );
+app.use(cookieParser());
+
 const corsOptions = {
     origin: 'http://localhost:3000', // Allow requests only from this origin
     allowedHeaders: ['Content-Type'],
