@@ -5,6 +5,7 @@ import { io } from 'socket.io-client'
 import { useParams } from 'react-router-dom'
 import { Editor } from '@tinymce/tinymce-react';
 import { set } from 'mongoose';
+import NavBar from '../components/Navbar';
 
 
 
@@ -93,6 +94,9 @@ export default function TextEditor() {
 
     return (
         <div>
+            <NavBar />
+        
+        <div>
             <h1>TinyMCE Text Editor</h1>
             <Editor
                 apiKey="bw59pp70ggqha1u9xgyiva27d1vrdvvdar1elkcj2gd51r3q"
@@ -105,6 +109,7 @@ export default function TextEditor() {
                     toolbar: 'undo redo | bold italic | alignleft aligncenter alignright | code | image',
                 }}
             />
+        </div>
         </div>
     );
 }
