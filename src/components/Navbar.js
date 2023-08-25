@@ -81,13 +81,23 @@ const Navbar = ({ isMenuOpen, handleToggleClick, scrollToSection }) => {
             Writing Assistant
           </a>
         </li>
+        {cookies.user ? (
+          <>
+            <li className={`item button ${getItemClassName()}`}>
+              <a onClick={handleLogoutClick}>Log Out</a>
+            </li>
+          </>
+        ) : (
+          <>
         <li className={`item button ${getItemClassName()}`}>
           <a href="login">Log In</a>
         </li>
-        <li className={`item button secondary ${getItemClassName()}`} >
+        <li className={`item button secondary ${getItemClassName()}`} onClick={handleToggleClick}>
           <a href="signup">Sign Up</a>
         </li>
-        <li className={`toggle ${getItemClassName()}`}>
+        </>
+        )}
+        <li className={`toggle ${getItemClassName()}`} onClick={handleToggleClick}>
           <span className="bars"></span>
         </li>
       </ul>

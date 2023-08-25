@@ -1,7 +1,10 @@
 import React, { useState } from 'react';
 import '../styles/signup.css'; // Import your custom CSS
 import axios from 'axios';
+import { useHistory, Link } from 'react-router-dom';
+
 const SignUp = () => {
+    const history = useHistory();
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -103,6 +106,9 @@ const SignUp = () => {
 
   return (
     <div className="signup-container">
+      <button className="btn1" onClick={() => history.push("/")}>
+        Home
+      </button>
       <form className="signup-form" onSubmit={handleSubmit}>
         <div className="input-container">
           <input
@@ -164,7 +170,7 @@ const SignUp = () => {
 
         <div className="error-message">{passwordError}</div>
 
-        <button type="submit" className="custom-button">
+        <button type="submit" className="underlinebutton">
           Sign Up
         </button>
       </form>

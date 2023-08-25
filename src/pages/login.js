@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import "../styles/login.css"; // Import your custom CSS
 import axios from "axios";
-import { useHistory } from "react-router-dom";
+import { useHistory,Link } from "react-router-dom";
 import { useCookies } from "react-cookie";
 
 const LogIn = () => {
@@ -76,6 +76,10 @@ const LogIn = () => {
 
   return (
     <div className="signin-container">
+      
+      <button className="btn1" onClick={() => history.push("/")}>
+        Home
+      </button>
       <form className="signin-form" onSubmit={handleSubmit}>
         {/* Email input */}
         <div className="input-container">
@@ -136,7 +140,7 @@ const LogIn = () => {
         </div>
 
         {/* Sign-in button */}
-        <button type="submit" className="custom-button">
+        <button type="submit" className="underlinebutton">
           Sign In
         </button>
       </form>

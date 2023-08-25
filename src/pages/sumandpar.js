@@ -4,6 +4,7 @@ import Output from "../components/Output";
 import axios from "axios";
 import Navbar from "../components/Navbar";
 import "../styles/sumandpar.css";
+import {useCookies} from "react-cookie";
 export default function SumAndPar() {
   const [isMenuOpen, setMenuOpen] = useState(false);
 
@@ -59,6 +60,7 @@ export default function SumAndPar() {
   };
 
   return (
+
     <div className="app">
       <Navbar
         isMenuOpen={isMenuOpen}
