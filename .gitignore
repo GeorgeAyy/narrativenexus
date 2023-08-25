@@ -5,6 +5,8 @@
 /.pnp
 .pnp.js
 # Ignore system-generated files and directories
+__pycache__/
+*.pyc
 # testing
 /coverage
 
