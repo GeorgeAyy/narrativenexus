@@ -5,6 +5,7 @@ from rest_framework.views import APIView
 from django.conf import settings
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
+from django.http import JsonResponse
 import openai
 import json
 
@@ -94,19 +95,22 @@ def paraphrase_text(text):
     )
     return response.choices[0].message.content + "\n"
 
-
-def generate_prompt(text):
-    print(text)
+@csrf_exempt
+def generate_prompt(request):
+    
+    data = json.loads(request.body)
+    text = data['promptText']
+    print(f'text: {text}')
     response = openai.ChatCompletion.create(
         engine="narrativedeployment",
         temperature=0,  # You can set the temperature to control the randomness of the summary
         max_tokens=150,
         messages=[
-            {"role": "system", "content": ""},
+            {"role": "system", "content": "You are a helpful assistant."},
             {"role": "user", "content": text}
 
         ],
 
 
     )
-    return (response.choices[0].message.content + "\n")
+    return HttpResponse(json.dumps(response.choices[0].message.content + "\n"))

@@ -31,15 +31,15 @@ const PromptGenerator = () => {
 
     const generatePrompt = async () => {
         const promptText = `Write a ${selectedGenre} story featuring a ${selectedCharacterType}`;
-
+        console.log(promptText);
         try {
-            const response = await fetch("http://127.0.0.1:8000/api/generate_prompt", {
+            const response = await fetch("http://127.0.0.1:8000/api/generate_prompt/", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
                 },
                 body: JSON.stringify({
-                    text: promptText,
+                    promptText,
                 }),
             });
             const data = await response.json();
@@ -55,7 +55,7 @@ const PromptGenerator = () => {
             <div className="options">
                 <label>Select Genre:</label>
                 <select onChange={(e) => setSelectedGenre(e.target.value)}>
-                    <option value="">Select Genre</option>
+                    <option value="Mystery">Villain</option>
                     {genres.map((genre, index) => (
                         <option key={index} value={genre}>
                             {genre}
@@ -64,7 +64,7 @@ const PromptGenerator = () => {
                 </select>
                 <label>Select Character Type:</label>
                 <select onChange={(e) => setSelectedCharacterType(e.target.value)}>
-                    <option value="">Select Character Type</option>
+                    <option value="Vilain">Mystery</option>
                     {characterTypes.map((type, index) => (
                         <option key={index} value={type}>
                             {type}
@@ -75,12 +75,12 @@ const PromptGenerator = () => {
             </div>
             <div className="generated-prompt">
                 <h2>Your Writing Prompt:</h2>
-                <p>{prompt}</p>
+
                 {/* Text field where the generated prompt will appear */}
                 <textarea
                     rows="4"
                     cols="50"
-                    value={prompt}
+                    value={outputText}
                     readOnly
                     placeholder="Generated Prompt"
                     id='prompt'
