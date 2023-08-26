@@ -95,18 +95,19 @@ def paraphrase_text(text):
     )
     return response.choices[0].message.content + "\n"
 
+
 @csrf_exempt
 def generate_prompt(request):
-    
+
     data = json.loads(request.body)
     text = data['promptText']
     print(f'text: {text}')
     response = openai.ChatCompletion.create(
         engine="narrativedeployment",
-        temperature=0,  # You can set the temperature to control the randomness of the summary
-        max_tokens=150,
+        temperature=1,  # You can set the temperature to control the randomness of the story
+        max_tokens=300,
         messages=[
-            {"role": "system", "content": "You are a helpful assistant."},
+            {"role": "system", "content": "write main plot points and ideas to break writers block. about this topic"},
             {"role": "user", "content": text}
 
         ],
