@@ -1,0 +1,45 @@
+/* summaryPopup.css */
+
+.popup-summary {
+    position: absolute;
+    background-color: #f0f0f0;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: auto; /* Allow the width to adjust based on content */
+    max-width: 80vw; /* Limit the maximum width to 80% of viewport width */
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    padding: 20px;
+    z-index: 9999;
+    text-align: center;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+  
+  .popup-summary-content {
+    font-size: 16px;
+    line-height: 1.5;
+    text-align: left;
+    background-color: #ffffff;
+    padding: 10px;
+    margin: 10px;
+    overflow: auto; /* Add scrollbars if content overflows */
+    max-height: 60vh; /* Limit the maximum height to 60% of viewport height */
+  }
+  
+  .summary-close-button {
+    margin-top: 20px;
+    padding: 10px 20px;
+    background-color: #d9534f;
+    color: #fff;
+    font-size: 16px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .summary-close-button:hover {
+    background-color: #c9302c;
+  }
+  

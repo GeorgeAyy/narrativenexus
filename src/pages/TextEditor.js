@@ -6,7 +6,7 @@ import { useParams } from 'react-router-dom'
 import { Editor } from '@tinymce/tinymce-react';
 import ReactLoading from "react-loading";
 import { openPopupGrammarChecker } from "../Utils/grammarchecker";
-
+import { openPopupSummary } from "../Utils/summaryPopup";
 import { useCookies, removeCookie } from "react-cookie";
 import Navbar from '../components/Navbar';
 import InvalidAccessPage from '../components/invalidaccesspage';
@@ -37,6 +37,10 @@ export default function TextEditor() {
 
   const editorRef = useRef(null);
   const [grammerChecker, setGrammerChecker] = useState(false);
+  const [summarizer, setSummarizer] = useState(false);
+  const [summary, setSummary] = useState(""); // New state for summarized text
+  const [Paraphraser, setParaphraser] = useState(false);
+  const [paraphrase, setparaphrase] = useState(""); // New state for summarized text
   const [cookies, setCookie, removeCookie] = useCookies(['user']);
 
   // Function to load the document
@@ -124,7 +128,7 @@ export default function TextEditor() {
             height: 500,
             menubar: true,
             plugins: ["image ", "link ", " code"],
-            toolbar: "undo redo | bold italic | alignleft aligncenter alignright | code | image| GrammarChecker",
+            toolbar: "undo redo | bold italic | alignleft aligncenter alignright | code | image| GrammarChecker| SummarizeText | ParaphraseText",
             setup: (editor) => {
               editor.ui.registry.addButton("GrammarChecker", {
                 text: "Grammar Checker",
@@ -195,9 +199,73 @@ export default function TextEditor() {
                   }
                 },
               });
+              editor.ui.registry.addButton("SummarizeText", {
+                text: "Summarize Text",
+                tooltip: "Summarize the selected text",
+                onAction: async () => {
+                  const selection = editor.selection.getContent();
+  
+                  if (selection !== "") {
+                    setSummarizer(true);
+                    const data = {
+                      text: selection,
+                      action:'summarize',
+                    };
+                    const response = await fetch(
+                      "http://127.0.0.1:8000/api/process_text/", // Change the URL to your summarization API endpoint
+                      {
+                        method: "POST",
+                        headers: {
+                          "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify(data),
+                      }
+                    );
+                   const result=await response.json();
+                   setSummary(result); 
+                   openPopupSummary(result);
+                  } else {
+                    alert("Please select a sentence");
+                  }
+                },
+              });
+               
+              editor.ui.registry.addButton("ParaphraseText", {
+                text: "Paraphrase Text",
+                tooltip: "Paraphrase the selected text",
+                onAction: async () => {
+                  const selection = editor.selection.getContent();
+  
+                  if (selection !== "") {
+                    setParaphraser(true);
+                    const data = {
+                      text: selection,
+                      action:'paraphrase',
+                    };
+                    const response = await fetch(
+                      "http://127.0.0.1:8000/api/process_text/", // Change the URL to your summarization API endpoint
+                      {
+                        method: "POST",
+                        headers: {
+                          "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify(data),
+                      }
+                    );
+                   const answer=await response.json();
+                   setparaphrase(answer); 
+                   openPopupSummary(answer);
+                  } else {
+                    alert("Please select a sentence");
+                  }
+                },
+              });
+
             },
           }}
         />
+    
+
       </div>
     );
   }
