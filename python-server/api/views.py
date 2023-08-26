@@ -11,7 +11,7 @@ import json
 
 with open('./server/config.json') as config_file:
     config_data = json.load(config_file)
-    
+
 openai.api_type = "azure"
 openai.api_base = "https://narrativenexus.openai.azure.com/"
 openai.api_version = "2023-03-15-preview"
@@ -23,8 +23,9 @@ class GrammarCorrectionView(APIView):
         text = request.data.get('text')
 
         # Perform grammar correction
-        language_tool = language_tool_python.LanguageTool('en-US', config={'maxSpellingSuggestions': 1})
-        #text = 'A sentence with a error in the Hitchhiker’s Guide tot he Galaxy'
+        language_tool = language_tool_python.LanguageTool(
+            'en-US', config={'maxSpellingSuggestions': 1})
+        # text = 'A sentence with a error in the Hitchhiker’s Guide tot he Galaxy'
         matches = language_tool.check(text)
         correctText = language_tool.correct(text)
 
@@ -40,6 +41,7 @@ class GrammarCorrectionView(APIView):
             'matches': matches
         }
         return Response(response_data, status=status.HTTP_200_OK)
+
 
 @csrf_exempt
 def process_text(request):
@@ -63,17 +65,18 @@ def process_text(request):
 
     return HttpResponse(json.dumps(response))
 
+
 def summarize_text(text):
     # You can set the max tokens to control the length of the summary
     response = openai.ChatCompletion.create(
         engine="narrativedeployment",
-        temperature=0, # You can set the temperature to control the randomness of the summary
+        temperature=0,  # You can set the temperature to control the randomness of the summary
         max_tokens=150,
-        messages= [
-                {"role":"system", "content":"Summarize the following text without adding extra words of your own."},
-                {"role":"user","content": text}
+        messages=[
+            {"role": "system", "content": "Summarize the following text without adding extra words of your own."},
+            {"role": "user", "content": text}
         ],
-        
+
     )
     return (response.choices[0].message.content + "\n")
 
@@ -82,12 +85,25 @@ def paraphrase_text(text):
     # You can set the max tokens to control the length of the paraphrase
     response = openai.ChatCompletion.create(
         engine="narrativedeployment",
-        temperature=0, # You can set the temperature to control the randomness of the paraphrase
+        temperature=0,  # You can set the temperature to control the randomness of the paraphrase
         max_tokens=100,
-        messages= [
-                {"role":"system", "content":"You are a helpful assistant. Paraphrase the following text."},
-                {"role":"user","content": text}
+        messages=[
+            {"role": "system", "content": "You are a helpful assistant. Paraphrase the following text."},
+            {"role": "user", "content": text}
         ]
     )
     return response.choices[0].message.content + "\n"
-    
+
+
+def generate_prompt(text):
+    response = openai.ChatCompletion.create(
+        engine="narrativedeployment",
+        temperature=0,  # You can set the temperature to control the randomness of the summary
+        max_tokens=150,
+        messages=[
+            {"role": "system", "content": "Summarize the following text without adding extra words of your own."},
+            {"role": "user", "content": text}
+        ],
+
+    )
+    return (response.choices[0].message.content + "\n")

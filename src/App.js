@@ -5,6 +5,7 @@ import React, { useState, useEffect } from "react";
 import LogIn from "./pages/login";
 import NotFound from "./pages/notfound";
 import Home from "./pages/Home";
+import PromptGenerator from "./pages/promptGenerator";
 import {
   BrowserRouter as Router,
   Switch,
@@ -38,6 +39,10 @@ const ReactApp = () => {
 
         <Route path="/login">
           <LogIn />
+        </Route>
+
+        <Route path="/generatepromts">
+          <PromptGenerator />
         </Route>
 
         <Route path="*">
