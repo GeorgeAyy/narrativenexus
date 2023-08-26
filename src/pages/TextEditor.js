@@ -7,6 +7,9 @@ import { Editor } from '@tinymce/tinymce-react';
 import ReactLoading from "react-loading";
 import { openPopupGrammarChecker } from "../Utils/grammarchecker";
 import { set } from 'mongoose';
+import { useCookies,removeCookie } from "react-cookie";
+import Navbar from '../components/Navbar';
+import InvalidAccessPage from '../components/invalidaccesspage';
 import "../styles/App.css";
 
 
@@ -44,7 +47,7 @@ export default function TextEditor() {
     const [editorInstance, setEditorInstance] = useState(null);
     const editorRef = useRef(null);
     const [grammerChecker, setGrammerChecker] = useState(false);
-  
+    const [cookies, setCookie, removeCookie] = useCookies(['user']);
   
     // Function to load the document
     const loadDocument = useCallback(() => {
@@ -98,6 +101,14 @@ export default function TextEditor() {
         editorRef.current = editor;
     };
 
+    if (!cookies.user) {
+      return (
+        <div class = "divcontainer">
+          <Navbar />
+          <InvalidAccessPage />
+        </div>
+      );
+    } else {
     return (
         <div style={{padding: "5%"}}>
         {grammerChecker ? (
@@ -199,4 +210,5 @@ export default function TextEditor() {
             />
         </div>
     );
+}
 }

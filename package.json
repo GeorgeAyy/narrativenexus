@@ -36,7 +36,7 @@
   "scripts": {
     "start": "react-scripts start",
     "devStart": "nodemon server/server.js",
-    "pythonApp": "python python-server/summarizer.py",
+    "pythonApp": "python python-server/manage.py runserver",
     "devBoth": "concurrently \"npm run pythonApp\" \"npm start\"",
     "build": "react-scripts build",
     "test": "react-scripts test",

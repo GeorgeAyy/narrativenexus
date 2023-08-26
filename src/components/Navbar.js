@@ -2,6 +2,7 @@
 import React from "react";
 import {useLocation} from 'react-router-dom';
 import { useCookies,removeCookie } from "react-cookie";
+import image from "../images/logo.png";
 const Navbar = ({ isMenuOpen, handleToggleClick, scrollToSection }) => {
   const getItemClassName = () => {
     return isMenuOpen ? "active" : "";
@@ -22,9 +23,10 @@ const Navbar = ({ isMenuOpen, handleToggleClick, scrollToSection }) => {
       <ul className="menu">
         <li className="logo">
           <a onClick={() => scrollToSection("section1")} href="#section1">
-            NN
+            <img src = {image} alt ="logo" class = "logoinnav"/>
           </a>
         </li>
+        
         {cookies.user && (
   <>
     <li className={`item ${getItemClassName()}`}>
@@ -68,7 +70,7 @@ const Navbar = ({ isMenuOpen, handleToggleClick, scrollToSection }) => {
       <ul className="menu">
         <li className="logo">
           <a href="/">
-            NN
+          <img src = {image} alt ="logo" class = "logoinnav"/>
           </a>
         </li>
         <li className={`item ${getItemClassName()}`}>

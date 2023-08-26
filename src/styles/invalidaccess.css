@@ -1,0 +1,38 @@
+
+  
+  .invalid-access {
+    margin-top: 13%;
+    text-align: center;
+    padding: 20px;
+    background-color: #f7f7f7;
+    display: 'flex'; 
+    align-items: 'center'; 
+    justify-content: 'center';
+  }
+  
+  .invalid-access h1 {
+    color: black;
+    font-family: Roboto, sans-serif;
+    font-size: 20px;
+    line-height: 1.5;
+  }
+  
+  .invalid-access p {
+    color: darkgray;
+    font-family: Roboto, sans-serif;
+    font-size: 16px;
+    line-height: 1.5;
+  }
+  
+  .invalid-access button {
+    background-color: #3498db;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 10px;
+    cursor: pointer;
+  }
+  
+  .invalid-access button:hover {
+    background-color: #2980b9;
+  }
