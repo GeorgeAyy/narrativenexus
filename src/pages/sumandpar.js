@@ -4,8 +4,10 @@ import Output from "../components/Output";
 import axios from "axios";
 import Navbar from "../components/Navbar";
 import "../styles/sumandpar.css";
-import {useCookies} from "react-cookie";
+import { useCookies, removeCookie } from "react-cookie";
+import InvalidAccessPage from "../components/invalidaccesspage";
 export default function SumAndPar() {
+  const [cookies, setCookie, removeCookie] = useCookies(["user"]);
   const [isMenuOpen, setMenuOpen] = useState(false);
 
   const handleToggleClick = () => {
@@ -49,26 +51,41 @@ export default function SumAndPar() {
 
   const processText = async (text, action) => {
     try {
-      const response = await axios.post("http://127.0.0.1:5000/process_text", {
-        text,
-        action,
+      const response = await fetch("http://127.0.0.1:8000/api/process_text/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          text,
+          action,
+        }),
       });
-      setOutputText(response.data);
+      const data = await response.json();
+      setOutputText(data);
     } catch (error) {
       setOutputText(`Error processing text: ${error}`);
     }
   };
 
-  return (
-
-    <div className="app">
-      <Navbar
-        isMenuOpen={isMenuOpen}
-        handleToggleClick={handleToggleClick}
-        scrollToSection={scrollToSection}
-      />
-      <TextForm onProcessText={processText} />
-      <Output outputText={outputText} />
-    </div>
-  );
+  if (!cookies.user) {
+    return (
+      <div class = "divcontainer">
+        <Navbar />
+        <InvalidAccessPage />
+      </div>
+    );
+  } else {
+    return (
+      <div className="app">
+        <Navbar
+          isMenuOpen={isMenuOpen}
+          handleToggleClick={handleToggleClick}
+          scrollToSection={scrollToSection}
+        />
+        <TextForm onProcessText={processText} />
+        <Output outputText={outputText} />
+      </div>
+    );
+  }
 }
