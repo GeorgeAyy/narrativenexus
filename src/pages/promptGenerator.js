@@ -1,49 +1,53 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import '../styles/promptgenerator.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 const genres = ['Fantasy', 'Romance', 'Mystery', 'Science Fiction', 'Historical Fiction'];
 const characterTypes = ['Hero', 'Villain', 'Detective', 'Alien'];
 
-
-const generatePrompt = async (text) => {
-
-    try {
-        const response = await fetch("http://127.0.0.1:8000/api/generate_prompt/", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-                text,
-
-            }),
-        });
-        const data = await response.json();
-        setOutputText(data);
-    } catch (error) {
-        setOutputText(`Error processing text: ${error}`);
-    }
-    finally {
-        document.getElementById("prompt").value = outputText;
-    }
-};
-
-
-
-
 const PromptGenerator = () => {
     const [selectedGenre, setSelectedGenre] = useState('');
     const [selectedCharacterType, setSelectedCharacterType] = useState('');
     const [prompt, setPrompt] = useState('');
-    const [outputText, setOutputText] = useState("");
+    const [outputText, setOutputText] = useState('');
 
 
-    // const generatePrompt = () => {
-    //     // Generate a prompt based on selectedGenre and selectedCharacterType
-    //     const newPrompt = `Write a ${selectedGenre} story featuring a ${selectedCharacterType}.`;
-    //     setPrompt(newPrompt);
-    // };
+
+    useEffect(() => {
+        const generateButton = document.getElementById("generateButton");
+        if (generateButton) {
+            generateButton.addEventListener("click", generatePrompt);
+        }
+        return () => {
+            if (generateButton) {
+                generateButton.removeEventListener("click", generatePrompt);
+            }
+        };
+    }, []);
+
+
+
+
+
+    const generatePrompt = async () => {
+        const promptText = `Write a ${selectedGenre} story featuring a ${selectedCharacterType}`;
+
+        try {
+            const response = await fetch("http://127.0.0.1:8000/api/generate_prompt", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    text: promptText,
+                }),
+            });
+            const data = await response.json();
+            setOutputText(data);
+        } catch (error) {
+            setOutputText(`Error processing text: ${error}`);
+        }
+    };
 
     return (
         <div className="prompt-generator">
@@ -67,7 +71,7 @@ const PromptGenerator = () => {
                         </option>
                     ))}
                 </select>
-                <button onClick={generatePrompt}>Generate Prompt</button>
+                <button id="generateButton">Generate Prompt</button>
             </div>
             <div className="generated-prompt">
                 <h2>Your Writing Prompt:</h2>

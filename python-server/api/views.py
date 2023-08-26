@@ -96,14 +96,17 @@ def paraphrase_text(text):
 
 
 def generate_prompt(text):
+    print(text)
     response = openai.ChatCompletion.create(
         engine="narrativedeployment",
         temperature=0,  # You can set the temperature to control the randomness of the summary
         max_tokens=150,
         messages=[
-            {"role": "system", "content": "Summarize the following text without adding extra words of your own."},
+            {"role": "system", "content": ""},
             {"role": "user", "content": text}
+
         ],
+
 
     )
     return (response.choices[0].message.content + "\n")
