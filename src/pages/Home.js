@@ -7,6 +7,9 @@ import narrativebanner from "../images/narrativebanner.png";
 import sumandparbanner from "../images/sumandparbanner.png";
 import writingpromptbanner from "../images/writingpromptbanner.png";
 import writingassistantbanner from "../images/writingassistantbanner.png";
+import sumandpar from "../images/sumandpar.png";
+import writingassistant from "../images/writingassistant.png";
+import writingprompt from "../images/writingprompt.png";
 import "react-responsive-carousel/lib/styles/carousel.min.css";
 import { useState, useEffect } from "react";
 
@@ -57,7 +60,7 @@ const Home = () => {
         handleToggleClick={handleToggleClick}
         scrollToSection={scrollToSection}
       />
-      <div style={{ maxWidth: "90%", margin: "0 auto",maxHeight:"10%" }}>
+      <div class= "carouseldiv"style={{ maxWidth: "90%", margin: "0 auto",maxHeight:"10%", marginTop:"30px"}}>
         <Carousel showThumbs={false}
           showStatus={false}
           autoPlay={true} // Enable auto-rotation
@@ -81,49 +84,41 @@ const Home = () => {
       
       <Section
         id="section1"
-        title="NN"
+        title={writingassistant}
         content={{
           upper:
-            "logo Welcome to our Al-powered Creative Writing Assistant! Our web application is designed to help you overcome writer's block, boost your creativity, and improve your writing skills. With our cutting-edge technology, we offer a range of powerful features to assist you throughout your writing journey.",
+            "AI Powered Writing Assistant",
           lower:
-            " To experience the power of our Al-powered Creative Writing Assistant, sign up now and unlock a world of writing possibilities. Whether you're an aspiring writer, a professional seeking to enhance your skills, or part of a team working on collaborative projects, our application is here to empower you and take your writing to the next level. Sign up today and unleash your creativity!.",
+            "Our Writing Assistant puts the power of professional editing at your fingertips. With just a click, you can check selected texts for spelling and grammar mistakes, ensuring your work is error-free. Need to distill complex content? Click again to summarize selected texts or effortlessly rephrase them for a fresh perspective. It's like having a versatile writing toolset within your reach, making your writing process more efficient and effective. Say goodbye to time-consuming editing tasks and hello to a more polished and refined writing experience.",
         }}
+        href="/documents"
+        button="Try Writing Assistant"
       />
-      <div className="btn">
-        <a href="/documents">
-          <button>Try it now</button>
-        </a>
-      </div>
       <Section
         id="section2"
-        title="Summarizer and Paraphraser"
+        title={sumandpar}
         content={{
           upper:
-            "Our AI-powered Summarizer and Paraphraser offer an efficient and effortless way to tackle complex texts. With the Summarizer, you can quickly extract key points and generate concise summaries from lengthy documents, making it easier to grasp essential information",
+            "AI Powered Summarizer and Paraphraser",
           lower:
-            "Meanwhile, our Paraphraser ensures the authenticity of your work by skillfully rephrasing sentences and paragraphs, maintaining the original context and meaning while avoiding plagiarism.",
+          "Elevate your writing with our Summarizer and Paraphraser Tool. The Summarizer distills complex content into concise summaries, while the Paraphraser skillfully rephrases sentences and paragraphs, preserving originality and clarity. Say goodbye to lengthy revisions and hello to efficient, polished writing.",
         }}
+        href="/sumandpar"
+        button="Try Summarizer and Paraphraser"
       />
-      <div className="btn">
-        <a href="/sumandpar">
-          <button>Summarizer and Paraphraser</button>
-        </a>
-      </div>
       <Section
         id="section3"
-        title="Writing Assistant"
+        title={writingprompt}
         content={{
           upper:
-            "With the Al-powered writing assistant, you can write with confidence, knowing that you havea reliable proofreader and writing coach at your side. It helps you polish your work as you write, saving you time on revisions and ensuring your final piece is free from errors and reads smoothly.",
+            "AI Powered Writing Prompt",
           lower:
-            "When you're composing your text, the Al-powered assistant actively examines your writing and identifies areas that can be enhanced. It helps you avoid pesky spelling errors by highlighting and suggesting corrections for misspelled words. Additionally, it assists with grammar mistakes by flagging them and providing alternative suggestions to improve sentence construction and clarity.",
+            "Break through creative barriers with our Writing Prompt Generator. When the blank page feels daunting, this tool offers a wellspring of inspiration, sparking your imagination and guiding your storytelling. Say farewell to writer's block and embark on a captivating writing journey filled with fresh, engaging ideas. Explore the endless possibilities and discover your muse with Narrative Nexus's Writing Prompt Generator.",
         }}
+        href="/writingprompt"
+        button="Try Writing Prompt"
       />
-      <div className="btn">
-        <a href="/documents">
-          <button>Writing Assistant</button>
-        </a>
-      </div>
+      
     </div>
   );
 };

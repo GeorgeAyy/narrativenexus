@@ -41,7 +41,7 @@ const ReactApp = () => {
           <LogIn />
         </Route>
 
-        <Route path="/generatepromts">
+        <Route path="/writingprompt">
           <PromptGenerator />
         </Route>
 
