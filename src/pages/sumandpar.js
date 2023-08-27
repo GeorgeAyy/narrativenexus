@@ -70,7 +70,7 @@ export default function SumAndPar() {
 
   if (!cookies.user) {
     return (
-      <div class = "divcontainer">
+      <div class="divcontainer">
         <Navbar />
         <InvalidAccessPage />
       </div>
