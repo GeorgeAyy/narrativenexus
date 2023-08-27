@@ -11,6 +11,7 @@ import { useCookies, removeCookie } from "react-cookie";
 import Navbar from '../components/Navbar';
 import InvalidAccessPage from '../components/invalidaccesspage';
 import "../styles/App.css";
+// import { use } from '../../server/routes/auth';
 
 
 
@@ -30,6 +31,7 @@ const SAAVE_INTERVAL_MS = 2000 // save every 2 seconds
 // ...
 
 export default function TextEditor() {
+
   const { id: documentId } = useParams();
   const [socket, setSocket] = useState();
   const [editorContent, setEditorContent] = useState();
@@ -42,6 +44,7 @@ export default function TextEditor() {
   const [Paraphraser, setParaphraser] = useState(false);
   const [paraphrase, setparaphrase] = useState(""); // New state for summarized text
   const [cookies, setCookie, removeCookie] = useCookies(['user']);
+  const userId = cookies.user._id
 
   // Function to load the document
   const loadDocument = useCallback(() => {
@@ -53,9 +56,21 @@ export default function TextEditor() {
     });
   }, [socket]);
 
+
+  useEffect(() => {
+    if (socket == null) return;
+
+    socket.emit('attatch-document', documentId, userId);
+
+
+  }, [socket]);
+
+
   useEffect(() => {
     const s = io('http://localhost:3001');
     setSocket(s);
+
+
 
     return () => {
       s.disconnect();
@@ -204,12 +219,12 @@ export default function TextEditor() {
                 tooltip: "Summarize the selected text",
                 onAction: async () => {
                   const selection = editor.selection.getContent();
-  
+
                   if (selection !== "") {
                     setSummarizer(true);
                     const data = {
                       text: selection,
-                      action:'summarize',
+                      action: 'summarize',
                     };
                     const response = await fetch(
                       "http://127.0.0.1:8000/api/process_text/", // Change the URL to your summarization API endpoint
@@ -221,26 +236,26 @@ export default function TextEditor() {
                         body: JSON.stringify(data),
                       }
                     );
-                   const result=await response.json();
-                   setSummary(result); 
-                   openPopupSummary(result);
+                    const result = await response.json();
+                    setSummary(result);
+                    openPopupSummary(result);
                   } else {
                     alert("Please select a sentence");
                   }
                 },
               });
-               
+
               editor.ui.registry.addButton("ParaphraseText", {
                 text: "Paraphrase Text",
                 tooltip: "Paraphrase the selected text",
                 onAction: async () => {
                   const selection = editor.selection.getContent();
-  
+
                   if (selection !== "") {
                     setParaphraser(true);
                     const data = {
                       text: selection,
-                      action:'paraphrase',
+                      action: 'paraphrase',
                     };
                     const response = await fetch(
                       "http://127.0.0.1:8000/api/process_text/", // Change the URL to your summarization API endpoint
@@ -252,9 +267,9 @@ export default function TextEditor() {
                         body: JSON.stringify(data),
                       }
                     );
-                   const answer=await response.json();
-                   setparaphrase(answer); 
-                   openPopupSummary(answer);
+                    const answer = await response.json();
+                    setparaphrase(answer);
+                    openPopupSummary(answer);
                   } else {
                     alert("Please select a sentence");
                   }
@@ -264,7 +279,7 @@ export default function TextEditor() {
             },
           }}
         />
-    
+
 
       </div>
     );
