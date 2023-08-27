@@ -6,7 +6,7 @@ import { useParams } from 'react-router-dom'
 import { Editor } from '@tinymce/tinymce-react';
 import ReactLoading from "react-loading";
 import { openPopupGrammarChecker } from "../Utils/grammarchecker";
-import { openPopupSummary } from "../Utils/summaryPopup";
+import { openPopupSummaryandParaphrase } from "../Utils/summaryandparaphrasePopup";
 import { useCookies, removeCookie } from "react-cookie";
 import Navbar from '../components/Navbar';
 import InvalidAccessPage from '../components/invalidaccesspage';
@@ -105,7 +105,7 @@ export default function TextEditor() {
   } else {
     return (
       <div style={{ padding: "5%" }}>
-        {grammerChecker ? (
+        {grammerChecker ||summarizer || Paraphraser? (
           <ReactLoading
             type={"spin"}
             color="#0A99E5"
@@ -222,8 +222,9 @@ export default function TextEditor() {
                       }
                     );
                    const result=await response.json();
+                   setSummarizer(false);
                    setSummary(result); 
-                   openPopupSummary(result);
+                   openPopupSummaryandParaphrase(result,editor);
                   } else {
                     alert("Please select a sentence");
                   }
@@ -253,8 +254,9 @@ export default function TextEditor() {
                       }
                     );
                    const answer=await response.json();
+                   setParaphraser(false);
                    setparaphrase(answer); 
-                   openPopupSummary(answer);
+                   openPopupSummaryandParaphrase(answer,editor);
                   } else {
                     alert("Please select a sentence");
                   }
