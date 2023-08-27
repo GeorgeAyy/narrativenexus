@@ -23,7 +23,7 @@ const ReactApp = () => {
         </Route>
 
         <Route exact path="/documents">
-          <Redirect to={`/documents/ ${uuidv4()}`} />
+          <Redirect to={`/documents/${uuidv4()}`} />
         </Route>
 
         <Route path="/documents/:id">
