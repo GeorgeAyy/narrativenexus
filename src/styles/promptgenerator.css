@@ -59,7 +59,7 @@ select {
 
 button {
     padding: 10px 20px;
-    background-color: #4caf50;
+    background-color: #5abf9d;
     color: white;
     border: none;
     border-radius: 4px;
@@ -68,7 +68,7 @@ button {
 }
 
 button:hover {
-    background-color: #6cbe6f;
+    background-color: #4a9c84; /* Change this color to your desired hover color */
 }
 
 .generated-prompt {
