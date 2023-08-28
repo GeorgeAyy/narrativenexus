@@ -11,7 +11,7 @@ const Section = ({ id, title, content,href,button }) => {
         <div className="lowersection">
           <p>{content.lower}</p>
           <a href={href}>
-          <button className="btn">{button}</button>
+          <button className="btn" style={{ marginTop: '25px', fontSize: '17px'  }}>{button}</button>
           </a>
           
         </div>
