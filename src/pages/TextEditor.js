@@ -44,8 +44,12 @@ export default function TextEditor() {
   const [Paraphraser, setParaphraser] = useState(false);
   const [paraphrase, setparaphrase] = useState(""); // New state for summarized text
   const [cookies, setCookie, removeCookie] = useCookies(['user']);
-  const userId = cookies.user._id
-
+  const userId = null;
+  if(cookies.user)
+  {
+    userId = cookies.user._id
+  }
+  
   // Function to load the document
   const loadDocument = useCallback(() => {
     if (socket == null) return;
@@ -58,7 +62,7 @@ export default function TextEditor() {
 
 
   useEffect(() => {
-    if (socket == null) return;
+    if (socket == null || userId==null) return;
 
     socket.emit('attatch-document', documentId, userId);
 
