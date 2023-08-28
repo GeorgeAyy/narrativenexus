@@ -356,6 +356,7 @@ li a {
   border-radius: 5px;
   cursor: pointer;
   transition: background-color 0.3s ease, transform 0.3s ease;
+  
 }
 
 .custom-button:hover {
@@ -378,12 +379,11 @@ li a {
 .sectionimage {
   width: 100%;
   height: auto;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  transition: opacity 0.3s;
 }
 
 .sectionimage:hover {
-  transform: scale(1.1);
-  box-shadow: 0 2px 14px rgba(0, 0, 0, 0.4);
+  opacity: 0.8;
 }
 
 /* Media query for smaller screens */
