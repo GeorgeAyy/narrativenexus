@@ -116,26 +116,27 @@ def generate_prompt(request):
     )
     return HttpResponse(json.dumps(response.choices[0].message.content + "\n"))
 
+
 @csrf_exempt
 def autocomplete(request):
 
-        data = json.loads(request.body)
-        text = data['text']
-        print(f'text: {text}')
+    data = json.loads(request.body)
+    text = data['text']
+    print(f'text: {text}')
 
-        # Debugging: Print the received text before sending it to OpenAI
-        print(f'Received text: {text}')
+    # Debugging: Print the received text before sending it to OpenAI
+    print(f'Received text: {text}')
 
-        response = openai.ChatCompletion.create(
-            engine="narrativedeployment",
-            temperature=1,  # You can set the temperature to control the randomness of the story
-            max_tokens=50,
-            messages=[
-                {"role": "system", "content": "you are an autocomplete engine, give me a word only one word and not more that would autocomplete this text while ignoring any html sent to you by the user if you are going to reply with a repeating word then reply with none"},
-                {"role": "user", "content": text}
-            ]
-        )
+    response = openai.ChatCompletion.create(
+        engine="narrativedeployment",
+        temperature=1,  # You can set the temperature to control the randomness of the story
+        max_tokens=50,
+        messages=[
+            {"role": "system", "content": "you are an autocomplete engine, give me a word only one word and not more that would autocomplete this text while ignoring any html sent to you by the user if you are going to reply with a repeating word then reply with none"},
+            {"role": "user", "content": text}
+        ]
+    )
 
-        # Debugging: Print the generated response from OpenAI
-        print(f'Response from OpenAI: {response.choices[0].message.content}')
-        return HttpResponse(json.dumps(response.choices[0].message.content + "\n"))
+    # Debugging: Print the generated response from OpenAI
+    print(f'Response from OpenAI: {response.choices[0].message.content}')
+    return HttpResponse(json.dumps(response.choices[0].message.content + "\n"))
