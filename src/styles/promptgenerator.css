@@ -7,7 +7,7 @@
 
 body {
     font-family: Arial, sans-serif;
-    background-color: #f5f5f5;
+    background-color: #ffffff;
     color: #333;
 }
 
@@ -65,16 +65,14 @@ button {
     border-radius: 4px;
     cursor: pointer;
     transition: background-color 0.3s, box-shadow 0.3s;
-    text-shadow: 0px 1px 2px rgba(0, 0, 0, 0.5); /* Add text shadow initially */
-    box-shadow: -3px  4px 2px rgba(0, 0, 0, 0.3); /* Add box shadow initially */
-  }
-  
-  button:hover {
+    text-shadow: 0px 1px 2px rgba(0, 0, 0, 0.5);
+    box-shadow: -3px 4px 2px rgba(0, 0, 0, 0.3);
+}
+
+button:hover {
     background-color: #4e5d94; /* Change the background color on hover */
     box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5); /* Add a different box shadow on hover */
 }
-  
-  
 
 .generated-prompt {
     padding: 20px;
