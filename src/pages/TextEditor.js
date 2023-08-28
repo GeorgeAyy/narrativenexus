@@ -44,7 +44,12 @@ export default function TextEditor() {
   const [Paraphraser, setParaphraser] = useState(false);
   const [paraphrase, setparaphrase] = useState(""); // New state for summarized text
   const [cookies, setCookie, removeCookie] = useCookies(['user']);
-  const userId = null;
+  // Define variables for auto-completion
+  const [autoCompleteText, setAutoCompleteText] = useState(''); // Define autoCompleteText
+  const [autoCompleteTimer, setAutoCompleteTimer] = useState(null); // Define autoCompleteTimer
+  const AUTO_COMPLETE_DELAY = 1000; // Set the delay in milliseconds
+  const [editorChangeEnabled, setEditorChangeEnabled] = useState(true);
+  var userId = null;
   if(cookies.user)
   {
     userId = cookies.user._id
@@ -104,7 +109,29 @@ export default function TextEditor() {
 
   const handleEditorChange = (content) => {
     console.log('Content was updated:', content);
+    if(editorChangeEnabled){
     setEditorContent(content);
+    
+      // Clear the auto-complete timer on content change
+      clearTimeout(autoCompleteTimer);
+  
+      // Start a new auto-complete timer
+      const timer = setTimeout(() => {
+        if(editorChangeEnabled){
+        sendTextForAutoComplete(content); // Send the text for auto-completion
+        }
+        else
+        {
+          setEditorChangeEnabled(true);
+        }
+      }, 2000);
+  
+      setAutoCompleteTimer(timer);
+    }
+    else
+    {
+      setEditorChangeEnabled(true);
+    }
   };
 
   const handleEditorInit = (evt, editor) => {
@@ -112,6 +139,39 @@ export default function TextEditor() {
     // Load the document once the editor is initialized
     loadDocument();
     editorRef.current = editor;
+
+    
+  };
+  
+  const sendTextForAutoComplete = async (text) => {
+   
+    try {
+      const data = {
+        text: text,
+      };
+      const response = await fetch("http://127.0.0.1:8000/api/autocomplete/", {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(
+          data
+        ),
+      });
+
+      const reply = await response.json();
+     console.log("the reply is: " + reply);
+       // Temporarily remove the change event listener
+       setEditorChangeEnabled(false);
+
+       // Use the insertContent method to append the reply to the current selection
+       editorRef.current.selection.setContent(reply);
+   
+       // Re-enable the change event listener after a short delay (e.g., 200 milliseconds)
+
+    } catch (error) {
+      console.error('Error fetching auto-complete suggestions:', error);
+    }
   };
 
   if (!cookies.user) {
