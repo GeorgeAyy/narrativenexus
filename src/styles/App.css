@@ -5,7 +5,7 @@
   padding: 0;
   box-sizing: border-box;
   font-family: 'Roboto', sans-serif;
-
+  scroll-behavior: smooth;
 }
 
 nav {
@@ -329,12 +329,12 @@ li a {
 }
 
 .uppersection {
-  background-color: #f0f0f0;
-  padding: 10px;
   border-radius: 5px;
 }
 
 .uppersection p {
+  font-weight: bold;
+  font-family: 'Copper Hewitt Bold', sans-serif;
   font-weight: bold;
 }
 
@@ -345,6 +345,7 @@ li a {
 .lowersection p {
   font-size: 16px;
   line-height: 2;
+  font-family: 'Copper Hewitt Book', sans-serif;
 }
 
 .custom-button {
@@ -402,4 +403,20 @@ li a {
   .btn a button {
     margin-left: 20%;
   }
+}
+
+/* Copper Hewitt Bold */
+@font-face {
+  font-family: 'Copper Hewitt Bold';
+  src: url('./CooperHewitt-Bold.otf') format('opentype');
+  font-weight: bold;
+  font-style: normal;
+}
+
+/* Copper Hewitt Light */
+@font-face {
+  font-family: 'Copper Hewitt Book';
+  src: url('./CooperHewitt-Book.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
 }
