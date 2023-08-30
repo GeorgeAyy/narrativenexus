@@ -157,9 +157,9 @@ export default function TextEditor() {
       if (event.keyCode === 9) {
 
         event.preventDefault();
-        if (autoCompleteEnabled) {
+        if (true) {
           // Prevent default Tab behavior
-          event.preventDefault();
+
 
           // Get the content of the editor
           editor.dom.select(`span[style="color: ${targetColor};"]`).forEach(span => {
@@ -170,7 +170,7 @@ export default function TextEditor() {
             parent.removeChild(span);
           });
 
-          autoCompleteEnabled = false; // Disable further autocomplete
+          // autoCompleteEnabled = false; // Disable further autocomplete
         }
       } else {
         // Check if the pressed key is not the Tab key (key code: 9)
