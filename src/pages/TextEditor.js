@@ -11,6 +11,9 @@ import { useCookies, removeCookie } from "react-cookie";
 import Navbar from '../components/Navbar';
 import InvalidAccessPage from '../components/invalidaccesspage';
 import "../styles/App.css";
+import { set } from 'mongoose';
+
+
 // import { use } from '../../server/routes/auth';
 
 
@@ -20,7 +23,8 @@ import "../styles/App.css";
 
 
 const SAAVE_INTERVAL_MS = 2000 // save every 2 seconds
-
+const AUTO_COMPLETE_DELAY = 1000;
+let autoCompleteTimer;
 
 // ...
 
@@ -46,8 +50,8 @@ export default function TextEditor() {
   const [cookies, setCookie, removeCookie] = useCookies(['user']);
   // Define variables for auto-completion
   const [autoCompleteText, setAutoCompleteText] = useState(''); // Define autoCompleteText
-  const [autoCompleteTimer, setAutoCompleteTimer] = useState(null); // Define autoCompleteTimer
-  const AUTO_COMPLETE_DELAY = 1000; // Set the delay in milliseconds
+
+  const AUTO_COMPLETE_DELAY = 3000; // Set the delay in milliseconds
   const [editorChangeEnabled, setEditorChangeEnabled] = useState(true);
   var userId = null;
   if (cookies.user) {
@@ -118,29 +122,25 @@ export default function TextEditor() {
     }
   }, [socket, editorContent]);
 
-  const handleEditorChange = (content) => {
+  const handleEditorChange = async (content) => {
     console.log('Content was updated:', content);
-    if (editorChangeEnabled) {
-      setEditorContent(content);
+    setEditorContent(content);
 
-      // Clear the auto-complete timer on content change
+
+    if (editorChangeEnabled) {
+      // Clear the previous timer
       clearTimeout(autoCompleteTimer);
 
-      // Start a new auto-complete timer
-      const timer = setTimeout(() => {
-        if (editorChangeEnabled) {
-          sendTextForAutoComplete(content); // Send the text for auto-completion
-        }
-        else {
-          setEditorChangeEnabled(true);
-        }
-      }, 2000);
+      // Start a new timer
+      autoCompleteTimer = setTimeout(() => {
+        console.log('Send text for auto-completion:', content);
+        sendTextForAutoComplete(content); // Send the text for auto-completion
+      }, AUTO_COMPLETE_DELAY);
+    }
 
-      setAutoCompleteTimer(timer);
-    }
-    else {
-      setEditorChangeEnabled(true);
-    }
+
+
+
   };
 
   const handleEditorInit = (evt, editor) => {
@@ -165,13 +165,7 @@ export default function TextEditor() {
           parentNode.removeChild(textNode);
         });
       }
-    });
-
-
-    edit.on('keydown', event => {
-      // Check if the pressed key is not the Tab key (key code: 9)
-      if (event.keyCode === 9) {
-        // Get the content of the editor
+      else {
         editor.dom.select(`span[style="color: ${targetColor};"]`).forEach(span => {
           const parent = span.parentNode;
           while (span.firstChild) {
@@ -181,6 +175,15 @@ export default function TextEditor() {
         });
       }
     });
+
+
+    // edit.on('keydown', event => {
+    //   // Check if the pressed key is not the Tab key (key code: 9)
+    //   if (event.keyCode === 9) {
+    //     // Get the content of the editor
+
+    //   }
+    // });
 
 
 
@@ -194,7 +197,7 @@ export default function TextEditor() {
 
 
   const sendTextForAutoComplete = async (text) => {
-
+    setEditorChangeEnabled(false);
     try {
       const data = {
         text: text,
@@ -212,7 +215,7 @@ export default function TextEditor() {
       const reply = await response.json();
       console.log("the reply is: " + reply);
       // Temporarily remove the change event listener
-      setEditorChangeEnabled(false);
+
       const myStyle = { color: 'red' }; // Change color to red
 
       // Construct the style string from the myStyle object
@@ -227,7 +230,12 @@ export default function TextEditor() {
     } catch (error) {
       console.error('Error fetching auto-complete suggestions:', error);
     }
+
+    setEditorChangeEnabled(true);
   };
+
+
+
 
   if (!cookies.user) {
     return (
