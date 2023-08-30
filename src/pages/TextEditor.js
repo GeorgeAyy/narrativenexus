@@ -50,6 +50,7 @@ export default function TextEditor() {
   const AUTO_COMPLETE_DELAY = 1000; // Set the delay in milliseconds
   const [editorChangeEnabled, setEditorChangeEnabled] = useState(true);
   const [autoCompleteEnabled, setAutoCompleteEnabled] = useState(true);
+  const targetColor = '#a9a9ac';
   var userId = null;
   if (cookies.user) {
     userId = cookies.user._id
@@ -112,25 +113,25 @@ export default function TextEditor() {
 
   const handleEditorChange = (content) => {
     console.log('Content was updated:', content);
-  
+
     if (editorChangeEnabled) {
       setEditorContent(content);
-  
+
       // Clear the auto-complete timer on content change
       clearTimeout(autoCompleteTimer);
-  
+
       // Start a new auto-complete timer only if content is not empty
       if (content.trim() !== "") {
         const timer = setTimeout(() => {
           if (editorChangeEnabled && autoCompleteEnabled) {
             sendTextForAutoComplete(content); // Send the text for auto-completion
-            setAutoCompleteEnabled(false); 
+            setAutoCompleteEnabled(false);
           } else {
             setEditorChangeEnabled(true);
-            setAutoCompleteEnabled(true); 
+            setAutoCompleteEnabled(true);
           }
         }, 2000);
-  
+
         setAutoCompleteTimer(timer);
       }
       else {
@@ -140,24 +141,26 @@ export default function TextEditor() {
       setEditorChangeEnabled(true);
     }
   };
-  
+
 
   const handleEditorInit = (evt, editor) => {
     // Load the document once the editor is initialized
     loadDocument();
     editorRef.current = editor;
-  
+
     const edit = editorRef.current; // Assuming you have a reference to the editor instance
-    const targetColor = 'red'; // Color you want to remove
+    // Color you want to remove
     let autoCompleteEnabled = true;
-  
+
     // Add a keydown event listener to the editor
     edit.on('keydown', event => {
       if (event.keyCode === 9) {
-        if (autoCompleteEnabled) {
+
+        event.preventDefault();
+        if (true) {
           // Prevent default Tab behavior
-          event.preventDefault();
-  
+
+
           // Get the content of the editor
           editor.dom.select(`span[style="color: ${targetColor};"]`).forEach(span => {
             const parent = span.parentNode;
@@ -166,14 +169,14 @@ export default function TextEditor() {
             }
             parent.removeChild(span);
           });
-  
-          autoCompleteEnabled = false; // Disable further autocomplete
+
+          // autoCompleteEnabled = false; // Disable further autocomplete
         }
       } else {
         // Check if the pressed key is not the Tab key (key code: 9)
         const contentDocument = editor.getDoc();
         const textNodes = contentDocument.querySelectorAll(`span[style="color: ${targetColor};"]`);
-  
+
         // Remove the parent nodes of the matched text nodes
         textNodes.forEach(textNode => {
           const parentNode = textNode.parentNode;
@@ -182,7 +185,7 @@ export default function TextEditor() {
       }
     });
   };
-  
+
 
 
 
@@ -207,7 +210,7 @@ export default function TextEditor() {
       console.log("the reply is: " + reply);
       // Temporarily remove the change event listener
       setEditorChangeEnabled(false);
-      const myStyle = { color: 'red' }; // Change color to red
+      const myStyle = { color: '#a9a9ac' }; // Change color to red
 
       // Construct the style string from the myStyle object
       const styleString = Object.keys(myStyle)
