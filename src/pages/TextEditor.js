@@ -50,7 +50,7 @@ export default function TextEditor() {
   const [cookies, setCookie, removeCookie] = useCookies(['user']);
   // Define variables for auto-completion
   const [autoCompleteText, setAutoCompleteText] = useState(''); // Define autoCompleteText
-
+  const targetColor = '#a9a9ac';
   const AUTO_COMPLETE_DELAY = 3000; // Set the delay in milliseconds
   const [editorChangeEnabled, setEditorChangeEnabled] = useState(true);
   var userId = null;
@@ -150,10 +150,11 @@ export default function TextEditor() {
     editorRef.current = editor;
 
     const edit = editorRef.current; // Assuming you have a reference to the editor instance
-    const targetColor = 'red'; // Color you want to remove
+    // Color you want to remove
 
     // Add a keydown event listener to the editor
     edit.on('keydown', event => {
+
       // Check if the pressed key is not the Tab key (key code: 9)
       if (event.keyCode !== 9) {
         const contentDocument = editor.getDoc();
@@ -166,7 +167,10 @@ export default function TextEditor() {
         });
       }
       else {
+        event.preventDefault();
+
         editor.dom.select(`span[style="color: ${targetColor};"]`).forEach(span => {
+
           const parent = span.parentNode;
           while (span.firstChild) {
             parent.insertBefore(span.firstChild, span);
@@ -216,7 +220,7 @@ export default function TextEditor() {
       console.log("the reply is: " + reply);
       // Temporarily remove the change event listener
 
-      const myStyle = { color: 'red' }; // Change color to red
+      const myStyle = { color: '#a9a9ac' }; // Change color to geryish
 
       // Construct the style string from the myStyle object
       const styleString = Object.keys(myStyle)
