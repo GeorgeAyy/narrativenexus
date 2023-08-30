@@ -6,6 +6,7 @@ from django.conf import settings
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
+from bs4 import BeautifulSoup
 import openai
 import json
 
@@ -22,13 +23,15 @@ openai.api_key = config_data['apikey']
 class GrammarCorrectionView(APIView):
     def post(self, request):
         text = request.data.get('text')
+        soup = BeautifulSoup(text, 'html.parser')
+        plain_text = soup.get_text()
 
         # Perform grammar correction
         language_tool = language_tool_python.LanguageTool(
             'en-US', config={'maxSpellingSuggestions': 1})
         # text = 'A sentence with a error in the Hitchhiker’s Guide tot he Galaxy'
-        matches = language_tool.check(text)
-        correctText = language_tool.correct(text)
+        matches = language_tool.check(plain_text)
+        correctText = language_tool.correct(plain_text)
 
         # Print out the values of variables
         print(f'text: {text}')
@@ -120,23 +123,24 @@ def generate_prompt(request):
 @csrf_exempt
 def autocomplete(request):
 
-    data = json.loads(request.body)
-    text = data['text']
-    print(f'text: {text}')
+        data = json.loads(request.body)
+        text = data['text']
+        print(f'text: {text}')
+        soup = BeautifulSoup(text, 'html.parser')
+        plain_text = soup.get_text()
+        # Debugging: Print the received text before sending it to OpenAI
+        print(f'Received text: {plain_text}')
 
-    # Debugging: Print the received text before sending it to OpenAI
-    print(f'Received text: {text}')
+        response = openai.ChatCompletion.create(
+            engine="narrativedeployment",
+            temperature=1,  # You can set the temperature to control the randomness of the story
+            max_tokens=50,
+            messages=[
+                {"role": "system", "content": "you are an autocomplete engine, give me a word only one word and not more that would autocomplete this text "},
+                {"role": "user", "content": plain_text}
+            ]
+        )
 
-    response = openai.ChatCompletion.create(
-        engine="narrativedeployment",
-        temperature=1,  # You can set the temperature to control the randomness of the story
-        max_tokens=50,
-        messages=[
-            {"role": "system", "content": "you are an autocomplete engine, give me a word only one word and not more that would autocomplete this text while ignoring any html sent to you by the user if you are going to reply with a repeating word then reply with none"},
-            {"role": "user", "content": text}
-        ]
-    )
-
-    # Debugging: Print the generated response from OpenAI
-    print(f'Response from OpenAI: {response.choices[0].message.content}')
-    return HttpResponse(json.dumps(response.choices[0].message.content + "\n"))
+        # Debugging: Print the generated response from OpenAI
+        print(f'Response from OpenAI: {response.choices[0].message.content}')
+        return HttpResponse(json.dumps(response.choices[0].message.content + "\n"))
