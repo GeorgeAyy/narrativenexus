@@ -44,12 +44,16 @@ export default function TextEditor() {
   const [Paraphraser, setParaphraser] = useState(false);
   const [paraphrase, setparaphrase] = useState(""); // New state for summarized text
   const [cookies, setCookie, removeCookie] = useCookies(['user']);
-  const userId = null;
-  if(cookies.user)
-  {
+  // Define variables for auto-completion
+  const [autoCompleteText, setAutoCompleteText] = useState(''); // Define autoCompleteText
+  const [autoCompleteTimer, setAutoCompleteTimer] = useState(null); // Define autoCompleteTimer
+  const AUTO_COMPLETE_DELAY = 1000; // Set the delay in milliseconds
+  const [editorChangeEnabled, setEditorChangeEnabled] = useState(true);
+  var userId = null;
+  if (cookies.user) {
     userId = cookies.user._id
   }
-  
+
   // Function to load the document
   const loadDocument = useCallback(() => {
     if (socket == null) return;
@@ -61,8 +65,20 @@ export default function TextEditor() {
   }, [socket]);
 
 
+
+
+
+
+
+
+
+
+
+
+
+
   useEffect(() => {
-    if (socket == null || userId==null) return;
+    if (socket == null || userId == null) return;
 
     socket.emit('attatch-document', documentId, userId);
 
@@ -104,7 +120,27 @@ export default function TextEditor() {
 
   const handleEditorChange = (content) => {
     console.log('Content was updated:', content);
-    setEditorContent(content);
+    if (editorChangeEnabled) {
+      setEditorContent(content);
+
+      // Clear the auto-complete timer on content change
+      clearTimeout(autoCompleteTimer);
+
+      // Start a new auto-complete timer
+      const timer = setTimeout(() => {
+        if (editorChangeEnabled) {
+          sendTextForAutoComplete(content); // Send the text for auto-completion
+        }
+        else {
+          setEditorChangeEnabled(true);
+        }
+      }, 2000);
+
+      setAutoCompleteTimer(timer);
+    }
+    else {
+      setEditorChangeEnabled(true);
+    }
   };
 
   const handleEditorInit = (evt, editor) => {
@@ -112,6 +148,85 @@ export default function TextEditor() {
     // Load the document once the editor is initialized
     loadDocument();
     editorRef.current = editor;
+
+    const edit = editorRef.current; // Assuming you have a reference to the editor instance
+    const targetColor = 'red'; // Color you want to remove
+
+    // Add a keydown event listener to the editor
+    edit.on('keydown', event => {
+      // Check if the pressed key is not the Tab key (key code: 9)
+      if (event.keyCode !== 9) {
+        const contentDocument = editor.getDoc();
+        const textNodes = contentDocument.querySelectorAll(`span[style="color: ${targetColor};"]`);
+
+        // Remove the parent nodes of the matched text nodes
+        textNodes.forEach(textNode => {
+          const parentNode = textNode.parentNode;
+          parentNode.removeChild(textNode);
+        });
+      }
+    });
+
+
+    edit.on('keydown', event => {
+      // Check if the pressed key is not the Tab key (key code: 9)
+      if (event.keyCode === 9) {
+        // Get the content of the editor
+        editor.dom.select(`span[style="color: ${targetColor};"]`).forEach(span => {
+          const parent = span.parentNode;
+          while (span.firstChild) {
+            parent.insertBefore(span.firstChild, span);
+          }
+          parent.removeChild(span);
+        });
+      }
+    });
+
+
+
+  }
+
+
+
+
+
+
+
+
+  const sendTextForAutoComplete = async (text) => {
+
+    try {
+      const data = {
+        text: text,
+      };
+      const response = await fetch("http://127.0.0.1:8000/api/autocomplete/", {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(
+          data
+        ),
+      });
+
+      const reply = await response.json();
+      console.log("the reply is: " + reply);
+      // Temporarily remove the change event listener
+      setEditorChangeEnabled(false);
+      const myStyle = { color: 'red' }; // Change color to red
+
+      // Construct the style string from the myStyle object
+      const styleString = Object.keys(myStyle)
+        .map(key => `${key}: ${myStyle[key]};`)
+        .join(' ');
+
+      // Use the insertContent method to append the reply to the current selection
+      editorRef.current.selection.setContent(`<span style="${styleString}">${reply}</span>`);
+      // Re-enable the change event listener after a short delay (e.g., 200 milliseconds)
+
+    } catch (error) {
+      console.error('Error fetching auto-complete suggestions:', error);
+    }
   };
 
   if (!cookies.user) {
@@ -124,7 +239,7 @@ export default function TextEditor() {
   } else {
     return (
       <div style={{ padding: "5%" }}>
-        {grammerChecker ||summarizer || Paraphraser? (
+        {grammerChecker || summarizer || Paraphraser ? (
           <ReactLoading
             type={"spin"}
             color="#0A99E5"
@@ -241,10 +356,10 @@ export default function TextEditor() {
                       }
                     );
 
-                   const result=await response.json();
-                   setSummarizer(false);
-                   setSummary(result); 
-                   openPopupSummaryandParaphrase(result,editor);
+                    const result = await response.json();
+                    setSummarizer(false);
+                    setSummary(result);
+                    openPopupSummaryandParaphrase(result, editor);
 
 
                   } else {
@@ -276,10 +391,10 @@ export default function TextEditor() {
                       }
                     );
 
-                   const answer=await response.json();
-                   setParaphraser(false);
-                   setparaphrase(answer); 
-                   openPopupSummaryandParaphrase(answer,editor);
+                    const answer = await response.json();
+                    setParaphraser(false);
+                    setparaphrase(answer);
+                    openPopupSummaryandParaphrase(answer, editor);
 
                   } else {
                     alert("Please select a sentence");
