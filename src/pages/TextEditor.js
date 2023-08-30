@@ -50,11 +50,14 @@ export default function TextEditor() {
   const [autoCompleteTimer, setAutoCompleteTimer] = useState(null); // Define autoCompleteTimer
   const AUTO_COMPLETE_DELAY = 1000; // Set the delay in milliseconds
   const [editorChangeEnabled, setEditorChangeEnabled] = useState(true);
+
   const [sidebarOpen, setSidebarOpen] = useState(true); // New state for sidebar open/closed
   const [history, setHistory] = useState([]); // To store history entries
   const toggleSidebar = () => {
       setSidebarOpen(!sidebarOpen);
     };
+  const [autoCompleteEnabled, setAutoCompleteEnabled] = useState(true);
+  const targetColor = '#a9a9ac';
   var userId = null;
   if (cookies.user) {
     userId = cookies.user._id
@@ -69,15 +72,6 @@ export default function TextEditor() {
       setEditorLoad(document);
     });
   }, [socket]);
-
-
-
-
-
-
-
-
-
 
 
 
@@ -144,42 +138,67 @@ const wrapperRef = useCallback((wrapper) => {                        // using ca
 
   const handleEditorChange = (content) => {
     console.log('Content was updated:', content);
+
     if (editorChangeEnabled) {
       setEditorContent(content);
 
       // Clear the auto-complete timer on content change
       clearTimeout(autoCompleteTimer);
 
-      // Start a new auto-complete timer
-      const timer = setTimeout(() => {
-        if (editorChangeEnabled) {
-          sendTextForAutoComplete(content); // Send the text for auto-completion
-        }
-        else {
-          setEditorChangeEnabled(true);
-        }
-      }, 2000);
+      // Start a new auto-complete timer only if content is not empty
+      if (content.trim() !== "") {
+        const timer = setTimeout(() => {
+          if (editorChangeEnabled && autoCompleteEnabled) {
+            sendTextForAutoComplete(content); // Send the text for auto-completion
+            setAutoCompleteEnabled(false);
+          } else {
+            setEditorChangeEnabled(true);
+            setAutoCompleteEnabled(true);
+          }
+        }, 2000);
 
-      setAutoCompleteTimer(timer);
-    }
-    else {
+        setAutoCompleteTimer(timer);
+      }
+      else {
+        setEditorChangeEnabled(true);
+      }
+    } else {
       setEditorChangeEnabled(true);
     }
   };
 
-  const handleEditorInit = (evt, editor) => {
 
+  const handleEditorInit = (evt, editor) => {
     // Load the document once the editor is initialized
     loadDocument();
     editorRef.current = editor;
 
     const edit = editorRef.current; // Assuming you have a reference to the editor instance
-    const targetColor = 'red'; // Color you want to remove
+    // Color you want to remove
+    let autoCompleteEnabled = true;
 
     // Add a keydown event listener to the editor
     edit.on('keydown', event => {
-      // Check if the pressed key is not the Tab key (key code: 9)
-      if (event.keyCode !== 9) {
+      if (event.keyCode === 9) {
+
+        event.preventDefault();
+        if (true) {
+          // Prevent default Tab behavior
+
+
+          // Get the content of the editor
+          editor.dom.select(`span[style="color: ${targetColor};"]`).forEach(span => {
+            const parent = span.parentNode;
+            while (span.firstChild) {
+              parent.insertBefore(span.firstChild, span);
+            }
+            parent.removeChild(span);
+          });
+
+          // autoCompleteEnabled = false; // Disable further autocomplete
+        }
+      } else {
+        // Check if the pressed key is not the Tab key (key code: 9)
         const contentDocument = editor.getDoc();
         const textNodes = contentDocument.querySelectorAll(`span[style="color: ${targetColor};"]`);
 
@@ -190,28 +209,7 @@ const wrapperRef = useCallback((wrapper) => {                        // using ca
         });
       }
     });
-
-
-    edit.on('keydown', event => {
-      // Check if the pressed key is not the Tab key (key code: 9)
-      if (event.keyCode === 9) {
-        // Get the content of the editor
-        editor.dom.select(`span[style="color: ${targetColor};"]`).forEach(span => {
-          const parent = span.parentNode;
-          while (span.firstChild) {
-            parent.insertBefore(span.firstChild, span);
-          }
-          parent.removeChild(span);
-        });
-      }
-    });
-
-
-
-  }
-
-
-
+  };
 
 
 
@@ -237,7 +235,7 @@ const wrapperRef = useCallback((wrapper) => {                        // using ca
       console.log("the reply is: " + reply);
       // Temporarily remove the change event listener
       setEditorChangeEnabled(false);
-      const myStyle = { color: 'red' }; // Change color to red
+      const myStyle = { color: '#a9a9ac' }; // Change color to red
 
       // Construct the style string from the myStyle object
       const styleString = Object.keys(myStyle)
