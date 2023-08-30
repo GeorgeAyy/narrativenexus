@@ -10,6 +10,7 @@ import { openPopupSummaryandParaphrase } from "../Utils/summaryandparaphrasePopu
 import { useCookies, removeCookie } from "react-cookie";
 import Navbar from '../components/Navbar';
 import InvalidAccessPage from '../components/invalidaccesspage';
+import HistorySidebar from './histoySidebar'; // Import the HistorySidebar component
 import "../styles/App.css";
 // import { use } from '../../server/routes/auth';
 
@@ -49,6 +50,12 @@ export default function TextEditor() {
   const [autoCompleteTimer, setAutoCompleteTimer] = useState(null); // Define autoCompleteTimer
   const AUTO_COMPLETE_DELAY = 1000; // Set the delay in milliseconds
   const [editorChangeEnabled, setEditorChangeEnabled] = useState(true);
+
+  const [sidebarOpen, setSidebarOpen] = useState(true); // New state for sidebar open/closed
+  const [history, setHistory] = useState([]); // To store history entries
+  const toggleSidebar = () => {
+      setSidebarOpen(!sidebarOpen);
+    };
   const [autoCompleteEnabled, setAutoCompleteEnabled] = useState(true);
   const targetColor = '#a9a9ac';
   var userId = null;
@@ -110,6 +117,24 @@ export default function TextEditor() {
       clearInterval(interval); // clear the interval when we are done
     }
   }, [socket, editorContent]);
+
+  useEffect(() => {
+    if (socket == null) return;
+
+    socket.on('receive-history', (newHistory) => {
+    setHistory(newHistory);
+    });
+
+    return () => {
+    socket.off('receive-history');
+    };
+}, [socket]);
+const wrapperRef = useCallback((wrapper) => {                        // using callback and passing it to our ref
+  // disable the editor until we load the document
+
+
+
+}, [])
 
   const handleEditorChange = (content) => {
     console.log('Content was updated:', content);
@@ -235,7 +260,7 @@ export default function TextEditor() {
     );
   } else {
     return (
-      <div style={{ padding: "5%" }}>
+      <div>
         {grammerChecker || summarizer || Paraphraser ? (
           <ReactLoading
             type={"spin"}
@@ -247,6 +272,13 @@ export default function TextEditor() {
         ) : (
           <></>
         )}
+          <div className="editor-page">
+          <HistorySidebar history={history} isOpen={sidebarOpen} toggleSidebar={toggleSidebar} />
+          <div className={`editor-container ${sidebarOpen ? '' : 'full-width'}`}>
+            <button className="toggle-history-button" onClick={toggleSidebar}>
+              {sidebarOpen ? 'Close History' : 'Open History'}
+            </button>
+            <div className="editor-wrapper" ref={wrapperRef}></div>
         <h1>TinyMCE Text Editor</h1>
 
 
@@ -404,6 +436,8 @@ export default function TextEditor() {
         />
 
 
+      </div>
+      </div>
       </div>
     );
   }
