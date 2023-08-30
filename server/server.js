@@ -36,9 +36,10 @@ mongoose
   .catch((err) => console.log(`[MONGO] Error connecting to MongoDB: ${err}`));
 
 const authRouter = require("./routes/auth.js");
+const historyRouter = require("./routes/history.js");
 const { findById } = require("./models/User");
 app.use("/auth", authRouter);
-
+app.use("/history", historyRouter);
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
