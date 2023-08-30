@@ -50,7 +50,7 @@ export default function TextEditor() {
   const [autoCompleteTimer, setAutoCompleteTimer] = useState(null); // Define autoCompleteTimer
   const AUTO_COMPLETE_DELAY = 1000; // Set the delay in milliseconds
   const [editorChangeEnabled, setEditorChangeEnabled] = useState(true);
-
+  const [documents, setDocuments] = useState([]);
   const [sidebarOpen, setSidebarOpen] = useState(true); // New state for sidebar open/closed
   const [history, setHistory] = useState([]); // To store history entries
   const toggleSidebar = () => {
@@ -129,6 +129,35 @@ export default function TextEditor() {
     socket.off('receive-history');
     };
 }, [socket]);
+
+useEffect(() => {
+  console.log("Fetching documents for user ID:", cookies.user._id);
+
+  // Make a fetch or axios request to retrieve documents from your backend
+  fetch('http://localhost:5000/history/retrieveDocuments', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ userId: cookies.user._id }), // Replace with the actual user ID
+  })
+    .then((response) => {
+      if (!response.ok) {
+        console.error('Response not ok:', response.status, response.statusText);
+        return Promise.reject('Fetch failed');
+      }
+      return response.json();
+    })
+    .then((data) => {
+      console.log("Data received from server:", data);
+
+      if (data.documents) {
+        setDocuments(data.documents);
+      }
+    })
+    .catch((error) => console.error('Error fetching documents:', error));
+}, []);
+
 const wrapperRef = useCallback((wrapper) => {                        // using callback and passing it to our ref
   // disable the editor until we load the document
 
@@ -273,7 +302,7 @@ const wrapperRef = useCallback((wrapper) => {                        // using ca
           <></>
         )}
           <div className="editor-page">
-          <HistorySidebar history={history} isOpen={sidebarOpen} toggleSidebar={toggleSidebar} />
+          <HistorySidebar documents={documents} isOpen={sidebarOpen} toggleSidebar={toggleSidebar} />
           <div className={`editor-container ${sidebarOpen ? '' : 'full-width'}`}>
             <button className="toggle-history-button" onClick={toggleSidebar}>
               {sidebarOpen ? 'Close History' : 'Open History'}
