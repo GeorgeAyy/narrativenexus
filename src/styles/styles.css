@@ -132,3 +132,158 @@ body {
     }
 }
 
+body {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+    background-color: #f0f0f0;
+  }
+  
+  .editor-page {
+    display: flex;
+  }
+  
+  .history-sidebar {
+    width: 300px;
+    padding: 20px;
+    background-color: #333;
+    color: #fff;
+    transition: transform 0.3s ease-in-out;
+    transform: translateX(-100%);
+    overflow-y: auto;
+    box-shadow: 2px 0px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .history-sidebar.open {
+    transform: translateX(0);
+  }
+  
+  .history-sidebar .toggle-button {
+    cursor: pointer;
+    margin-bottom: 10px;
+    text-align: center;
+    padding: 10px;
+    background-color: #444;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    outline: none;
+    transition: background-color 0.3s ease-in-out;
+  }
+  
+  .history-sidebar .toggle-button:hover {
+    background-color: #555;
+  }
+  
+  .history-sidebar ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+  }
+  
+  .history-sidebar li {
+    margin-bottom: 5px;
+  }
+  
+  @media (max-width: 768px) {
+    .editor-container {
+      flex-direction: column-reverse;
+    }
+  
+    .editor-wrapper {
+      margin-right: 0;
+      margin-bottom: 20px;
+    }
+  
+    .history-sidebar.open .toggle-button {
+      display: none;
+    }
+  
+    .history-sidebar .toggle-button-mobile {
+      display: block;
+      margin-top: 10px;
+      text-align: center;
+      padding: 10px;
+      background-color: #444;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      outline: none;
+      transition: background-color 0.3s ease-in-out;
+    }
+  
+    .history-sidebar {
+      width: 100%;
+      height: 0;
+      overflow: hidden;
+      position: absolute;
+      top: 0;
+      left: 0;
+      background-color: rgba(0, 0, 0, 0.9);
+      color: #fff;
+      transition: transform 0.3s ease-in-out;
+      transform: translateX(-100%);
+      box-shadow: 2px 0px 4px rgba(0, 0, 0, 0.1);
+    }
+  
+    .history-sidebar.open {
+      transform: translateX(0);
+      height: 100%;
+    }
+  
+    .history-sidebar ul {
+      list-style-type: none;
+      padding: 0;
+      margin: 20px 0;
+    }
+  
+    .history-sidebar li {
+      margin-bottom: 10px;
+    }
+  }
+  
+  .toggle-history-button {
+    display: block;
+    margin: 10px auto;
+    padding: 10px 20px;
+    background-color: #333;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease-in-out;
+  }
+  
+  .toggle-history-button:hover {
+    background-color: #444;
+  }
+  .editor-container {
+    flex: 1;
+    padding: 20px;
+    background-color: #fff;
+    transition: flex 0.3s ease-in-out;
+  }
+  
+  .editor-container.full-width {
+    flex: 3;
+  }
+  
+  .history-heading {
+    font-size: 1.2rem;
+    font-weight: bold;
+    margin-top: 10px;
+    margin-bottom: 5px;
+  }
+  .history-list {
+    list-style: none;
+    padding: 0;
+    margin: 10px 0;
+  }
+  
+  .history-item {
+    padding: 10px;
+    background-color: #444;
+    color: #fff;
+    border-radius: 5px;
+    margin-bottom: 5px;
+  } 
