@@ -56,6 +56,48 @@ const io = require("socket.io")(3001, {
 const defaultValue = "";
 
 io.on('connection', (socket) => {
+
+
+
+  socket.on('get-user-documents', async (userId) => {
+    console.log('entered the get documents')
+    if (!userId) {
+      console.log("User not logged in");
+      return;
+    }
+
+    try {
+      const user = await User.findById(userId);
+
+      if (!user) {
+        console.log("User not found");
+        return;
+      }
+
+      const documents = user.documentIds;
+
+      socket.emit('get-user-documents', documents);
+
+      // Emit a success event
+
+    } catch (error) {
+      console.error("Error getting documents:", error);
+      // Emit an error event
+
+    }
+  })
+
+
+
+
+
+
+
+
+
+
+
+
   socket.on('attatch-document', async (documentId, userId) => {
     console.log('entered the attatch document')
     // if (userId == null) {
