@@ -10,7 +10,7 @@ import { openPopupSummaryandParaphrase } from "../Utils/summaryandparaphrasePopu
 import { useCookies, removeCookie } from "react-cookie";
 import Navbar from '../components/Navbar';
 import InvalidAccessPage from '../components/invalidaccesspage';
-import HistorySidebar from './histoySidebar'; // Import the HistorySidebar component
+import HistorySidebar from '../components/histoySidebar'; // Import the HistorySidebar component
 import "../styles/App.css";
 // import { use } from '../../server/routes/auth';
 
@@ -307,7 +307,7 @@ const wrapperRef = useCallback((wrapper) => {                        // using ca
             <button className="toggle-history-button" onClick={toggleSidebar}>
               {sidebarOpen ? 'Close History' : 'Open History'}
             </button>
-            <div className="editor-wrapper" ref={wrapperRef}></div>
+            
         <h1>TinyMCE Text Editor</h1>
 
 
@@ -317,7 +317,7 @@ const wrapperRef = useCallback((wrapper) => {                        // using ca
           onEditorChange={handleEditorChange}
           onInit={handleEditorInit}
           init={{
-            height: 500,
+            height: 700,
             menubar: true,
             plugins: ["image ", "link ", " code"],
             toolbar: "undo redo | bold italic | alignleft aligncenter alignright | code | image| GrammarChecker| SummarizeText | ParaphraseText",

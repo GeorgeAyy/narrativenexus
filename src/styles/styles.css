@@ -141,19 +141,27 @@ body {
   
   .editor-page {
     display: flex;
+    transition: all 0.3s ease;
+    height: 100vh;
   }
   
   .history-sidebar {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
     width: 300px;
     padding: 20px;
     background-color: #333;
     color: #fff;
-    transition: transform 0.3s ease-in-out;
+    transition: width0.3 ease;
     transform: translateX(-100%);
     overflow-y: auto;
     box-shadow: 2px 0px 4px rgba(0, 0, 0, 0.1);
   }
-  
+  .pagination {
+    margin-top: auto;
+    /* Push the pagination to the bottom */
+  }
   .history-sidebar.open {
     transform: translateX(0);
   }
@@ -230,7 +238,10 @@ body {
       transform: translateX(0);
       height: 100%;
     }
-  
+    .history-sidebar.closed{
+      width: 0;
+      flex: 0;
+    }
     .history-sidebar ul {
       list-style-type: none;
       padding: 0;
@@ -258,14 +269,14 @@ body {
     background-color: #444;
   }
   .editor-container {
-    flex: 1;
+    flex: auto;
     padding: 20px;
     background-color: #fff;
-    transition: flex 0.3s ease-in-out;
+    transition: flex 0.3s ease;
   }
   
-  .editor-container.full-width {
-    flex: 3;
+  .full-width {
+    width: 100vw;
   }
   
   .history-heading {
@@ -275,6 +286,7 @@ body {
     margin-bottom: 5px;
   }
   .history-list {
+    flex-grow: 1;
     list-style: none;
     padding: 0;
     margin: 10px 0;
