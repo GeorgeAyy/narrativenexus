@@ -6,6 +6,7 @@ import LogIn from "./pages/login";
 import NotFound from "./pages/notfound";
 import Home from "./pages/Home";
 import PromptGenerator from "./pages/promptGenerator";
+import DocumentManagment from "./pages/DocumentManagment";
 import {
   BrowserRouter as Router,
   Switch,
@@ -45,11 +46,15 @@ const ReactApp = () => {
           <PromptGenerator />
         </Route>
 
+        <Route path="/DocumentManagment">
+          <DocumentManagment />
+        </Route>
+
         <Route path="*">
           <NotFound />
         </Route>
       </Switch>
-    </Router>
+    </Router >
   );
 };
 
