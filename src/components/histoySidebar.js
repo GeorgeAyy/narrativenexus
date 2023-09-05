@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 
 const ITEMS_PER_PAGE = 10;
+
 
 const HistorySidebar = ({ documents, isOpen, toggleSidebar }) => {
   const [currentPage, setCurrentPage] = useState(1);
@@ -41,13 +43,16 @@ const HistorySidebar = ({ documents, isOpen, toggleSidebar }) => {
   };
 
   return (
+    
     <div className={`history-sidebar ${isOpen ? 'open' : ''}`}>
       <h2 className="history-heading">Previous History</h2>
       <ul className="history-list">
         {documentsToDisplay.map((document) => (
+          <a href={`/documents/${document._id}`} class="history-anchor">
           <li key={document._id} className="history-item">
             {document._id}
           </li>
+          </a>
         ))}
       </ul>
       {renderPaginationButtons()}

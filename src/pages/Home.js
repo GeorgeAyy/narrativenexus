@@ -91,7 +91,7 @@ const Home = () => {
           lower:
             "Our Writing Assistant puts the power of professional editing at your fingertips. With just a click, you can check selected texts for spelling and grammar mistakes, ensuring your work is error-free. Need to distill complex content? Click again to summarize selected texts or effortlessly rephrase them for a fresh perspective. It's like having a versatile writing toolset within your reach, making your writing process more efficient and effective. Say goodbye to time-consuming editing tasks and hello to a more polished and refined writing experience.",
         }}
-        href="/documents"
+        href="/documentmanagment"
         button="Try Writing Assistant"
       />
       <Section

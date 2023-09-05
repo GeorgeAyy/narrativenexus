@@ -1,89 +1,99 @@
-// DocumentPage.js
-import React, { useState, useEffect } from 'react';
-import '../styles/documentmanagment.css';
-import { io } from 'socket.io-client'
-import { useCookies, removeCookie } from "react-cookie";
-import { set } from 'mongoose';
-
-
-
-
-
-
-
+import React, { useState, useEffect } from "react";
+import "../styles/documentmanagment.css";
+import { io } from "socket.io-client";
+import { useCookies } from "react-cookie";
+import Navbar from "../components/Navbar";
 
 const DocumentPage = () => {
+  const [socket, setSocket] = useState();
+  const [cookies] = useCookies(["user"]);
+  const [documents, setDocuments] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const documentsPerPage = 8;
 
+  var userId = null;
+  if (cookies.user) {
+    userId = cookies.user._id;
+  }
 
-
-
-
-
-    const [socket, setSocket] = useState();
-    const [cookies, setCookie, removeCookie] = useCookies(['user']);
-    const [documents, setDocuments] = useState([]);
-
-    var userId = null;
-    if (cookies.user) {
-        userId = cookies.user._id
+  const handleAddDocument = () => {
+    if (userId) {
+      // Redirect to another page
+      window.location.href = "/documents";
     }
+  };
 
+  useEffect(() => {
+    if (socket == null) return;
+    socket.emit("get-user-documents", userId);
 
+    socket.on("get-user-documents", (docs) => {
+      setDocuments(docs);
+    });
+  }, [socket, userId]);
 
-    const handleAddDocument = () => {
-        if (userId) {
-            // Redirect to another page
-            // Redirect to another page
-            window.location.href = "/documents";
+  useEffect(() => {
+    const s = io("http://localhost:3001");
+    setSocket(s);
 
-
-        }
+    return () => {
+      s.disconnect();
     };
+  }, []);
 
-    useEffect(() => {
-        if (socket == null) return
-        socket.emit('get-user-documents', userId)
+  // Calculate the index range for the current page
+  const startIndex = (currentPage - 1) * documentsPerPage;
+  const endIndex = startIndex + documentsPerPage;
 
-        socket.on('get-user-documents', (docs) => {
-            setDocuments(docs)
+  // Extract the documents to be displayed on the current page
+  const displayedDocuments = documents.slice(startIndex, endIndex);
 
-        })
+  // Function to handle pagination button clicks
+  const handlePageChange = (newPage) => {
+    setCurrentPage(newPage);
+  };
 
-
-    }, [socket]);
-
-
-
-
-    useEffect(() => {
-        const s = io('http://localhost:3001');
-        setSocket(s);
-
-
-
-        return () => {
-            s.disconnect();
-        }
-    }, []);
-
-    return (
-        <div className="container">
-            <h1>Document Management</h1>
-            <button className="add-button" onClick={handleAddDocument}>
-                Add Document
-            </button>
-            <div className="card-container">
-                {documents.map((document, index) => (
-                    <a key={index} href={`/documents/${document}`} className="document-link">
-                        <div className="document-card">
-                            <h2>{`Document ${index + 1}`}</h2>
-                            <p>Document content: {document}</p>
-                        </div>
-                    </a>
-                ))}
-            </div>
+  return (
+    <div>
+      <Navbar />
+      <div className="management-container">
+        <h1>Document Management</h1>
+        <button className="add-button" onClick={handleAddDocument}>
+          Add Document
+        </button>
+        <div className="card-container">
+          {displayedDocuments.map((document, index) => (
+            <a
+              key={index}
+              href={`/documents/${document}`}
+              className="document-link"
+            >
+              <div className="document-card">
+                <h2>{`Document ${startIndex + index + 1}`}</h2>
+                <p>Document content: {document}</p>
+              </div>
+            </a>
+          ))}
         </div>
-    );
+        {/* Pagination buttons */}
+        <div className="pagination">
+          {Array(Math.ceil(documents.length / documentsPerPage))
+            .fill(0)
+            .map((_, index) => (
+              <button
+                key={index}
+                onClick={() => handlePageChange(index + 1)}
+                className={`pagination-button ${
+                  currentPage === index + 1 ? "active" : ""
+                }`}
+              >
+                {index + 1}
+              </button>
+            ))}
+        </div>
+      </div>
+    </div>
+  );
 };
 
 export default DocumentPage;

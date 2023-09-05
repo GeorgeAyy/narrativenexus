@@ -1,10 +1,10 @@
 /* styles.css */
-.container {
+.management-container {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    min-height: 100vh;
+    min-height: 86vh;
     background-color: #f0f0f0;
 }
 
@@ -33,5 +33,43 @@
     padding: 10px;
     margin: 10px;
     width: 300px;
+    transition: transform 0.2s, box-shadow 0.2s;
     background-color: white;
 }
+.management-container .card-container:hover {
+    background-color: #eee; /* Change the background color on hover */
+}
+.document-link:hover{
+    text-decoration: none;
+}
+
+
+.document-card:hover {
+    transform: translateY(-5px); /* Move the card container up */
+    box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.2); /* Add a shadow */
+}
+
+/* Add styles to the pagination buttons */
+.pagination {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+  }
+  
+  .pagination-button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    margin: 0 5px;
+    cursor: pointer;
+    transition: background-color 0.2s, color 0.2s;
+  }
+  
+  .pagination-button:hover {
+    background-color: #0056b3;
+  }
+  
+  .pagination-button.active {
+    background-color: #0056b3;
+  }
