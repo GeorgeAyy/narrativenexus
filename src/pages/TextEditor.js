@@ -53,9 +53,11 @@ export default function TextEditor() {
   const [documents, setDocuments] = useState([]);
   const [sidebarOpen, setSidebarOpen] = useState(true); // New state for sidebar open/closed
   const [history, setHistory] = useState([]); // To store history entries
+  const [oldContent, setOldContent] = useState(''); // To store the old content of the editor
+  const [newContent, setNewContent] = useState(''); // To store the new content of the editor
   const toggleSidebar = () => {
-      setSidebarOpen(!sidebarOpen);
-    };
+    setSidebarOpen(!sidebarOpen);
+  };
   const [autoCompleteEnabled, setAutoCompleteEnabled] = useState(true);
   const targetColor = '#a9a9ac';
   var userId = null;
@@ -74,6 +76,69 @@ export default function TextEditor() {
   }, [socket]);
 
 
+  const insertTextAtPosition = (text, position) => {
+    if (editorRef.current && socket !== null) {
+      // Get the current content of the editor
+      const currentContent = editorRef.current.getContent();
+
+      // Insert the text at the specified position
+      const updatedContent =
+        currentContent.slice(0, position) + text + currentContent.slice(position);
+
+      // Set the updated content back into the editor
+      editorRef.current.setContent(updatedContent);
+    }
+  };
+
+
+  function findContentChanges(oldContent, newContent) {
+    const differences = [];
+
+    let currentIndex = 0;
+    let addedText = "";
+    let removedText = "";
+
+    while (currentIndex < oldContent.length || currentIndex < newContent.length) {
+      if (oldContent[currentIndex] !== newContent[currentIndex]) {
+        // A change is detected at the current index
+        const startPosition = currentIndex;
+
+        // Find added content
+        while (currentIndex < newContent.length && newContent[currentIndex] !== oldContent[currentIndex]) {
+          addedText += newContent[currentIndex];
+          currentIndex++;
+        }
+
+        // Find removed content
+        while (currentIndex < oldContent.length && oldContent[currentIndex] !== newContent[currentIndex]) {
+          removedText += oldContent[currentIndex];
+          currentIndex++;
+        }
+
+        // Calculate end position based on the length of added or removed text
+        const endPosition = startPosition + (addedText.length > removedText.length ? addedText.length : removedText.length);
+
+        differences.push({
+          startPosition,
+          endPosition,
+          addedText,
+          removedText,
+        });
+
+        // Reset addedText and removedText
+        addedText = "";
+        removedText = "";
+      } else {
+        currentIndex++;
+      }
+    }
+
+    setOldContent(newContent);
+
+    console.log("Differences:", differences);
+
+    return differences;
+  }
 
 
 
@@ -122,53 +187,75 @@ export default function TextEditor() {
     if (socket == null) return;
 
     socket.on('receive-history', (newHistory) => {
-    setHistory(newHistory);
+      setHistory(newHistory);
     });
 
     return () => {
-    socket.off('receive-history');
+      socket.off('receive-history');
     };
-}, [socket]);
+  }, [socket]);
 
-useEffect(() => {
-  console.log("Fetching documents for user ID:", cookies.user._id);
+  useEffect(() => {
+    console.log("Fetching documents for user ID:", cookies.user._id);
 
-  // Make a fetch or axios request to retrieve documents from your backend
-  fetch('http://localhost:5000/history/retrieveDocuments', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({ userId: cookies.user._id }), // Replace with the actual user ID
-  })
-    .then((response) => {
-      if (!response.ok) {
-        console.error('Response not ok:', response.status, response.statusText);
-        return Promise.reject('Fetch failed');
-      }
-      return response.json();
+    // Make a fetch or axios request to retrieve documents from your backend
+    fetch('http://localhost:5000/history/retrieveDocuments', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ userId: cookies.user._id }), // Replace with the actual user ID
     })
-    .then((data) => {
-      console.log("Data received from server:", data);
+      .then((response) => {
+        if (!response.ok) {
+          console.error('Response not ok:', response.status, response.statusText);
+          return Promise.reject('Fetch failed');
+        }
+        return response.json();
+      })
+      .then((data) => {
+        console.log("Data received from server:", data);
 
-      if (data.documents) {
-        setDocuments(data.documents);
-      }
-    })
-    .catch((error) => console.error('Error fetching documents:', error));
-}, []);
+        if (data.documents) {
+          setDocuments(data.documents);
+        }
+      })
+      .catch((error) => console.error('Error fetching documents:', error));
+  }, []);
 
-const wrapperRef = useCallback((wrapper) => {                        // using callback and passing it to our ref
-  // disable the editor until we load the document
+  const wrapperRef = useCallback((wrapper) => {                        // using callback and passing it to our ref
+    // disable the editor until we load the document
 
 
 
-}, [])
+  }, [])
 
   const handleEditorChange = (content) => {
+
+    setNewContent(content);
+
+
+    const differences = findContentChanges(oldContent, newContent);
+
+
+    // Now you have access to the added and removed content
+
+
+
+    socket.emit('send-changes', differences);
+
+
+
+
+
+
+
+
     console.log('Content was updated:', content);
 
     if (editorChangeEnabled) {
+
+
       setEditorContent(content);
 
       // Clear the auto-complete timer on content change
@@ -178,6 +265,7 @@ const wrapperRef = useCallback((wrapper) => {                        // using ca
       if (content.trim() !== "") {
         const timer = setTimeout(() => {
           if (editorChangeEnabled && autoCompleteEnabled) {
+            insertTextAtPosition('test', 10);
             sendTextForAutoComplete(content); // Send the text for auto-completion
             setAutoCompleteEnabled(false);
           } else {
@@ -194,10 +282,12 @@ const wrapperRef = useCallback((wrapper) => {                        // using ca
     } else {
       setEditorChangeEnabled(true);
     }
+
   };
 
 
   const handleEditorInit = (evt, editor) => {
+    setOldContent(editor.getContent()); // Store the initial content of the editor
     // Load the document once the editor is initialized
     loadDocument();
     editorRef.current = editor;
@@ -301,172 +391,172 @@ const wrapperRef = useCallback((wrapper) => {                        // using ca
         ) : (
           <></>
         )}
-          <div className="editor-page">
+        <div className="editor-page">
           <HistorySidebar documents={documents} isOpen={sidebarOpen} toggleSidebar={toggleSidebar} />
           <div className={`editor-container ${sidebarOpen ? '' : 'full-width'}`}>
             <button className="toggle-history-button" onClick={toggleSidebar}>
               {sidebarOpen ? 'Close History' : 'Open History'}
             </button>
-            
-        <h1>TinyMCE Text Editor</h1>
+
+            <h1>TinyMCE Text Editor</h1>
 
 
-        <Editor
-          apiKey="bw59pp70ggqha1u9xgyiva27d1vrdvvdar1elkcj2gd51r3q"
-          initialValue={editorLoad}
-          onEditorChange={handleEditorChange}
-          onInit={handleEditorInit}
-          init={{
-            height: 700,
-            menubar: true,
-            plugins: ["image ", "link ", " code"],
-            toolbar: "undo redo | bold italic | alignleft aligncenter alignright | code | image| GrammarChecker| SummarizeText | ParaphraseText",
-            setup: (editor) => {
-              editor.ui.registry.addButton("GrammarChecker", {
-                text: "Grammar Checker",
-                icon: "highlight-bg-color",
-                tooltip:
-                  "Highlight a prompt and click this button to query ChatGPT",
-                enabled: true,
-                onAction: async () => {
-                  const selection = editor.selection.getContent();
+            <Editor
+              apiKey="bw59pp70ggqha1u9xgyiva27d1vrdvvdar1elkcj2gd51r3q"
+              initialValue={editorLoad}
+              onEditorChange={handleEditorChange}
+              onInit={handleEditorInit}
+              init={{
+                height: 700,
+                menubar: true,
+                plugins: ["image ", "link ", " code"],
+                toolbar: "undo redo | bold italic | alignleft aligncenter alignright | code | image| GrammarChecker| SummarizeText | ParaphraseText",
+                setup: (editor) => {
+                  editor.ui.registry.addButton("GrammarChecker", {
+                    text: "Grammar Checker",
+                    icon: "highlight-bg-color",
+                    tooltip:
+                      "Highlight a prompt and click this button to query ChatGPT",
+                    enabled: true,
+                    onAction: async () => {
+                      const selection = editor.selection.getContent();
 
-                  if (selection !== "") {
-                    setGrammerChecker(true);
-                    const data = {
-                      text: selection,
-                    };
-                    const response = await fetch(
-                      "http://127.0.0.1:8000/api/grammar-correction/",
-                      {
-                        method: "POST", // *GET, POST, PUT, DELETE, etc.
-                        headers: {
-                          "Content-Type": "application/json",
-                        },
-                        body: JSON.stringify(data), // body data type must match "Content-Type" header
+                      if (selection !== "") {
+                        setGrammerChecker(true);
+                        const data = {
+                          text: selection,
+                        };
+                        const response = await fetch(
+                          "http://127.0.0.1:8000/api/grammar-correction/",
+                          {
+                            method: "POST", // *GET, POST, PUT, DELETE, etc.
+                            headers: {
+                              "Content-Type": "application/json",
+                            },
+                            body: JSON.stringify(data), // body data type must match "Content-Type" header
+                          }
+                        );
+                        response.json().then((response) => {
+                          setGrammerChecker(false);
+                          let correctedText = response.corrected_text;
+                          let matches = response.matches;
+                          let grammarMistakes = [];
+                          for (let match of matches) {
+                            let mistakes = [];
+
+                            let incorrectText = match[4];
+                            // Calculate the start and end positions for the span element
+                            let start = match[3];
+                            let end = match[3] + match[6];
+
+                            // Rearrange the incorrectText with the span element
+                            let rearrangedText =
+                              incorrectText.substring(0, start) +
+                              `<span class="incorrecttext">` +
+                              incorrectText.substring(start, end) +
+                              "</span>" +
+                              incorrectText.substring(end);
+
+                            mistakes.push(rearrangedText);
+                            mistakes.push(`<b>Error : </b> ` + match[8]);
+                            mistakes.push(`<b>${match[1]}</b> `);
+                            mistakes.push(
+                              `<b>Suggestions : </b> <span class="suggestions">` +
+                              match[2].slice(0, 2) +
+                              "</span>"
+                            );
+
+                            grammarMistakes.push(mistakes);
+                          }
+
+                          openPopupGrammarChecker(
+                            grammarMistakes,
+                            editor,
+                            correctedText,
+                            matches.length
+                          );
+                        });
+                      } else {
+                        alert("Please select a sentence");
                       }
-                    );
-                    response.json().then((response) => {
-                      setGrammerChecker(false);
-                      let correctedText = response.corrected_text;
-                      let matches = response.matches;
-                      let grammarMistakes = [];
-                      for (let match of matches) {
-                        let mistakes = [];
+                    },
+                  });
+                  editor.ui.registry.addButton("SummarizeText", {
+                    text: "Summarize Text",
+                    tooltip: "Summarize the selected text",
+                    onAction: async () => {
+                      const selection = editor.selection.getContent();
 
-                        let incorrectText = match[4];
-                        // Calculate the start and end positions for the span element
-                        let start = match[3];
-                        let end = match[3] + match[6];
-
-                        // Rearrange the incorrectText with the span element
-                        let rearrangedText =
-                          incorrectText.substring(0, start) +
-                          `<span class="incorrecttext">` +
-                          incorrectText.substring(start, end) +
-                          "</span>" +
-                          incorrectText.substring(end);
-
-                        mistakes.push(rearrangedText);
-                        mistakes.push(`<b>Error : </b> ` + match[8]);
-                        mistakes.push(`<b>${match[1]}</b> `);
-                        mistakes.push(
-                          `<b>Suggestions : </b> <span class="suggestions">` +
-                          match[2].slice(0, 2) +
-                          "</span>"
+                      if (selection !== "") {
+                        setSummarizer(true);
+                        const data = {
+                          text: selection,
+                          action: 'summarize',
+                        };
+                        const response = await fetch(
+                          "http://127.0.0.1:8000/api/process_text/", // Change the URL to your summarization API endpoint
+                          {
+                            method: "POST",
+                            headers: {
+                              "Content-Type": "application/json",
+                            },
+                            body: JSON.stringify(data),
+                          }
                         );
 
-                        grammarMistakes.push(mistakes);
+                        const result = await response.json();
+                        setSummarizer(false);
+                        setSummary(result);
+                        openPopupSummaryandParaphrase(result, editor);
+
+
+                      } else {
+                        alert("Please select a sentence");
                       }
+                    },
+                  });
 
-                      openPopupGrammarChecker(
-                        grammarMistakes,
-                        editor,
-                        correctedText,
-                        matches.length
-                      );
-                    });
-                  } else {
-                    alert("Please select a sentence");
-                  }
-                },
-              });
-              editor.ui.registry.addButton("SummarizeText", {
-                text: "Summarize Text",
-                tooltip: "Summarize the selected text",
-                onAction: async () => {
-                  const selection = editor.selection.getContent();
+                  editor.ui.registry.addButton("ParaphraseText", {
+                    text: "Paraphrase Text",
+                    tooltip: "Paraphrase the selected text",
+                    onAction: async () => {
+                      const selection = editor.selection.getContent();
 
-                  if (selection !== "") {
-                    setSummarizer(true);
-                    const data = {
-                      text: selection,
-                      action: 'summarize',
-                    };
-                    const response = await fetch(
-                      "http://127.0.0.1:8000/api/process_text/", // Change the URL to your summarization API endpoint
-                      {
-                        method: "POST",
-                        headers: {
-                          "Content-Type": "application/json",
-                        },
-                        body: JSON.stringify(data),
+                      if (selection !== "") {
+                        setParaphraser(true);
+                        const data = {
+                          text: selection,
+                          action: 'paraphrase',
+                        };
+                        const response = await fetch(
+                          "http://127.0.0.1:8000/api/process_text/", // Change the URL to your summarization API endpoint
+                          {
+                            method: "POST",
+                            headers: {
+                              "Content-Type": "application/json",
+                            },
+                            body: JSON.stringify(data),
+                          }
+                        );
+
+                        const answer = await response.json();
+                        setParaphraser(false);
+                        setparaphrase(answer);
+                        openPopupSummaryandParaphrase(answer, editor);
+
+                      } else {
+                        alert("Please select a sentence");
                       }
-                    );
+                    },
+                  });
 
-                    const result = await response.json();
-                    setSummarizer(false);
-                    setSummary(result);
-                    openPopupSummaryandParaphrase(result, editor);
-
-
-                  } else {
-                    alert("Please select a sentence");
-                  }
                 },
-              });
-
-              editor.ui.registry.addButton("ParaphraseText", {
-                text: "Paraphrase Text",
-                tooltip: "Paraphrase the selected text",
-                onAction: async () => {
-                  const selection = editor.selection.getContent();
-
-                  if (selection !== "") {
-                    setParaphraser(true);
-                    const data = {
-                      text: selection,
-                      action: 'paraphrase',
-                    };
-                    const response = await fetch(
-                      "http://127.0.0.1:8000/api/process_text/", // Change the URL to your summarization API endpoint
-                      {
-                        method: "POST",
-                        headers: {
-                          "Content-Type": "application/json",
-                        },
-                        body: JSON.stringify(data),
-                      }
-                    );
-
-                    const answer = await response.json();
-                    setParaphraser(false);
-                    setparaphrase(answer);
-                    openPopupSummaryandParaphrase(answer, editor);
-
-                  } else {
-                    alert("Please select a sentence");
-                  }
-                },
-              });
-
-            },
-          }}
-        />
+              }}
+            />
 
 
-      </div>
-      </div>
+          </div>
+        </div>
       </div>
     );
   }

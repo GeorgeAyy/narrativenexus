@@ -97,8 +97,6 @@ io.on('connection', (socket) => {
 
 
 
-
-
   socket.on('attatch-document', async (documentId, userId) => {
     console.log('entered the attatch document')
     // if (userId == null) {
