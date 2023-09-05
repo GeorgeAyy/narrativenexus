@@ -49,8 +49,8 @@ const HistorySidebar = ({ documents, isOpen, toggleSidebar }) => {
       <ul className="history-list">
         {documentsToDisplay.map((document) => (
           <a href={`/documents/${document._id}`} class="history-anchor">
-          <li key={document._id} className="history-item">
-            {document._id}
+          <li key={document.data} className="history-item">
+            {document.data}
           </li>
           </a>
         ))}

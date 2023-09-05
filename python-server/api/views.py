@@ -28,7 +28,7 @@ class GrammarCorrectionView(APIView):
 
         # Perform grammar correction
         language_tool = language_tool_python.LanguageTool(
-            'en-US', config={'maxSpellingSuggestions': 1})
+            'en-US')
         # text = 'A sentence with a error in the Hitchhiker’s Guide tot he Galaxy'
         matches = language_tool.check(plain_text)
         correctText = language_tool.correct(plain_text)
