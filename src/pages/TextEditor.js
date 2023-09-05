@@ -58,6 +58,8 @@ export default function TextEditor() {
   const toggleSidebar = () => {
     setSidebarOpen(!sidebarOpen);
   };
+  const [processingChanges, setProcessingChanges] = useState(false);
+
   const [autoCompleteEnabled, setAutoCompleteEnabled] = useState(true);
   const targetColor = '#a9a9ac';
   var userId = null;
@@ -123,6 +125,7 @@ export default function TextEditor() {
           endPosition,
           addedText,
           removedText,
+          operation: addedText.length > removedText.length ? 'insert' : 'delete'
         });
 
         // Reset addedText and removedText
@@ -139,6 +142,54 @@ export default function TextEditor() {
 
     return differences;
   }
+
+
+
+  useEffect(() => {
+
+    if (socket == null || editorRef.current == null) return;
+    console.log("entered the use effect");
+    const handler = (delta) => {
+      setProcessingChanges(true);
+      console.log("Received changes from server:", delta);
+
+      // Iterate through the delta to apply each change
+      delta.forEach(change => {
+        const { position, addedText, removedText } = change;
+        const operation = change.operation;
+        console.log("the operation is: " + operation);
+        // Check the operation type (e.g., 'insert' or 'delete')
+        if (operation === 'insert') {
+          // Insert the text at the specified position
+          const currentContent = editorRef.current.getContent();
+          const updatedContent =
+            currentContent.slice(0, position) + addedText + currentContent.slice(position);
+          editorRef.current.setContent(updatedContent);
+          console.log("the updated content is: " + updatedContent);
+        } else if (operation === 'delete') {
+          // Delete text at the specified position
+          const currentContent = editorRef.current.getContent();
+          const updatedContent =
+            currentContent.slice(0, position) + currentContent.slice(position + removedText.length);
+          editorRef.current.setContent(updatedContent);
+          console.log("the updated content is: " + updatedContent);
+        }
+
+      });
+      setProcessingChanges(false);
+    }
+
+
+    socket.on('receive-changes', handler);
+
+
+
+    return () => {
+
+      socket.off('receive-changes');
+    };
+
+  }, [socket, editorContent]);
 
 
 
@@ -235,20 +286,17 @@ export default function TextEditor() {
     setNewContent(content);
 
 
-    const differences = findContentChanges(oldContent, newContent);
+    const delta = findContentChanges(oldContent, newContent);
 
 
     // Now you have access to the added and removed content
 
 
 
-    socket.emit('send-changes', differences);
+    if (!processingChanges) {
 
-
-
-
-
-
+      socket.emit('send-changes', delta);
+    }
 
 
     console.log('Content was updated:', content);
@@ -265,7 +313,7 @@ export default function TextEditor() {
       if (content.trim() !== "") {
         const timer = setTimeout(() => {
           if (editorChangeEnabled && autoCompleteEnabled) {
-            insertTextAtPosition('test', 10);
+            // insertTextAtPosition('test', 10);
             sendTextForAutoComplete(content); // Send the text for auto-completion
             setAutoCompleteEnabled(false);
           } else {
