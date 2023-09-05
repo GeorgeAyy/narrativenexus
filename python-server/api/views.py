@@ -15,7 +15,7 @@ with open('./server/config.json') as config_file:
     config_data = json.load(config_file)
 
 openai.api_type = "azure"
-openai.api_base = "https://narrativenexus.openai.azure.com/"
+openai.api_base = "https://trippee.openai.azure.com"
 openai.api_version = "2023-03-15-preview"
 openai.api_key = config_data['apikey']
 
@@ -73,7 +73,7 @@ def process_text(request):
 def summarize_text(text):
     # You can set the max tokens to control the length of the summary
     response = openai.ChatCompletion.create(
-        engine="narrativedeployment",
+        engine="gpt-35-turbo",
         temperature=0,  # You can set the temperature to control the randomness of the summary
         max_tokens=150,
         messages=[
@@ -88,7 +88,7 @@ def summarize_text(text):
 def paraphrase_text(text):
     # You can set the max tokens to control the length of the paraphrase
     response = openai.ChatCompletion.create(
-        engine="narrativedeployment",
+        engine="gpt-35-turbo",
         temperature=0,  # You can set the temperature to control the randomness of the paraphrase
         max_tokens=100,
         messages=[
@@ -106,7 +106,7 @@ def generate_prompt(request):
     text = data['promptText']
     print(f'text: {text}')
     response = openai.ChatCompletion.create(
-        engine="narrativedeployment",
+        engine="gpt-35-turbo",
         temperature=1,  # You can set the temperature to control the randomness of the story
         max_tokens=300,
         messages=[
@@ -132,7 +132,7 @@ def autocomplete(request):
         print(f'Received text: {plain_text}')
 
         response = openai.ChatCompletion.create(
-            engine="narrativedeployment",
+            engine="gpt-35-turbo",
             temperature=1,  # You can set the temperature to control the randomness of the story
             max_tokens=50,
             messages=[
