@@ -35,6 +35,9 @@
     width: 300px;
     transition: transform 0.2s, box-shadow 0.2s;
     background-color: white;
+    white-space: nowrap; /* Prevent text from wrapping */
+    overflow: hidden; /* Hide any overflowing text */
+    text-overflow: ellipsis;
 }
 .management-container .card-container:hover {
     background-color: #eee; /* Change the background color on hover */

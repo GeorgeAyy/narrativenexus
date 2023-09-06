@@ -41,6 +41,11 @@ const HistorySidebar = ({ documents, isOpen, toggleSidebar }) => {
       </div>
     );
   };
+  function stripHtmlTags(html) {
+    const tmp = document.createElement("div");
+    tmp.innerHTML = html;
+    return tmp.textContent || tmp.innerText || "";
+  }
 
   return (
     
@@ -50,7 +55,7 @@ const HistorySidebar = ({ documents, isOpen, toggleSidebar }) => {
         {documentsToDisplay.map((document) => (
           <a href={`/documents/${document._id}`} class="history-anchor">
           <li key={document.data} className="history-item">
-            {document.data}
+          {document.data ? stripHtmlTags(document.data) : "Empty"}
           </li>
           </a>
         ))}

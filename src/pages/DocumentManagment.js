@@ -80,7 +80,11 @@ const DocumentPage = () => {
   const handlePageChange = (newPage) => {
     setCurrentPage(newPage);
   };
-
+  function stripHtmlTags(html) {
+    const tmp = document.createElement("div");
+    tmp.innerHTML = html;
+    return tmp.textContent || tmp.innerText || "";
+  }
   return (
     <div>
       <Navbar />
@@ -98,7 +102,7 @@ const DocumentPage = () => {
             >
               <div className="document-card">
                 <h2>{`Document ${startIndex + index + 1}`}</h2>
-                <p>Document content: {document.data}</p>
+                <p> Document content: {document.data ? stripHtmlTags(document.data) : "Empty"}</p>
               </div>
             </a>
           ))}

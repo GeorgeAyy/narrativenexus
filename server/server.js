@@ -8,7 +8,6 @@ const cors = require("cors");
 const app = express();
 const session = require("express-session");
 const cookieParser = require("cookie-parser");
-const cheerio = require('cheerio');
 app.use(express.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(
@@ -178,17 +177,13 @@ io.on('connection', (socket) => {
     })
 
     socket.on('save-document', async data => { // save the document to the database
-      const plainText = stripHtmlTags(data); // Remove HTML tags
-      await Document.findByIdAndUpdate(documentId, { data: plainText }) // find the document by id and update it with the data
+    
+      await Document.findByIdAndUpdate(documentId, { data }) // find the document by id and update it with the data
     })
   })
 
 
 })
-function stripHtmlTags(html) {
-  const $ = cheerio.load(html);
-  return $.text(); // Extract plain text from HTML
-}
 
 
 async function findOrCreateDocument(id) {
