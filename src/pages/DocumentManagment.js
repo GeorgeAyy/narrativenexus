@@ -40,6 +40,34 @@ const DocumentPage = () => {
       s.disconnect();
     };
   }, []);
+  useEffect(() => {
+    console.log("Fetching documents for user ID:", cookies.user._id);
+  
+    // Make a fetch or axios request to retrieve documents from your backend
+    fetch('http://localhost:5000/history/retrieveDocuments', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ userId: cookies.user._id }), // Replace with the actual user ID
+    })
+      .then((response) => {
+        if (!response.ok) {
+          console.error('Response not ok:', response.status, response.statusText);
+          return Promise.reject('Fetch failed');
+        }
+        return response.json();
+      })
+      .then((data) => {
+        console.log("Data received from server:", data);
+  
+        if (data.documents) {
+          setDocuments(data.documents);
+        }
+      })
+      .catch((error) => console.error('Error fetching documents:', error));
+  }, []);
+  
 
   // Calculate the index range for the current page
   const startIndex = (currentPage - 1) * documentsPerPage;
@@ -65,12 +93,12 @@ const DocumentPage = () => {
           {displayedDocuments.map((document, index) => (
             <a
               key={index}
-              href={`/documents/${document}`}
+              href={`/documents/${document._id}`}
               className="document-link"
             >
               <div className="document-card">
                 <h2>{`Document ${startIndex + index + 1}`}</h2>
-                <p>Document content: {document}</p>
+                <p>Document content: {document.data}</p>
               </div>
             </a>
           ))}
