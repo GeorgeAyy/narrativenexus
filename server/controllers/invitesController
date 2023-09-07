@@ -1,0 +1,55 @@
+const User = require('../models/User'); // Import the User model
+/*inviteeEmail: inviteeEmail,
+      ownerId: cookies.user._id,
+      documentId: documentId, */
+// Function to send an invitation
+exports.sendInvitation = async (req, res) => {
+  try {
+    // Get the owner ID, document ID, and invitee email from the request body
+    const { ownerId, documentId, inviteeEmail } = req.body;
+
+    // Find the owner and invitee by their IDs
+    const owner = await User.findById(ownerId);
+    const invitee = await User.findOne({ email: inviteeEmail });
+
+    if (!owner || !invitee) {
+      throw new Error('Owner or invitee not found.');
+    }
+
+    // Check if the invitee is already invited to the same document by the owner
+    const existingInvitation = owner.sentInvitations.find(
+      (invitation) =>
+        invitation.documentId === documentId &&
+        invitation.inviteeEmail === inviteeEmail
+    );
+
+    if (existingInvitation) {
+      console.log('Invitation already sent to the same user for this document.');
+      return res.status(400).json({ error: 'Invitation already sent' });
+    }
+
+    // Add the invitation to the owner's sentInvitations array
+    owner.sentInvitations.push({
+      documentId,
+      inviteeEmail,
+      status: 'pending', // You can set the initial status to 'pending'
+    });
+
+    // Add the invitation to the invitee's receivedInvitations array
+    invitee.receivedInvitations.push({
+      documentId,
+      inviterId: owner._id,
+      status: 'pending', // You can set the initial status to 'pending'
+    });
+
+    // Save the changes to both users
+    await owner.save();
+    await invitee.save();
+
+    console.log('Invitation sent successfully.');
+    res.status(200).json({ message: 'Invitation sent successfully' });
+  } catch (error) {
+    console.error('Error sending invitation:', error);
+    res.status(500).json({ error: 'An error occurred while sending the invitation' });
+  }
+};

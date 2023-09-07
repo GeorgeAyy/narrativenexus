@@ -53,25 +53,31 @@ export default function TextEditor() {
   const [documents, setDocuments] = useState([]);
   const [sidebarOpen, setSidebarOpen] = useState(true); // New state for sidebar open/closed
   const [history, setHistory] = useState([]); // To store history entries
+  const [documentOwner, setDocumentOwner] = useState(null); // To store the owner of the document
+  const [inviteeEmail, setInviteeEmail] = useState('');
   const toggleSidebar = () => {
       setSidebarOpen(!sidebarOpen);
     };
   const [autoCompleteEnabled, setAutoCompleteEnabled] = useState(true);
   const targetColor = '#a9a9ac';
   var userId = null;
-  if (cookies.user) {
+
+  if (cookies.user ) {
     userId = cookies.user._id
   }
 
   // Function to load the document
   const loadDocument = useCallback(() => {
     if (socket == null) return;
-
-    socket.once('load-document', document => {
+  
+    socket.once('load-document', ({ document, owner }) => { // Receive document and owner
       console.log(`Loaded document: ${document}`);
       setEditorLoad(document);
+      // Now you have access to both document and owner in your state
+      setDocumentOwner(owner); // Assuming you have a state variable to store the owner
     });
   }, [socket]);
+  
 
 
 
@@ -98,25 +104,21 @@ export default function TextEditor() {
   }, []);
 
   useEffect(() => {
-    if (socket == null) return;
-
-    socket.emit('get-document', documentId);
+    if (socket == null || !cookies.user) return;
+  
+    const userId = cookies.user._id;
+  
+    socket.emit('get-document', { documentId, userId }); // Pass userId to the server
     loadDocument(); // Load the document immediately when socket is available
-  }, [socket, documentId, loadDocument]);
-
-  useEffect(() => {
-    console.log('saving document');
+  }, [socket, documentId, loadDocument, cookies.user]);
+  
+  const handleSave = () => {
     if (socket == null || editorContent == null) return;
-
-    const interval = setInterval(() => {
-      console.log("saved" + editorContent);
-      socket.emit('save-document', editorContent);
-    }, SAAVE_INTERVAL_MS);
-
-    return () => {
-      clearInterval(interval); // clear the interval when we are done
-    }
-  }, [socket, editorContent]);
+  
+    // Send the document content to the server
+    socket.emit('save-document', editorContent);
+  };
+  
 
   useEffect(() => {
     if (socket == null) return;
@@ -131,6 +133,9 @@ export default function TextEditor() {
 }, [socket]);
 
 useEffect(() => {
+  if (!cookies.user) {
+    return;
+  }
   console.log("Fetching documents for user ID:", cookies.user._id);
 
   // Make a fetch or axios request to retrieve documents from your backend
@@ -241,7 +246,48 @@ const wrapperRef = useCallback((wrapper) => {                        // using ca
   };
 
 
-
+  const handleInvite = async (e) => {
+    e.preventDefault();
+  
+    // Check if inviteeEmail is not empty
+    if (!inviteeEmail) {
+      alert('Please enter an email address.');
+      return;
+    }
+  //ownerId, documentId, inviteeEmail
+    // Create a JSON object with the email address
+    const invitationData = {
+      inviteeEmail: inviteeEmail,
+      ownerId: cookies.user._id,
+      documentId: documentId,
+    };
+  
+    try {
+      // Send a POST request to your backend route
+      const response = await fetch('http://localhost:5000/invite/sendInvitation', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(invitationData),
+      });
+  
+      // Check if the response status is OK (200)
+      if (response.ok) {
+        alert('Invitation sent successfully.');
+        // Clear the inviteeEmail input field
+        setInviteeEmail('');
+      } else {
+        // Handle errors or display an error message
+        const errorMessage = await response.text();
+        alert(`Error: ${errorMessage}`);
+      }
+    } catch (error) {
+      console.error('Error sending invitation:', error);
+      alert('An error occurred while sending the invitation.');
+    }
+  };
+  
 
 
   const sendTextForAutoComplete = async (text) => {
@@ -301,6 +347,21 @@ const wrapperRef = useCallback((wrapper) => {                        // using ca
         ) : (
           <></>
         )}
+        {/* Invitation Section */}
+{cookies.user && cookies.user._id === documentOwner && (
+  <div className="invitation-section">
+    <h2>Invite Collaborators</h2>
+    <form onSubmit={handleInvite}>
+      <input
+        type="email"
+        placeholder="Enter email address"
+        value={inviteeEmail}
+        onChange={(e) => setInviteeEmail(e.target.value)}
+      />
+      <button type="submit">Send Invitation</button>
+    </form>
+  </div>
+)}
           <div className="editor-page">
           <HistorySidebar documents={documents} isOpen={sidebarOpen} toggleSidebar={toggleSidebar} />
           <div className={`editor-container ${sidebarOpen ? '' : 'full-width'}`}>
@@ -309,6 +370,7 @@ const wrapperRef = useCallback((wrapper) => {                        // using ca
             </button>
             
         <h1>TinyMCE Text Editor</h1>
+        <button onClick={handleSave}>Save</button>
 
 
         <Editor

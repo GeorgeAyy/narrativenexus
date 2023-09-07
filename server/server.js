@@ -38,10 +38,11 @@ mongoose
 
 const authRouter = require("./routes/auth.js");
 const historyRouter = require("./routes/history.js");
+const invitesRouter = require("./routes/invites.js");
 const { findById } = require("./models/User");
 app.use("/auth", authRouter);
 app.use("/history", historyRouter);
-
+app.use("/invite", invitesRouter)
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
@@ -167,21 +168,22 @@ io.on('connection', (socket) => {
 
 
 
-  socket.on('get-document', async documentId => {  // this takes in a document id)
-    const document = await findOrCreateDocument(documentId) // get document from database
-    socket.join(documentId) // join the room for the document
-    socket.emit('load-document', document.data) // send the document to the client
-
-
-    socket.on('send-changes', (delta) => { // the delta is passed in
-      socket.broadcast.to(documentId).emit('receive-changes', delta) // broadcast to everyone else  recive changes is a function name?
-    })
-
-    socket.on('save-document', async data => { // save the document to the database
-      const plainText = stripHtmlTags(data); // Remove HTML tags
-      await Document.findByIdAndUpdate(documentId, { data: plainText }) // find the document by id and update it with the data
-    })
-  })
+  socket.on('get-document', async ({ documentId, userId }) => { // Receive documentId and userId
+    const document = await findOrCreateDocument(documentId, userId); // Pass userId to findOrCreateDocument
+  
+    socket.join(documentId); // Join the room for the document
+    socket.emit('load-document', {document: document.data, owner: document.owner}); // Send the document to the client
+  
+    socket.on('send-changes', (delta) => {
+      socket.broadcast.to(documentId).emit('receive-changes', delta);
+    });
+  
+    socket.on('save-document', async data => {
+      const plainText = stripHtmlTags(data);
+      await Document.findByIdAndUpdate(documentId, { data: plainText });
+    });
+  });
+  
 
 
 })
@@ -191,16 +193,19 @@ function stripHtmlTags(html) {
 }
 
 
-async function findOrCreateDocument(id) {
-  if (id == null) return;
+async function findOrCreateDocument(documentId, userId) {
+  if (!documentId) return;
 
-  const document = await Document.findById(id);
+  const document = await Document.findById(documentId);
   if (document) {
     console.log(`[MONGO] Document found:`, document);
     return document;
   }
-  const newDocument = await Document.create({ _id: id, data: defaultValue });
+
+  // Create the document with userId as the owner
+  const newDocument = await Document.create({ _id: documentId, data: defaultValue, owner: userId });
   console.log(`[MONGO] Document created:`, newDocument);
   return newDocument;
 }
+
 
