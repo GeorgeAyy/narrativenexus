@@ -114,23 +114,33 @@ export default function TextEditor() {
   };
 
 
-
   const setCursorPosition = (position) => {
     const editor = editorRef.current;
 
     if (editor && editor.selection) {
-      // Get the current selection range
-      const selection = editor.selection.getRng();
+      // Get the current content and cursor position
+      const content = editor.getContent();
+      const currentCursorPosition = getCursorPosition();
 
-      // Create a new range with the desired cursor position
-      const newRange = editor.dom.createRng();
-      newRange.setStart(selection.startContainer, position);
-      newRange.setEnd(selection.startContainer, position);
+      console.log('Current Cursor Position:', currentCursorPosition);
+      console.log('Content Length:', content.length);
+      console.log('Setting Cursor Position to Offset:', position);
 
-      // Set the new range to the editor's selection
-      editor.selection.setRng(newRange);
+      // Check if the position is within the valid range
+      if (position >= 0 && position <= content.length) {
+        // Create a new range with the desired cursor position
+        const newRange = editor.dom.createRng();
+        newRange.setStart(editor.getBody(), position);
+        newRange.collapse(true);
+
+        // Set the new range to the editor's selection
+        editor.selection.setRng(newRange);
+      } else {
+        console.error('Invalid cursor position:', position);
+      }
     }
   };
+
 
 
 
