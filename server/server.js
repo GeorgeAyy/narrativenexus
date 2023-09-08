@@ -172,6 +172,7 @@ io.on('connection', (socket) => {
 
     socket.on('send-changes', (delta) => { // the delta is passed in
       console.log(delta)
+
       socket.broadcast.to(documentId).emit('receive-changes', delta) // broadcast to everyone else  recive changes is a function name?
     })
 

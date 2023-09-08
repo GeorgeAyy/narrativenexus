@@ -12,24 +12,14 @@ import Navbar from '../components/Navbar';
 import InvalidAccessPage from '../components/invalidaccesspage';
 import HistorySidebar from '../components/histoySidebar'; // Import the HistorySidebar component
 import "../styles/App.css";
+import { set } from 'mongoose';
 // import { use } from '../../server/routes/auth';
-
-
-
 
 
 
 
 const SAAVE_INTERVAL_MS = 2000 // save every 2 seconds
 
-
-// ...
-
-// ...
-
-// ...
-
-// ...
 
 export default function TextEditor() {
 
@@ -55,10 +45,14 @@ export default function TextEditor() {
   const [history, setHistory] = useState([]); // To store history entries
   const [oldContent, setOldContent] = useState(''); // To store the old content of the editor
   const [newContent, setNewContent] = useState(''); // To store the new content of the editor
+  const editorChangeTimeout = useRef(null);
+
+  var sentFlag = false;
   const toggleSidebar = () => {
     setSidebarOpen(!sidebarOpen);
   };
-  const [processingChanges, setProcessingChanges] = useState(false);
+  // const [processingChanges, setProcessingChanges] = useState(false);
+  var processingChanges = false;
 
   const [autoCompleteEnabled, setAutoCompleteEnabled] = useState(true);
   const targetColor = '#a9a9ac';
@@ -74,6 +68,7 @@ export default function TextEditor() {
     socket.once('load-document', document => {
       console.log(`Loaded document: ${document}`);
       setEditorLoad(document);
+      setOldContent(document);
     });
   }, [socket]);
 
@@ -93,9 +88,12 @@ export default function TextEditor() {
   };
 
 
-  function findContentChanges(oldContent, newContent) {
-    const differences = [];
+  function findContentChanges() {
 
+    sentFlag = true;
+
+    const differences = [];
+    console.log("the old content is: " + oldContent);
     let currentIndex = 0;
     let addedText = "";
     let removedText = "";
@@ -137,6 +135,7 @@ export default function TextEditor() {
     }
 
     setOldContent(newContent);
+    sentFlag = false;
 
     console.log("Differences:", differences);
 
@@ -145,38 +144,50 @@ export default function TextEditor() {
 
 
 
-  useEffect(() => {
+  const test = () => {
 
-    if (socket == null || editorRef.current == null) return;
-    console.log("entered the use effect");
+    // if (socket == null || editorRef.current == null) return;
+    // console.log("entered the use effect");
     const handler = (delta) => {
-      setProcessingChanges(true);
-      console.log("Received changes from server:", delta);
 
-      // Iterate through the delta to apply each change
-      delta.forEach(change => {
-        const { position, addedText, removedText } = change;
-        const operation = change.operation;
-        console.log("the operation is: " + operation);
-        // Check the operation type (e.g., 'insert' or 'delete')
-        if (operation === 'insert') {
-          // Insert the text at the specified position
-          const currentContent = editorRef.current.getContent();
-          const updatedContent =
-            currentContent.slice(0, position) + addedText + currentContent.slice(position);
-          editorRef.current.setContent(updatedContent);
-          console.log("the updated content is: " + updatedContent);
-        } else if (operation === 'delete') {
-          // Delete text at the specified position
-          const currentContent = editorRef.current.getContent();
-          const updatedContent =
-            currentContent.slice(0, position) + currentContent.slice(position + removedText.length);
-          editorRef.current.setContent(updatedContent);
-          console.log("the updated content is: " + updatedContent);
-        }
+      //   processingChanges = true;
+      //   console.log("Received changes from server:", delta);
 
-      });
-      setProcessingChanges(false);
+      //   // Iterate through the delta to apply each change
+      //   delta.forEach(change => {
+      //     var updatedContent
+      //     const { position, addedText, removedText } = change;
+      //     const operation = change.operation;
+      //     console.log("the operation is: " + operation);
+      //     // Check the operation type (e.g., 'insert' or 'delete')
+      //     if (operation === 'insert') {
+      //       // Insert the text at the specified position
+      //       const currentContent = editorRef.current.getContent();
+      //       updatedContent =
+      //         currentContent.slice(0, position) + addedText + currentContent.slice(position);
+      //       editorRef.current.setContent(updatedContent);
+      //       console.log("the updated content is: " + updatedContent);
+      //     } else if (operation === 'delete') {
+      //       // Delete text at the specified position
+      //       const currentContent = editorRef.current.getContent();
+      //       updatedContent =
+      //         currentContent.slice(0, position) + currentContent.slice(position + removedText.length);
+      //       editorRef.current.setContent(updatedContent);
+      //       console.log("the updated content is: " + updatedContent);
+      //     }
+
+      //     setOldContent(editorRef.current.getContent());
+
+
+
+      // });
+
+
+
+      // processingChanges = false;
+
+      editorRef.current.setContent(delta);
+
     }
 
 
@@ -189,7 +200,7 @@ export default function TextEditor() {
       socket.off('receive-changes');
     };
 
-  }, [socket, editorContent]);
+  }
 
 
 
@@ -274,30 +285,36 @@ export default function TextEditor() {
       .catch((error) => console.error('Error fetching documents:', error));
   }, []);
 
-  const wrapperRef = useCallback((wrapper) => {                        // using callback and passing it to our ref
-    // disable the editor until we load the document
+  // const wrapperRef = useCallback((wrapper) => {                        // using callback and passing it to our ref
+  //   // disable the editor until we load the document
 
 
 
-  }, [])
+  // }, [])
 
   const handleEditorChange = (content) => {
 
+
+
+    clearTimeout(editorChangeTimeout.current);
+
+
+
     setNewContent(content);
+    // const delta = findContentChanges();
+    const delta = editorRef.current.getContent();
 
 
-    const delta = findContentChanges(oldContent, newContent);
+
+    console.log("sending changes to server");
+    socket.emit('send-changes', delta);
+
+
+
+
 
 
     // Now you have access to the added and removed content
-
-
-
-    if (!processingChanges) {
-
-      socket.emit('send-changes', delta);
-    }
-
 
     console.log('Content was updated:', content);
 
@@ -335,7 +352,7 @@ export default function TextEditor() {
 
 
   const handleEditorInit = (evt, editor) => {
-    setOldContent(editor.getContent()); // Store the initial content of the editor
+    // Store the initial content of the editor
     // Load the document once the editor is initialized
     loadDocument();
     editorRef.current = editor;
@@ -376,6 +393,7 @@ export default function TextEditor() {
         });
       }
     });
+    test();
   };
 
 
