@@ -55,6 +55,9 @@ export default function TextEditor() {
   const [sidebarOpen, setSidebarOpen] = useState(true); // New state for sidebar open/closed
   const [history, setHistory] = useState([]); // To store history entries
   const [typingPosition, setTypingPosition] = useState(); // To store the typing position
+
+  var flag = true;
+
   const toggleSidebar = () => {
     setSidebarOpen(!sidebarOpen);
   };
@@ -120,31 +123,31 @@ export default function TextEditor() {
     const editor = editorRef.current;
 
     if (editor && editor.selection) {
-      // Get the current content and cursor position
-      const content = editor.getContent();
-      const currentCursorPosition = position;
+      // Get the current content length
+      const contentLength = editor.getContent().length;
 
-      console.log('Current Cursor Position:', currentCursorPosition);
-      console.log('Content Length:', content.length);
-      console.log('Setting Cursor Position to Offset:', position);
+      // Ensure the position is within the valid range
+      const validPosition = Math.max(0, Math.min(position, contentLength));
 
-      // Check if the position is within the valid range
-      if (position >= 0 && position < content.length) {
-        // Create a new range with the desired cursor position
-        const newRange = editor.dom.createRng();
-        newRange.setStart(editor.getBody(), position);
-        newRange.collapse(true);
+      console.log('Current Cursor Position:', validPosition);
+      console.log('Content Length:', contentLength);
 
-        // Set the new range to the editor's selection
-        editor.selection.setRng(newRange);
-      } else {
-        console.error('Invalid cursor position:', position);
 
-        // Handle the out-of-range position here (e.g., show an error message)
-        // You can also consider setting the position to a valid value.
-      }
+
+      // Create a new range with the desired cursor position
+      const newRange = editor.dom.createRng();
+      newRange.setStart(editor.getBody(), typingPosition);
+
+
+      // Set the new range to the editor's selection
+      editor.selection.setRng(newRange);
+
+
+
+
     }
   };
+
 
 
 
@@ -156,16 +159,17 @@ export default function TextEditor() {
     // console.log("entered the use effect");
     const handler = (delta) => {
 
-
-
+      flag = false;
+      setTypingPosition(getCursorPosition());
+      console.log("the typing position is: " + typingPosition);
 
       // Set the new content
       editorRef.current.setContent(delta);
       if (timerRef.current) clearTimeout(timerRef.current);
       // Set the cursor position back
-      timerRef.current = setTimeout(() => {
-        setCursorPosition(typingPosition);
-      }, 1000);
+
+      setCursorPosition(typingPosition);
+
     }
 
 
@@ -176,6 +180,7 @@ export default function TextEditor() {
     return () => {
 
       socket.off('receive-changes');
+      flag = true;
     };
 
   }
@@ -271,13 +276,18 @@ export default function TextEditor() {
   const handleEditorChange = (content) => {
 
 
-    setCursorPosition(getCursorPosition());
+
 
     console.log('Content was updated:', content);
 
     if (editorChangeEnabled) {
+      console.log("entered the thing");
       setEditorContent(content);
-      socket.emit('send-changes', editorRef.current.getContent());
+      if (flag) {
+
+        socket.emit('send-changes', editorRef.current.getContent());
+      }
+
       // Clear the auto-complete timer on content change
       clearTimeout(autoCompleteTimer);
 
