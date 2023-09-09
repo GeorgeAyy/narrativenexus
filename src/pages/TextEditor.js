@@ -12,6 +12,7 @@ import Navbar from '../components/Navbar';
 import InvalidAccessPage from '../components/invalidaccesspage';
 import HistorySidebar from '../components/histoySidebar'; // Import the HistorySidebar component
 import "../styles/App.css";
+import { set } from 'mongoose';
 
 // import { use } from '../../server/routes/auth';
 
@@ -55,6 +56,7 @@ export default function TextEditor() {
   const [sidebarOpen, setSidebarOpen] = useState(true); // New state for sidebar open/closed
   const [history, setHistory] = useState([]); // To store history entries
   const [typingPosition, setTypingPosition] = useState(); // To store the typing position
+  const [receivedChange, setReceivedChange] = useState(false);
 
   var flag = true;
 
@@ -119,7 +121,7 @@ export default function TextEditor() {
   };
 
 
-  const setCursorPosition = (position) => {
+  const setCursorPosition = async (position) => {
     const editor = editorRef.current;
 
     if (editor && editor.selection) {
@@ -145,30 +147,45 @@ export default function TextEditor() {
 
 
 
+
     }
+    return true;
   };
 
 
+  const setTheContent = async (delta) => {
+    editorRef.current.setContent(delta);
+  }
 
+  const handler = async (delta) => {
 
-  const handler = (delta) => {
-
-
+    setReceivedChange(true);
     setTypingPosition(editorRef.current.selection.getRng().startOffset);
     console.log("KILL ME" + editorRef.current.selection.getRng().startOffset)
-
+    await setTheContent(delta);
 
 
 
     console.log("the typing position is: " + typingPosition);
 
     // Set the new content
-    editorRef.current.setContent(delta);
-    if (timerRef.current) clearTimeout(timerRef.current);
+
+    // if (timerRef.current) clearTimeout(timerRef.current);
     // Set the cursor position back
 
-    setCursorPosition(typingPosition);
-    flag = true;
+    // if (setCursorPosition(typingPosition))
+    //   flag = true;
+
+    // else
+    //   flag = true;
+    await setCursorPosition(typingPosition);
+    setReceivedChange(false);
+
+
+
+    // setReceivedChange(false)
+
+
 
   }
 
@@ -177,17 +194,14 @@ export default function TextEditor() {
     // if (socket == null || editorRef.current == null) return;
     // console.log("entered the use effect");
 
-
-
     socket.on('receive-changes', handler);
-    console.log("recieve-changes is called");
 
 
 
     return () => {
 
       socket.off('receive-changes');
-
+      flag = true;
     };
 
   }
@@ -284,16 +298,16 @@ export default function TextEditor() {
 
 
 
-
     console.log('Content was updated:', content);
 
     if (editorChangeEnabled) {
       console.log("entered the thing");
       setEditorContent(content);
 
-      if (flag)
+      if (flag && !receivedChange) {
+        console.log("sending changes");
         socket.emit('send-changes', editorRef.current.getContent());
-
+      }
 
       // Clear the auto-complete timer on content change
       clearTimeout(autoCompleteTimer);

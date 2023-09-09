@@ -173,11 +173,15 @@ io.on('connection', (socket) => {
 
 
     socket.on('send-changes', (delta) => { // the delta is passed in
-      socket.broadcast.to(documentId).emit('receive-changes', delta) // broadcast to everyone else  recive changes is a function name?
+      var test = ' ';
+      if (delta !== test) {
+        socket.broadcast.to(documentId).emit('receive-changes', delta)
+      }
+      // broadcast to everyone else  recive changes is a function name?
     })
 
     socket.on('save-document', async data => { // save the document to the database
-    
+
       await Document.findByIdAndUpdate(documentId, { data }) // find the document by id and update it with the data
     })
   })
