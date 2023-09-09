@@ -151,36 +151,43 @@ export default function TextEditor() {
 
 
 
+  const handler = (delta) => {
 
+
+    setTypingPosition(editorRef.current.selection.getRng().startOffset);
+    console.log("KILL ME" + editorRef.current.selection.getRng().startOffset)
+
+
+
+
+    console.log("the typing position is: " + typingPosition);
+
+    // Set the new content
+    editorRef.current.setContent(delta);
+    if (timerRef.current) clearTimeout(timerRef.current);
+    // Set the cursor position back
+
+    setCursorPosition(typingPosition);
+    flag = true;
+
+  }
 
   const onCollaboration = () => {
-
+    flag = false;
     // if (socket == null || editorRef.current == null) return;
     // console.log("entered the use effect");
-    const handler = (delta) => {
 
-      flag = false;
-      setTypingPosition(getCursorPosition());
-      console.log("the typing position is: " + typingPosition);
-
-      // Set the new content
-      editorRef.current.setContent(delta);
-      if (timerRef.current) clearTimeout(timerRef.current);
-      // Set the cursor position back
-
-      setCursorPosition(typingPosition);
-
-    }
 
 
     socket.on('receive-changes', handler);
+    console.log("recieve-changes is called");
 
 
 
     return () => {
 
       socket.off('receive-changes');
-      flag = true;
+
     };
 
   }
@@ -283,10 +290,10 @@ export default function TextEditor() {
     if (editorChangeEnabled) {
       console.log("entered the thing");
       setEditorContent(content);
-      if (flag) {
 
+      if (flag)
         socket.emit('send-changes', editorRef.current.getContent());
-      }
+
 
       // Clear the auto-complete timer on content change
       clearTimeout(autoCompleteTimer);
@@ -357,8 +364,9 @@ export default function TextEditor() {
           parentNode.removeChild(textNode);
         });
       }
-      onCollaboration();
+
     });
+    onCollaboration();
   };
 
 
