@@ -11,6 +11,7 @@ import { useCookies, removeCookie } from "react-cookie";
 import Navbar from '../components/Navbar';
 import InvalidAccessPage from '../components/invalidaccesspage';
 import HistorySidebar from '../components/histoySidebar'; // Import the HistorySidebar component
+import UserManagementPopup from '../components/UserManagementPopup';
 import "../styles/App.css";
 // import { use } from '../../server/routes/auth';
 
@@ -53,6 +54,8 @@ export default function TextEditor() {
   const [documents, setDocuments] = useState([]);
   const [sidebarOpen, setSidebarOpen] = useState(true); // New state for sidebar open/closed
   const [history, setHistory] = useState([]); // To store history entries
+  const [isUserManagementPopupOpen, setIsUserManagementPopupOpen] = useState(false);
+  const [documentOwner, setDocumentOwner] = useState(null); // To store the document owner
   const toggleSidebar = () => {
       setSidebarOpen(!sidebarOpen);
     };
@@ -66,16 +69,25 @@ export default function TextEditor() {
   // Function to load the document
   const loadDocument = useCallback(() => {
     if (socket == null) return;
-
-    socket.once('load-document', document => {
+  
+    socket.once('load-document', ({ document, owner }) => { // Receive document and owner
       console.log(`Loaded document: ${document}`);
       setEditorLoad(document);
+      // Now you have access to both document and owner in your state
+      setDocumentOwner(owner); // Assuming you have a state variable to store the owner
     });
   }, [socket]);
 
+  const openUserManagementPopup = () => {
+    setIsUserManagementPopupOpen(true);
+  };
+  
+  const closeUserManagementPopup = () => {
+    setIsUserManagementPopupOpen(false);
+  };
+  
 
-
-
+  
 
   useEffect(() => {
     if (socket == null || userId == null) return;
@@ -98,11 +110,13 @@ export default function TextEditor() {
   }, []);
 
   useEffect(() => {
-    if (socket == null) return;
-
-    socket.emit('get-document', documentId);
+    if (socket == null || !cookies.user) return;
+  
+    const userId = cookies.user._id;
+  
+    socket.emit('get-document', { documentId, userId:cookies.user._id }); // Pass userId to the server
     loadDocument(); // Load the document immediately when socket is available
-  }, [socket, documentId, loadDocument]);
+  }, [socket, documentId, loadDocument, cookies.user]);
 
   useEffect(() => {
     console.log('saving document');
@@ -290,6 +304,11 @@ const wrapperRef = useCallback((wrapper) => {                        // using ca
   } else {
     return (
       <div>
+        
+        <Navbar />
+        {isUserManagementPopupOpen && (
+      <div className="overlay"></div>
+    )}
         {grammerChecker || summarizer || Paraphraser ? (
           <ReactLoading
             type={"spin"}
@@ -301,15 +320,22 @@ const wrapperRef = useCallback((wrapper) => {                        // using ca
         ) : (
           <></>
         )}
+        
           <div className="editor-page">
+            
           <HistorySidebar documents={documents} isOpen={sidebarOpen} toggleSidebar={toggleSidebar} />
           <div className={`editor-container ${sidebarOpen ? '' : 'full-width'}`}>
+            
+            
+        <h1>Narrative Nexus Editor</h1>
+        <span style={{display: "flex"}}>
             <button className="toggle-history-button" onClick={toggleSidebar}>
               {sidebarOpen ? 'Close History' : 'Open History'}
             </button>
-            
-        <h1>TinyMCE Text Editor</h1>
-
+            <button className="toggle-history-button" onClick={openUserManagementPopup}>
+  Invite/Edit Users
+</button>
+            </span>
 
         <Editor
           apiKey="bw59pp70ggqha1u9xgyiva27d1vrdvvdar1elkcj2gd51r3q"
@@ -317,7 +343,7 @@ const wrapperRef = useCallback((wrapper) => {                        // using ca
           onEditorChange={handleEditorChange}
           onInit={handleEditorInit}
           init={{
-            height: 700,
+            height: 550,
             menubar: true,
             plugins: ["image ", "link ", " code"],
             toolbar: "undo redo | bold italic | alignleft aligncenter alignright | code | image| GrammarChecker| SummarizeText | ParaphraseText",
@@ -463,10 +489,14 @@ const wrapperRef = useCallback((wrapper) => {                        // using ca
             },
           }}
         />
-
+        {/* Conditionally render the UserManagementPopup component */}
+      {isUserManagementPopupOpen && (
+        <UserManagementPopup documentId={documentId} closeUserManagementPopup={closeUserManagementPopup} />
+      )}
 
       </div>
       </div>
+      
       </div>
     );
   }

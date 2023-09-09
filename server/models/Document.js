@@ -1,9 +1,16 @@
 const { Schema, model } = require('mongoose');
 
 const Document = new Schema({
-    _id: String,
-    name:String,
-    data: Object // what ever qull sends us
-})
+  _id: String,
+  name: String,
+  data: Object, // whatever content your document holds
+  owner: {
+    type: String,
+    required: true,
+  },
+  collaborators: [{
+    type: String,
+  }],
+});
 
-module.exports = model('Document', Document) // export the model
+module.exports = model('Document', Document);
