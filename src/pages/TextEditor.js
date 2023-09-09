@@ -12,6 +12,7 @@ import Navbar from '../components/Navbar';
 import InvalidAccessPage from '../components/invalidaccesspage';
 import HistorySidebar from '../components/histoySidebar'; // Import the HistorySidebar component
 import "../styles/App.css";
+
 // import { use } from '../../server/routes/auth';
 
 
@@ -32,7 +33,7 @@ const SAAVE_INTERVAL_MS = 2000 // save every 2 seconds
 // ...
 
 export default function TextEditor() {
-
+  const timerRef = useRef(null);
   const { id: documentId } = useParams();
   const [socket, setSocket] = useState();
   const [editorContent, setEditorContent] = useState();
@@ -53,6 +54,7 @@ export default function TextEditor() {
   const [documents, setDocuments] = useState([]);
   const [sidebarOpen, setSidebarOpen] = useState(true); // New state for sidebar open/closed
   const [history, setHistory] = useState([]); // To store history entries
+  const [typingPosition, setTypingPosition] = useState(); // To store the typing position
   const toggleSidebar = () => {
     setSidebarOpen(!sidebarOpen);
   };
@@ -120,14 +122,14 @@ export default function TextEditor() {
     if (editor && editor.selection) {
       // Get the current content and cursor position
       const content = editor.getContent();
-      const currentCursorPosition = getCursorPosition();
+      const currentCursorPosition = position;
 
       console.log('Current Cursor Position:', currentCursorPosition);
       console.log('Content Length:', content.length);
       console.log('Setting Cursor Position to Offset:', position);
 
       // Check if the position is within the valid range
-      if (position >= 0 && position <= content.length) {
+      if (position >= 0 && position < content.length) {
         // Create a new range with the desired cursor position
         const newRange = editor.dom.createRng();
         newRange.setStart(editor.getBody(), position);
@@ -137,6 +139,9 @@ export default function TextEditor() {
         editor.selection.setRng(newRange);
       } else {
         console.error('Invalid cursor position:', position);
+
+        // Handle the out-of-range position here (e.g., show an error message)
+        // You can also consider setting the position to a valid value.
       }
     }
   };
@@ -144,21 +149,23 @@ export default function TextEditor() {
 
 
 
-  const test = () => {
+
+  const onCollaboration = () => {
 
     // if (socket == null || editorRef.current == null) return;
     // console.log("entered the use effect");
     const handler = (delta) => {
 
 
-      const typingPosition = getCursorPosition();
+
 
       // Set the new content
       editorRef.current.setContent(delta);
-
+      if (timerRef.current) clearTimeout(timerRef.current);
       // Set the cursor position back
-      setCursorPosition(typingPosition);
-
+      timerRef.current = setTimeout(() => {
+        setCursorPosition(typingPosition);
+      }, 1000);
     }
 
 
@@ -263,8 +270,8 @@ export default function TextEditor() {
 
   const handleEditorChange = (content) => {
 
-    console.log("entered the handle editor change + " + content);
 
+    setCursorPosition(getCursorPosition());
 
     console.log('Content was updated:', content);
 
@@ -340,7 +347,7 @@ export default function TextEditor() {
           parentNode.removeChild(textNode);
         });
       }
-      test();
+      onCollaboration();
     });
   };
 
