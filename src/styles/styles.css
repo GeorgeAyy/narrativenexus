@@ -307,6 +307,9 @@ body {
   white-space: nowrap; /* Prevent text from wrapping */
   overflow: hidden; /* Hide any overflowing text */
   text-overflow: ellipsis;
+  display: flex; /* Use flexbox to arrange the icon and text horizontally */
+  align-items: center; /* Vertically center the items within the list item */
+  justify-content: space-between; 
 }
 
 .history-item:hover {
@@ -316,4 +319,11 @@ body {
 }
   .history-anchor:hover{
     text-decoration: none;
+  }
+  .history-icons {
+    display: flex; /* Use flexbox to arrange the icons and text horizontally */
+    align-items: center; /* Vertically center the items within the history-icons span */
+  }
+  .edit-icon {
+    margin-right: 5px; /* You can adjust the margin as needed */
   }

@@ -50,3 +50,26 @@ exports.deleteDocument = async (req, res) => {
       res.status(500).json({ message: 'Internal server error' });
     }
   };
+  exports.saveEditedData = async (req, res) => {
+    const { documentId, editedData } = req.body;
+  
+    try {
+      const updatedDocument = await DocumentModel.findByIdAndUpdate(
+        documentId,
+        { name: editedData },
+        { new: true }
+      );
+  
+      if (!updatedDocument) {
+        console.log("Document not found for documentId:", documentId);
+        return res.status(404).json({ message: 'Document not found' });
+      }
+  
+      console.log("Document data updated successfully:", updatedDocument);
+  
+      res.status(200).json({ message: 'Document data updated successfully', document: updatedDocument });
+    } catch (error) {
+      console.error("Error updating document data:", error);
+      res.status(500).json({ message: 'Internal server error' });
+    }
+  };
