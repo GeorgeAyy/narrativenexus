@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import '../styles/App.css';
-
+import config from '../config.json';
 const UserManagementPopup = ({ documentId, closeUserManagementPopup }) => {
   const [users, setUsers] = useState([]);
   const [newUsername, setNewUsername] = useState('');
@@ -10,7 +10,7 @@ const UserManagementPopup = ({ documentId, closeUserManagementPopup }) => {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const response = await fetch(`http://localhost:5000/invites/${documentId}/users`);
+        const response = await fetch(`http://${config.ip}:5000/invites/${documentId}/users`);
         if (response.ok) {
           const data = await response.json();
           setUsers(data.collaborators); // Assuming the collaborators data is returned from the API
@@ -29,7 +29,7 @@ const UserManagementPopup = ({ documentId, closeUserManagementPopup }) => {
 
   const deleteUser = async (userId) => {
     try {
-      const response = await fetch(`http://localhost:5000/invites/deleteUser`, {
+      const response = await fetch(`http://${config.ip}:5000/invites/deleteUser`, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
@@ -52,7 +52,7 @@ const UserManagementPopup = ({ documentId, closeUserManagementPopup }) => {
 
   const inviteUserByEmail = async () => {
     try {
-      const response = await fetch(`http://localhost:5000/invites/sendInvitation`, {
+      const response = await fetch(`http://${config.ip}:5000/invites/sendInvitation`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

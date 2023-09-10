@@ -13,6 +13,7 @@ import InvalidAccessPage from '../components/invalidaccesspage';
 import HistorySidebar from '../components/histoySidebar'; // Import the HistorySidebar component
 import UserManagementPopup from '../components/UserManagementPopup';
 import "../styles/App.css";
+import config from '../config.json';
 // import { use } from '../../server/routes/auth';
 
 
@@ -148,7 +149,7 @@ useEffect(() => {
   console.log("Fetching documents for user ID:", cookies.user._id);
 
   // Make a fetch or axios request to retrieve documents from your backend
-  fetch('http://localhost:5000/history/retrieveDocuments', {
+  fetch(`http://${config.ip}:5000/history/retrieveDocuments`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -264,7 +265,7 @@ const wrapperRef = useCallback((wrapper) => {                        // using ca
       const data = {
         text: text,
       };
-      const response = await fetch("http://127.0.0.1:8000/api/autocomplete/", {
+      const response = await fetch(`http://${config.ip}:8000/api/autocomplete/`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -363,7 +364,7 @@ const wrapperRef = useCallback((wrapper) => {                        // using ca
                       text: selection,
                     };
                     const response = await fetch(
-                      "http://127.0.0.1:8000/api/grammar-correction/",
+                      `http://${config.ip}:8000/api/grammar-correction/`,
                       {
                         method: "POST", // *GET, POST, PUT, DELETE, etc.
                         headers: {
@@ -430,7 +431,7 @@ const wrapperRef = useCallback((wrapper) => {                        // using ca
                       action: 'summarize',
                     };
                     const response = await fetch(
-                      "http://127.0.0.1:8000/api/process_text/", // Change the URL to your summarization API endpoint
+                      `http://${config.ip}:8000/api/process_text/`, // Change the URL to your summarization API endpoint
                       {
                         method: "POST",
                         headers: {
@@ -465,7 +466,7 @@ const wrapperRef = useCallback((wrapper) => {                        // using ca
                       action: 'paraphrase',
                     };
                     const response = await fetch(
-                      "http://127.0.0.1:8000/api/process_text/", // Change the URL to your summarization API endpoint
+                      `http://${config.ip}:8000/api/process_text/`, // Change the URL to your summarization API endpoint
                       {
                         method: "POST",
                         headers: {

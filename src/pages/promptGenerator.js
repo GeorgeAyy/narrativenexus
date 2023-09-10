@@ -4,7 +4,7 @@ import "../styles/promptgenerator.css";
 import Navbar from "../components/Navbar";
 import InvalidAccessPage from "../components/invalidaccesspage";
 import { useCookies } from "react-cookie";
-
+import config from "../config.json";
 const genres = [
   "Fantasy",
   "Romance",
@@ -41,7 +41,7 @@ const [cookies, setCookie, removeCookie] = useCookies(["user"]);
     console.log(promptText);
     try {
       const response = await fetch(
-        "http://127.0.0.1:8000/api/generate_prompt/",
+        `http://${config.ip}:8000/api/generate_prompt/`,
         {
           method: "POST",
           headers: {

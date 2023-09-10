@@ -3,7 +3,7 @@ import "../styles/login.css"; // Import your custom CSS
 import axios from "axios";
 import { useHistory,Link } from "react-router-dom";
 import { useCookies } from "react-cookie";
-
+import config from '../config.json';
 const LogIn = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -42,7 +42,7 @@ const LogIn = () => {
         };
 
         // Make a request to your authentication endpoint (e.g., /login)
-        const response = await fetch("http://localhost:5000/auth/login", {
+        const response = await fetch(`http://${config.ip}:5000/auth/login`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
