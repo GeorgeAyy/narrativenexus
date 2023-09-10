@@ -381,6 +381,19 @@ export default function TextEditor() {
 
     });
     onCollaboration();
+
+    editorRef.current.on('keydown', (e) => {
+      if (e.keyCode === 123) {
+        e.preventDefault();
+        // Check if the editor instance is available before setting readonly mode
+        // if (editorRef.current && editorRef.current.editor) {
+        //   editorRef.current.editor.setMode('readonly');
+        // }
+
+        const editorElement = edit.getElement();
+        editorElement.contentEditable = 'false';
+      }
+    });
   };
 
 
@@ -460,6 +473,7 @@ export default function TextEditor() {
               onEditorChange={handleEditorChange}
               onInit={handleEditorInit}
               init={{
+                readonly: 1,
                 directionality: 'ltr',
                 height: 700,
                 menubar: true,
