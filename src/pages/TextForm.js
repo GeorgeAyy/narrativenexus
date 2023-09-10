@@ -4,6 +4,7 @@ import { FiCheckCircle, FiEdit } from "react-icons/fi";
 const TextForm = ({ onProcessText }) => {
   const [text, setText] = useState("");
   const [action, setAction] = useState("summarize");
+  const [isSubmitting, setIsSubmitting] = useState(false); // Add a state variable
 
   const handleChange = (e) => {
     setText(e.target.value);
@@ -13,8 +14,12 @@ const TextForm = ({ onProcessText }) => {
     setAction(action === "summarize" ? "paraphrase" : "summarize");
   };
 
-  const handleSubmit = () => {
-    onProcessText(text, action);
+  const handleSubmit = async () => {
+    setIsSubmitting(true); // Disable the button when clicked
+    console.log("disabled")
+    await onProcessText(text, action);
+    setIsSubmitting(false); // Enable the button after execution
+    console.log("abled")
   };
 
   return (
@@ -31,9 +36,9 @@ const TextForm = ({ onProcessText }) => {
           {action === "summarize" ? <FiCheckCircle /> : <FiEdit />}
         </div>
       </div>
-      <button onClick={handleSubmit}>
-        <FiCheckCircle />
-        Submit
+      <button onClick={handleSubmit} disabled={isSubmitting}>
+      {isSubmitting ? "Submitting..." : <> <FiCheckCircle /> <span>Submit</span></>}
+
       </button>
     </div>
   );
