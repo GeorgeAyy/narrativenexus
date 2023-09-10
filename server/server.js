@@ -24,7 +24,7 @@ app.use(
 app.use(cookieParser());
 
 const corsOptions = {
-  origin: 'http://localhost:3000', // Allow requests only from this origin
+  origin: ['http://localhost:3000', 'http://20.218.101.44:3000'], // Allow requests only from these origins
   allowedHeaders: ['Content-Type'],
   optionsSuccessStatus: 200, // Return a successful response
   credentials: true, // Enable cookies
@@ -50,10 +50,9 @@ app.listen(PORT, () => {
 
 const io = require("socket.io")(3001, {
   cors: {
-    origin: "http://localhost:3000",
+    origin: ["http://localhost:3000", "http://20.218.101.44:3000"],
     methods: ["GET", "POST"],
   },
-
 });
 
 const defaultValue = "";

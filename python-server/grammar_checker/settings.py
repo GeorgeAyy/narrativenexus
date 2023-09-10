@@ -29,7 +29,8 @@ DEBUG = True
 
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
-]
+    "http://20.218.101.44:3000",
+];
 
 ALLOWED_HOSTS = [
     "*",  # Allow domain and subdomains
