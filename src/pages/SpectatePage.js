@@ -6,6 +6,12 @@ import { useCookies } from "react-cookie";
 import Navbar from "../components/Navbar";
 import config from '../config.json';
 
+function stripHtmlTags(html) {
+    const tmp = document.createElement("div");
+    tmp.innerHTML = html;
+    return tmp.textContent || tmp.innerText || "";
+}
+
 
 
 
@@ -39,13 +45,15 @@ const SpectatePage = () => {
         if (socket == null) return;
         socket.emit('get-document', { documentId, userId: cookies.user._id });
         socket.once('load-document', ({ document, owner }) => { // Receive document and owner
+
             setDocumentContent(document);
 
         });
     }, [socket]);
 
     const handler = (delta) => {
-        setDocumentContent(delta);
+        ;
+        setDocumentContent(stripHtmlTags(delta));
     }
     useEffect(() => {
 
@@ -82,6 +90,8 @@ const SpectatePage = () => {
                     id="spectate-textarea"
 
                 />
+
+
             </div>
         </div>
     )
