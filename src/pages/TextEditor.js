@@ -57,7 +57,7 @@ export default function TextEditor() {
   const [history, setHistory] = useState([]); // To store history entries
   const [isUserManagementPopupOpen, setIsUserManagementPopupOpen] = useState(false);
   const [documentOwner, setDocumentOwner] = useState(null); // To store the document owner
-  
+
   const toggleSidebar = () => {
       setSidebarOpen(!sidebarOpen);
     };
@@ -266,7 +266,7 @@ const wrapperRef = useCallback((wrapper) => {                        // using ca
       const data = {
         text: text,
       };
-      const response = await fetch(`http://${config.ip}:8000/api/autocomplete/`, {
+      const response = await fetch(`http://localhost:8000/api/autocomplete/`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -365,7 +365,7 @@ const wrapperRef = useCallback((wrapper) => {                        // using ca
                       text: selection,
                     };
                     const response = await fetch(
-                      `http://${config.ip}:8000/api/grammar-correction/`,
+                      `http://localhost:8000/api/grammar-correction/`,
                       {
                         method: "POST", // *GET, POST, PUT, DELETE, etc.
                         headers: {
@@ -432,7 +432,7 @@ const wrapperRef = useCallback((wrapper) => {                        // using ca
                       action: 'summarize',
                     };
                     const response = await fetch(
-                      `http://${config.ip}:8000/api/process_text/`, // Change the URL to your summarization API endpoint
+                      `http://localhost:8000/api/process_text/`, // Change the URL to your summarization API endpoint
                       {
                         method: "POST",
                         headers: {
@@ -467,7 +467,7 @@ const wrapperRef = useCallback((wrapper) => {                        // using ca
                       action: 'paraphrase',
                     };
                     const response = await fetch(
-                      `http://${config.ip}:8000/api/process_text/`, // Change the URL to your summarization API endpoint
+                      `http://localhost:8000/api/process_text/`, // Change the URL to your summarization API endpoint
                       {
                         method: "POST",
                         headers: {
