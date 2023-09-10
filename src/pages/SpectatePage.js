@@ -49,6 +49,8 @@ const SpectatePage = () => {
     }
     useEffect(() => {
 
+        if (socket == null) return;
+
         socket.on('receive-changes', handler);
 
 
