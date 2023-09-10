@@ -7,6 +7,7 @@ import NotFound from "./pages/notfound";
 import Home from "./pages/Home";
 import PromptGenerator from "./pages/promptGenerator";
 import DocumentManagment from "./pages/DocumentManagment";
+import SpectatePage from "./pages/SpectatePage";
 import {
   BrowserRouter as Router,
   Switch,
@@ -50,9 +51,14 @@ const ReactApp = () => {
           <DocumentManagment />
         </Route>
 
+        <Route path="/spectate/:id">
+          <SpectatePage />
+        </Route>
+
         <Route path="*">
           <NotFound />
         </Route>
+
       </Switch>
     </Router >
   );
