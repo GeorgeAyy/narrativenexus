@@ -163,3 +163,131 @@ exports.receivedInvitations = async (req, res) => {
       .json({ error: "An error occurred while fetching invitations" });
   }
 };
+
+// invitesController.js
+
+// Function to accept an invitation
+exports.acceptInvitation = async (req, res) => {
+  try {
+    // Get the owner ID, document ID, and invitee email from the request body
+    const { ownerId, documentId, inviteeEmail } = req.body;
+
+    // Find the owner and invitee by their IDs
+    const owner = await User.findById(ownerId);
+    const invitee = await User.findOne({ email: inviteeEmail });
+
+    if (!owner || !invitee) {
+      console.error('Owner or invitee not found.');
+      throw new Error('Owner or invitee not found.');
+    }
+
+    console.log(`Accepting invitation: Owner - ${owner.name}, Invitee - ${invitee.name}, Document - ${documentId}`);
+
+    // Update the invitation status to 'accepted'
+    const invitationIndex = owner.sentInvitations.findIndex(
+      (invitation) =>
+        invitation.documentId === documentId &&
+        invitation.inviteeEmail === inviteeEmail
+    );
+
+    if (invitationIndex !== -1) {
+      owner.sentInvitations[invitationIndex].status = 'accepted';
+      await owner.save();
+
+      console.log(`Invitation marked as accepted for Document - ${documentId}`);
+
+      // Update the invitee's receivedInvitations
+      const inviteeInvitationIndex = invitee.receivedInvitations.findIndex(
+        (invitation) =>
+          invitation.documentId === documentId &&
+          invitation.inviterId.toString() === owner._id.toString()
+      );
+
+      if (inviteeInvitationIndex !== -1) {
+        invitee.receivedInvitations[inviteeInvitationIndex].status = 'accepted';
+        await invitee.save();
+
+        console.log(`Invitee's receivedInvitations updated for Document - ${documentId}`);
+      } else {
+        console.log(`Invitee's receivedInvitations not found for Document - ${documentId}`);
+      }
+
+      // Add the invitee to the document's collaborators list
+      const document = await Document.findById(documentId);
+      if (!document) {
+        console.error('Document not found.');
+        throw new Error('Document not found.');
+      }
+
+      console.log(`Adding invitee to collaborators list for Document - ${documentId}`);
+
+      document.collaborators.push(invitee._id); // Assuming invitee._id is the user's ID
+      await document.save();
+
+      // Add the documentId to the list of documentIds for the user
+      if (!owner.documentIds.includes(documentId)) {
+        owner.documentIds.push(documentId);
+        await owner.save();
+        console.log(`Added Document - ${documentId} to the user's documentIds.`);
+      }
+    }
+
+    const successMessage = 'Invitation accepted successfully.';
+    console.log(successMessage);
+    res.status(200).json({ message: successMessage });
+  } catch (error) {
+    console.error('Error accepting invitation:', error);
+    const errorMessage = 'An error occurred while accepting the invitation.';
+    res.status(500).json({ error: errorMessage });
+  }
+};
+
+
+// Function to decline an invitation
+exports.declineInvitation = async (req, res) => {
+  try {
+    // Get the owner ID, document ID, and invitee email from the request body
+    const { ownerId, documentId, inviteeEmail } = req.body;
+
+    // Find the owner and invitee by their IDs
+    const owner = await User.findById(ownerId);
+    const invitee = await User.findOne({ email: inviteeEmail });
+
+    if (!owner || !invitee) {
+      console.error('Owner or invitee not found.');
+      throw new Error('Owner or invitee not found.');
+    }
+
+    console.log(`Declining invitation: Owner - ${owner.name}, Invitee - ${invitee.name}, Document - ${documentId}`);
+
+    // Remove the invitation from the owner's sentInvitations
+    owner.sentInvitations = owner.sentInvitations.filter(
+      (invitation) =>
+        invitation.documentId !== documentId &&
+        invitation.inviteeEmail !== inviteeEmail
+    );
+
+    await owner.save();
+
+    console.log(`Invitation removed from owner's sentInvitations for Document - ${documentId}`);
+
+    // Remove the invitation from the invitee's receivedInvitations
+    invitee.receivedInvitations = invitee.receivedInvitations.filter(
+      (invitation) =>
+        invitation.documentId !== documentId &&
+        invitation.inviterId.toString() === owner._id.toString()
+    );
+
+    await invitee.save();
+
+    console.log(`Invitation removed from invitee's receivedInvitations for Document - ${documentId}`);
+
+    const successMessage = 'Invitation declined successfully.';
+    console.log(successMessage);
+    res.status(200).json({ message: successMessage });
+  } catch (error) {
+    console.error('Error declining invitation:', error);
+    const errorMessage = 'An error occurred while declining the invitation.';
+    res.status(500).json({ error: errorMessage });
+  }
+};
