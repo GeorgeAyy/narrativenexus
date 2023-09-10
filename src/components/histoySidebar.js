@@ -53,7 +53,7 @@ const HistorySidebar = ({ documents, isOpen, toggleSidebar }) => {
       <h2 className="history-heading">Previous History</h2>
       <ul className="history-list">
         {documentsToDisplay.map((document) => (
-          <a href={`/documents/${document._id}`} class="history-anchor">
+          <a href={`/documents/${document._id}`} className="history-anchor">
           <li key={document.data} className="history-item">
           {document.data ? stripHtmlTags(document.data) : "Empty"}
           </li>

@@ -298,7 +298,7 @@ const wrapperRef = useCallback((wrapper) => {                        // using ca
 
   if (!cookies.user) {
     return (
-      <div class="divcontainer">
+      <div className="divcontainer">
         <Navbar />
         <InvalidAccessPage />
       </div>
@@ -390,7 +390,7 @@ const wrapperRef = useCallback((wrapper) => {                        // using ca
                         // Rearrange the incorrectText with the span element
                         let rearrangedText =
                           incorrectText.substring(0, start) +
-                          `<span class="incorrecttext">` +
+                          `<span className="incorrecttext">` +
                           incorrectText.substring(start, end) +
                           "</span>" +
                           incorrectText.substring(end);
@@ -399,7 +399,7 @@ const wrapperRef = useCallback((wrapper) => {                        // using ca
                         mistakes.push(`<b>Error : </b> ` + match[8]);
                         mistakes.push(`<b>${match[1]}</b> `);
                         mistakes.push(
-                          `<b>Suggestions : </b> <span class="suggestions">` +
+                          `<b>Suggestions : </b> <span className="suggestions">` +
                           match[2].slice(0, 2) +
                           "</span>"
                         );

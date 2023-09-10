@@ -60,7 +60,7 @@ const Home = () => {
         handleToggleClick={handleToggleClick}
         scrollToSection={scrollToSection}
       />
-      <div class= "carouseldiv"style={{ maxWidth: "90%", margin: "0 auto",maxHeight:"10%", marginTop:"30px"}}>
+      <div className= "carouseldiv"style={{ maxWidth: "90%", margin: "0 auto",maxHeight:"10%", marginTop:"30px"}}>
         <Carousel showThumbs={false}
           showStatus={false}
           autoPlay={true} // Enable auto-rotation

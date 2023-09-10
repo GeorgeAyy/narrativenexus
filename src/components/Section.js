@@ -17,9 +17,9 @@ const Section = ({ id, title, content,href,button }) => {
         </div>
       </div>
       <div className="leftpart">
-        <div class="image-container">
+        <div className="image-container">
           <a href={href}>
-            <img class="sectionimage" src={title} alt={id} />
+            <img className="sectionimage" src={title} alt={id} />
           </a>
         </div>
       </div>

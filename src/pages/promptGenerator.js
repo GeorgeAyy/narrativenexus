@@ -60,14 +60,14 @@ const [cookies, setCookie, removeCookie] = useCookies(["user"]);
   };
   if (!cookies.user) {
     return (
-      <div class="divcontainer">
+      <div className="divcontainer">
         <Navbar />
         <InvalidAccessPage />
       </div>
     );
   } else {
     return (
-      <div class="divcontainer">
+      <div className="divcontainer">
         <Navbar />
 
         <div className="">

@@ -23,7 +23,7 @@ const Navbar = ({ isMenuOpen, handleToggleClick, scrollToSection }) => {
       <ul className="menu">
         <li className="logo">
           <a onClick={() => scrollToSection("section1")} href="#section1">
-            <img src = {image} alt ="logo" class = "logoinnav"/>
+            <img src = {image} alt ="logo" className = "logoinnav"/>
           </a>
         </li>
         
@@ -70,7 +70,7 @@ const Navbar = ({ isMenuOpen, handleToggleClick, scrollToSection }) => {
       <ul className="menu">
         <li className="logo">
           <a href="/">
-          <img src = {image} alt ="logo" class = "logoinnav"/>
+          <img src = {image} alt ="logo" className = "logoinnav"/>
           </a>
         </li>
         <li className={`item ${getItemClassName()}`}>
