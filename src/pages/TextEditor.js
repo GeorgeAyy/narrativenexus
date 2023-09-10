@@ -57,6 +57,7 @@ export default function TextEditor() {
   const [history, setHistory] = useState([]); // To store history entries
   const [isUserManagementPopupOpen, setIsUserManagementPopupOpen] = useState(false);
   const [documentOwner, setDocumentOwner] = useState(null); // To store the document owner
+  
   const toggleSidebar = () => {
       setSidebarOpen(!sidebarOpen);
     };
@@ -100,7 +101,7 @@ export default function TextEditor() {
 
 
   useEffect(() => {
-    const s = io('http://localhost:3001');
+    const s = io(`http://${config.ip}:3001`);
     setSocket(s);
 
 
