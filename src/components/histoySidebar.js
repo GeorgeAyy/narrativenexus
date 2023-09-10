@@ -86,10 +86,17 @@ const HistorySidebar = ({ documents, isOpen, toggleSidebar }) => {
     <div className={`history-sidebar ${isOpen ? 'open' : ''}`}>
       <h2 className="history-heading">Previous History</h2>
       <ul className="history-list">
-        {documentsToDisplay.map((document) => (
+       {documentsToDisplay.map((document) => (
   <a href={`/documents/${document._id}`} className="history-anchor" key={document.data}>
     <li className="history-item">
-      <span>{document.data ? stripHtmlTags(document.data) : "Empty"}</span>
+      <span>
+        {document.data
+          ? stripHtmlTags(document.data)
+              .split(' ') // Split the data string into words
+              .slice(0, 2) // Get the first two words
+              .join(' ') // Join the first two words back into a string
+          : "Empty"}
+      </span>
       <span className="history-icons">
         <FontAwesomeIcon
           icon={faEdit}
@@ -111,6 +118,7 @@ const HistorySidebar = ({ documents, isOpen, toggleSidebar }) => {
     </li>
   </a>
 ))}
+
 
       </ul>
       {renderPaginationButtons()}
