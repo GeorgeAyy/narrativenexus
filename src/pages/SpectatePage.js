@@ -6,11 +6,8 @@ import { useCookies } from "react-cookie";
 import Navbar from "../components/Navbar";
 import config from '../config.json';
 
-function stripHtmlTags(html) {
-    const tmp = document.createElement("div");
-    tmp.innerHTML = html;
-    return tmp.textContent || tmp.innerText || "";
-}
+
+
 
 
 
@@ -19,9 +16,6 @@ const SpectatePage = () => {
     const { id: documentId } = useParams();
     const [socket, setSocket] = useState();
     const [cookies] = useCookies(["user"]);
-    const [documents, setDocuments] = useState([]);
-    const [currentPage, setCurrentPage] = useState(1);
-    const documentsPerPage = 8;
     const [documentContent, setDocumentContent] = useState('');
 
     var userId = null;
@@ -53,7 +47,7 @@ const SpectatePage = () => {
 
     const handler = (delta) => {
         ;
-        setDocumentContent(stripHtmlTags(delta));
+        setDocumentContent(delta);
     }
     useEffect(() => {
 
@@ -82,17 +76,13 @@ const SpectatePage = () => {
             <Navbar />
 
             <div className="center-container">
-                <textarea
-                    rows="10"
-                    cols="50"
-                    value={documentContent}
-                    readOnly
-                    id="spectate-textarea"
-
-                />
-
-
+                {/* Replace the textarea with a span */}
+                <span
+                    id="spectate-span" // You can set an id or className as needed
+                    dangerouslySetInnerHTML={{ __html: documentContent }}
+                ></span>
             </div>
+
         </div>
     )
 
