@@ -3,7 +3,7 @@ import "../styles/documentmanagment.css";
 import { io } from "socket.io-client";
 import { useCookies } from "react-cookie";
 import Navbar from "../components/Navbar";
-
+import config from '../config.json';
 const DocumentPage = () => {
   const [socket, setSocket] = useState();
   const [cookies] = useCookies(["user"]);
@@ -33,7 +33,7 @@ const DocumentPage = () => {
   }, [socket, userId]);
 
   useEffect(() => {
-    const s = io("http://localhost:3001");
+    const s = io(`http://${config.ip}:3001`);
     setSocket(s);
 
     return () => {
@@ -44,7 +44,7 @@ const DocumentPage = () => {
     console.log("Fetching documents for user ID:", cookies.user._id);
   
     // Make a fetch or axios request to retrieve documents from your backend
-    fetch('http://localhost:5000/history/retrieveDocuments', {
+    fetch(`http://${config.ip}:5000/history/retrieveDocuments`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

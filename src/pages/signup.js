@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import '../styles/signup.css'; // Import your custom CSS
 import axios from 'axios';
 import { useHistory, Link } from 'react-router-dom';
-
+import config from '../config.json';
 const SignUp = () => {
     const history = useHistory();
     const [name, setName] = useState('');
@@ -56,7 +56,7 @@ const SignUp = () => {
           };
       
           // Create the user using the UserService
-          fetch('http://localhost:5000/auth/signup', {
+          fetch(`http://${config.ip}:5000/auth/signup`, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
