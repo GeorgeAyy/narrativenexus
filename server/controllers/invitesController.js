@@ -6,6 +6,7 @@ const Document = require('../models/Document'); // Import the Document model
 // Function to send an invitation
 exports.sendInvitation = async (req, res) => {
   try {
+    console.log("the body is: " + req.body);
     // Get the owner ID, document ID, and invitee email from the request body
     const { ownerId, documentId, inviteeEmail } = req.body;
 
@@ -145,3 +146,20 @@ exports.fetchUsers = async (req, res) => {
   }
 };
 
+
+exports.receivedInvitations = async (req, res) => {
+  try {
+    const { userId } = req.body;
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+    const receivedInvitations = user.receivedInvitations;
+    res.status(200).json({ receivedInvitations });
+  } catch (error) {
+    console.error("Error fetching invitations:", error);
+    res
+      .status(500)
+      .json({ error: "An error occurred while fetching invitations" });
+  }
+};

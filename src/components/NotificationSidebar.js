@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import '../styles/NotificationSidebar.css';
 
-const NotificationSidebar = ({ isOpen, onClose }) => {
+const NotificationSidebar = ({ isOpen, onClose,notifications }) => {
 //   const [notifications, setNotifications] = useState([]);
 
 
@@ -10,12 +10,19 @@ const NotificationSidebar = ({ isOpen, onClose }) => {
       <button onClick={onClose}>Close</button>
       <h3>Notifications</h3>
       <div className="notification-content">
-        {/* <ul>
-          {notifications.map((notification, index) => (
-            <li key={index}>{notification}</li>
+        <ul className="notification-list">
+          {notifications && notifications.map((notifications) => (
+            <li key={notifications._id} className="notification-item">
+              <span className="notification-text">
+                {notifications.inviterId} has invited you to edit document {notifications.documentId}
+              </span>
+              <div className="notification-buttons">
+                <button className="notification-button">Accept</button>
+                <button className="notification-button">Decline</button>
+              </div>
+            </li>
           ))}
-        </ul> */}
-         <p>hello</p>
+        </ul>
       </div>
     </div>
   );

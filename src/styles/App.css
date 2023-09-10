@@ -408,7 +408,7 @@ li a {
 /* Copper Hewitt Bold */
 @font-face {
   font-family: 'Copper Hewitt Bold';
-  src: url('./CooperHewitt-Bold.otf') format('opentype');
+  src: url('./fonts/CooperHewitt-Bold.otf') format('opentype');
   font-weight: bold;
   font-style: normal;
 }
@@ -416,7 +416,7 @@ li a {
 /* Copper Hewitt Light */
 @font-face {
   font-family: 'Copper Hewitt Book';
-  src: url('./CooperHewitt-Book.otf') format('opentype');
+  src: url('./fonts/CooperHewitt-Book.otf') format('opentype');
   font-weight: normal;
   font-style: normal;
 }
