@@ -1,10 +1,11 @@
 // Navbar.js
-import React from "react";
+import React, { useEffect } from "react";
 import {useLocation} from 'react-router-dom';
 import { useCookies,removeCookie } from "react-cookie";
 import image from "../images/logo.png";
 import NotificationSidebar from "./NotificationSidebar";
 import { useState } from "react";
+import config from "../config.json";
 const Navbar = ({ isMenuOpen, handleToggleClick, scrollToSection }) => {
   const getItemClassName = () => {
     return isMenuOpen ? "active" : "";
@@ -12,6 +13,7 @@ const Navbar = ({ isMenuOpen, handleToggleClick, scrollToSection }) => {
   const location = useLocation();
   const [cookies, setCookie, removeCookie] = useCookies(['user']);
   const [showNotifications, setShowNotifications] = useState(false); // Add state to manage notification sidebar visibility
+  const [notification, setNotification] = useState([]); // Add state to manage notifications
   const handleLogoutClick = (e) => {
     e.preventDefault();
     removeCookie('user', { path: '/' });
@@ -22,6 +24,31 @@ const Navbar = ({ isMenuOpen, handleToggleClick, scrollToSection }) => {
     setShowNotifications(!showNotifications);
   };
 
+  useEffect(() => {
+    if (cookies.user) {
+      // Load notifications only if 'cookies.user' is truthy
+      const loadNotifications = async () => {
+        try {
+          const response = await fetch(
+            `http://${config.ip}:5000/invites/getNotifications`,
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({ userId: cookies.user._id }),
+            }
+          );
+          const data = await response.json();
+          setNotification(data.receivedInvitations);
+          console.log(data);
+        } catch (error) {
+          console.log(`Error loading notifications: ${error}`);
+        }
+      };
+      loadNotifications();
+    }
+  }, []); // Include 'cookies.user' as a dependency
 
   if(location.pathname ==='/')
   {
@@ -74,6 +101,7 @@ const Navbar = ({ isMenuOpen, handleToggleClick, scrollToSection }) => {
       <NotificationSidebar
         isOpen={showNotifications}
         onClose={toggleNotifications}
+        notifications={notification}
       />
     </nav>
     )

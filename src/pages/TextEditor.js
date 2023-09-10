@@ -172,7 +172,7 @@ useEffect(() => {
       }
     })
     .catch((error) => console.error('Error fetching documents:', error));
-}, []);
+}, [document]);
 
 const wrapperRef = useCallback((wrapper) => {                        // using callback and passing it to our ref
   // disable the editor until we load the document
@@ -493,7 +493,7 @@ const wrapperRef = useCallback((wrapper) => {                        // using ca
         />
         {/* Conditionally render the UserManagementPopup component */}
       {isUserManagementPopupOpen && (
-        <UserManagementPopup documentId={documentId} closeUserManagementPopup={closeUserManagementPopup} />
+        <UserManagementPopup ownerId = {cookies.user._id} documentId={documentId} closeUserManagementPopup={closeUserManagementPopup} />
       )}
 
       </div>

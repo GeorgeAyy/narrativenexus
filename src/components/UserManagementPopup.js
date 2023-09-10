@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import '../styles/App.css';
 import config from '../config.json';
-const UserManagementPopup = ({ documentId, closeUserManagementPopup }) => {
+import { useCookies, removeCookie } from "react-cookie";
+
+const UserManagementPopup = ({ ownerId, documentId, closeUserManagementPopup }) => {
   const [users, setUsers] = useState([]);
   const [newUsername, setNewUsername] = useState('');
   const [invitationMessage, setInvitationMessage] = useState('');
-
+  const [cookies, setCookie, removeCookie] = useCookies(['user']);
   // Fetch users from the backend when the component mounts
   useEffect(() => {
     const fetchUsers = async () => {
@@ -58,15 +60,16 @@ const UserManagementPopup = ({ documentId, closeUserManagementPopup }) => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
+          ownerId: ownerId,
           documentId,
-          username: newUsername,
+          inviteeEmail: document.getElementsByClassName('inviteeEmail')[0].value,
         }),
       });
 
       if (response.ok) {
         setInvitationMessage('Invitation sent successfully.');
       } else {
-        console.error('Failed to send invitation');
+        setInvitationMessage('User Already Invited');
       }
     } catch (error) {
       console.error('Error sending invitation:', error);
@@ -90,8 +93,7 @@ const UserManagementPopup = ({ documentId, closeUserManagementPopup }) => {
         <input
           type="text"
           placeholder="Enter email to invite"
-          value={newUsername}
-          onChange={(e) => setNewUsername(e.target.value)}
+          className="inviteeEmail"
         />
         <button className="custombtn" onClick={inviteUserByEmail}>
           Invite
