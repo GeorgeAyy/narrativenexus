@@ -4,6 +4,7 @@ import { io } from "socket.io-client";
 import { useCookies } from "react-cookie";
 import Navbar from "../components/Navbar";
 import config from '../config.json';
+import InvalidAccessPage from "../components/invalidaccesspage";
 const DocumentPage = () => {
   const [socket, setSocket] = useState();
   const [cookies] = useCookies(["user"]);
@@ -41,6 +42,7 @@ const DocumentPage = () => {
     };
   }, []);
   useEffect(() => {
+    if(!cookies.user) return;
     console.log("Fetching documents for user ID:", cookies.user._id);
   
     // Make a fetch or axios request to retrieve documents from your backend
@@ -85,6 +87,16 @@ const DocumentPage = () => {
     tmp.innerHTML = html;
     return tmp.textContent || tmp.innerText || "";
   }
+  if(!cookies.user)
+  {
+    return(
+      <div className="divcontainer">
+        <Navbar />
+        <InvalidAccessPage />
+      </div>
+    );
+  }
+
   return (
     <div>
       <Navbar />

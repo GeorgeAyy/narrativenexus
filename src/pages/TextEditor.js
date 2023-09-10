@@ -112,12 +112,14 @@ export default function TextEditor() {
   }, []);
 
   useEffect(() => {
+   
     if (socket == null || !cookies.user) return;
   
     const userId = cookies.user._id;
   
     socket.emit('get-document', { documentId, userId:cookies.user._id }); // Pass userId to the server
     loadDocument(); // Load the document immediately when socket is available
+    
   }, [socket, documentId, loadDocument, cookies.user]);
 
   useEffect(() => {
@@ -147,6 +149,8 @@ export default function TextEditor() {
 }, [socket]);
 
 useEffect(() => {
+  if(! cookies.user) return;
+  
   console.log("Fetching documents for user ID:", cookies.user._id);
 
   // Make a fetch or axios request to retrieve documents from your backend
@@ -172,6 +176,7 @@ useEffect(() => {
       }
     })
     .catch((error) => console.error('Error fetching documents:', error));
+  
 }, [document]);
 
 const wrapperRef = useCallback((wrapper) => {                        // using callback and passing it to our ref
