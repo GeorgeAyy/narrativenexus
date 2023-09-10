@@ -327,3 +327,17 @@ body {
   .edit-icon {
     margin-right: 5px; /* You can adjust the margin as needed */
   }
+  .history-item .save-button {
+    background-color: #343537; /* Set the background color */
+    color: #fff; /* Set the text color */
+    border: none; /* Remove the border */
+    padding: 8px 16px; /* Add padding to the button */
+    cursor: pointer; /* Change cursor to pointer on hover */
+    border-radius: 10px; 
+    margin-left: 10px;
+  }
+  
+  /* Style for the Save button on hover */
+  .history-item .save-button:hover {
+    background-color: #7b7c7a; /* Change the background color on hover */
+  }

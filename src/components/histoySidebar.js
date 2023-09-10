@@ -10,6 +10,7 @@ const HistorySidebar = ({ documents, isOpen, toggleSidebar }) => {
   const [localDocuments, setLocalDocuments] = useState(documents);
   const [editData, setEditData] = useState('');
   const [editedDocumentId, setEditedDocumentId] = useState(null);
+  const [isEditing, setIsEditing] = useState(false); // Add state to track editing mode
 
   useEffect(() => {
     setLocalDocuments(documents);
@@ -108,41 +109,52 @@ const HistorySidebar = ({ documents, isOpen, toggleSidebar }) => {
     <div className={`history-sidebar ${isOpen ? 'open' : ''}`}>
       <h2 className="history-heading">Previous History</h2>
       <ul className="history-list">
-        {documentsToDisplay.map((document) => (
+      {documentsToDisplay.map((document) => (
           <a href={`/documents/${document._id}`} className="history-anchor" key={document.data}>
             <li className="history-item">
-              {editedDocumentId === document._id ? (
+              {isEditing && editedDocumentId === document._id ? (
                 // Display an input field for editing
-                <input
-                  type="text"
-                  value={editData}
-                  onChange={(e) => setEditData(e.target.value)} // Update the edited data
-                  onBlur={() => saveEditedDataToServer(document._id, editData)} // Save the edited data to the server when the input field loses focus
-                  autoFocus // Automatically focus the input field
-                />
+                <div>
+                  <input
+                    type="text"
+                    value={editData}
+                    onChange={(e) => setEditData(e.target.value)} // Update the edited data
+                    autoFocus // Automatically focus the input field
+                  />
+                  <button 
+                  className='save-button'
+                    onClick={(e) => {
+                      e.preventDefault();
+                      saveEditedDataToServer(document._id, editData); // Save the edited data to the server
+                      setIsEditing(false); // Exit edit mode
+                    }}
+                  >
+                    Save
+                  </button>
+                </div>
               ) : (
                 // Display the document content
                 <span>
-                {document.name
-                  ? document.name
-                  : document.data
-                  ? stripHtmlTags(document.data)
-                      .split(' ')
-                      .slice(0, 5)
-                      .join(' ')
-                  : 'Empty'}
-              </span>
-              
+                  {document.name
+                    ? document.name
+                    : document.data
+                    ? stripHtmlTags(document.data)
+                        .split(' ')
+                        .slice(0, 5)
+                        .join(' ')
+                    : 'Empty'}
+                </span>
               )}
               <span className="history-icons">
-                {editedDocumentId !== document._id && (
-                  // Display the edit icon only when not in edit mode
+                {!isEditing && (
                   <FontAwesomeIcon
                     icon={faEdit}
                     className="edit-icon"
                     onClick={(e) => {
-                      e.preventDefault(); // Prevent the default link navigation
-                      setEditedDocumentId(document._id); // Enter edit mode
+                      e.preventDefault();
+                      setIsEditing(true); // Enter edit mode
+                      setEditedDocumentId(document._id);
+                      setEditData(document.name || ''); // Initialize editData with the current name or an empty string
                     }}
                   />
                 )}
@@ -150,7 +162,7 @@ const HistorySidebar = ({ documents, isOpen, toggleSidebar }) => {
                   icon={faTrash}
                   className="delete-icon"
                   onClick={(e) => {
-                    e.preventDefault(); // Prevent the default link navigation
+                    e.preventDefault();
                     handleDelete(document._id);
                   }}
                 />
