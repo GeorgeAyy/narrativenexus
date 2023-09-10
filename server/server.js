@@ -40,9 +40,11 @@ const authRouter = require("./routes/auth.js");
 const historyRouter = require("./routes/history.js");
 const invitesRouter = require("./routes/invites.js");
 const { findById } = require("./models/User");
+const deleteDocumentRouter = require("./routes/history.js");
 app.use("/auth", authRouter);
 app.use("/history", historyRouter);
-app.use("/invites", invitesRouter)
+app.use("/invites", invitesRouter);
+app.use("/history", deleteDocumentRouter);
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
