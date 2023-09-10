@@ -1,9 +1,20 @@
-import React, { useState } from "react";
+import React from "react";
 import '../styles/NotificationSidebar.css';
 
-const NotificationSidebar = ({ isOpen, onClose,notifications }) => {
-//   const [notifications, setNotifications] = useState([]);
+const NotificationSidebar = ({ isOpen, onClose, notifications, sendInvitation, declineInvitation, email }) => {
+  // ...
 
+  const handleAcceptClick = (invitation) => {
+    // Call the sendInvitation function with the necessary parameters
+    const { ownerId, documentId, inviteeEmail } = invitation;
+    sendInvitation(ownerId, documentId, inviteeEmail);
+  };
+
+  const handleDeclineClick = (invitation) => {
+    // Call the declineInvitation function with the necessary parameters
+    const { ownerId, documentId, inviteeEmail } = invitation;
+    declineInvitation(ownerId, documentId, inviteeEmail);
+  };
 
   return (
     <div className={`notification-sidebar ${isOpen ? "open" : ""}`}>
@@ -11,14 +22,14 @@ const NotificationSidebar = ({ isOpen, onClose,notifications }) => {
       <h3>Notifications</h3>
       <div className="notification-content">
         <ul className="notification-list">
-          {notifications && notifications.map((notifications) => (
-            <li key={notifications._id} className="notification-item">
+          {notifications && notifications.map((notification) => (
+            <li key={notification._id} className="notification-item">
               <span className="notification-text">
-                {notifications.inviterId} has invited you to edit document {notifications.documentId}
+                {notification.inviterId} has invited you to edit document {notification.documentId}
               </span>
               <div className="notification-buttons">
-                <button className="notification-button">Accept</button>
-                <button className="notification-button">Decline</button>
+                <button className="notification-button" onClick={() => handleAcceptClick({documentId: notification.documentId,  ownerId: notification.inviterId, inviteeEmail: email})}>Accept</button>
+                <button className="notification-button" onClick={() => handleDeclineClick(notification)}>Decline</button>
               </div>
             </li>
           ))}

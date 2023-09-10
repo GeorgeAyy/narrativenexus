@@ -8,7 +8,6 @@ const cors = require("cors");
 const app = express();
 const session = require("express-session");
 const cookieParser = require("cookie-parser");
-const cheerio = require('cheerio');
 app.use(express.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(
@@ -40,9 +39,13 @@ const authRouter = require("./routes/auth.js");
 const historyRouter = require("./routes/history.js");
 const invitesRouter = require("./routes/invites.js");
 const { findById } = require("./models/User");
+const deleteDocumentRouter = require("./routes/history.js");
+const editDocumentRouter = require("./routes/history.js");
 app.use("/auth", authRouter);
 app.use("/history", historyRouter);
-app.use("/invites", invitesRouter)
+app.use("/invites", invitesRouter);
+app.use("/history", deleteDocumentRouter);
+app.use("/history", editDocumentRouter);
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
@@ -178,18 +181,13 @@ io.on('connection', (socket) => {
     });
   
     socket.on('save-document', async data => {
-      const plainText = stripHtmlTags(data);
-      await Document.findByIdAndUpdate(documentId, { data: plainText });
+      await Document.findByIdAndUpdate(documentId, { data });
     });
   });
   
 
 
 })
-function stripHtmlTags(html) {
-  const $ = cheerio.load(html);
-  return $.text(); // Extract plain text from HTML
-}
 
 
 async function findOrCreateDocument(documentId, userId) {

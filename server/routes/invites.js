@@ -5,7 +5,9 @@ const {
   deleteInvitation,
   deleteUser,
   fetchUsers,
-  receivedInvitations
+  receivedInvitations,
+  acceptInvitation,
+  declineInvitation
 } = require("../controllers/invitesController");
 
 // Route for sending an invitation
@@ -21,5 +23,9 @@ router.delete("/deleteUser", deleteUser);
 router.get("/:documentId/users", fetchUsers);
 
 router.post("/getNotifications",receivedInvitations);
+
+router.post("/acceptInvitation", acceptInvitation);
+
+router.post("/declineInvitation", declineInvitation);
 
 module.exports = router;

@@ -49,6 +49,76 @@ const Navbar = ({ isMenuOpen, handleToggleClick, scrollToSection }) => {
       loadNotifications();
     }
   }, []); // Include 'cookies.user' as a dependency
+  // YourComponent.js
+
+// Function to accept an invitation
+const acceptInvitation = async (ownerId, documentId, inviteeEmail) => {
+  try {
+    const response = await fetch(
+      `http://${config.ip}:5000/invites/acceptInvitation`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ ownerId, documentId, inviteeEmail }),
+      }
+    );
+
+    if (response.ok) {
+      // Invitation accepted successfully, update the UI as needed
+      // For example, remove the notification from the list
+      const updatedNotifications = notification.filter((notification) => {
+        return (
+          notification.inviterId !== ownerId ||
+          notification.documentId !== documentId 
+        );
+      });
+
+      setNotification(updatedNotifications);
+    } else {
+      // Handle the case where accepting the invitation was not successful
+      console.error("Failed to accept invitation");
+    }
+  } catch (error) {
+    console.error("Error accepting invitation:", error);
+  }
+};
+
+// Function to decline an invitation
+const declineInvitation = async (ownerId, documentId, inviteeEmail) => {
+  try {
+    const response = await fetch(
+      `http://${config.ip}:5000/invites/declineInvitation`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ ownerId, documentId, inviteeEmail }),
+      }
+    );
+
+    if (response.ok) {
+      // Invitation declined successfully, update the UI as needed
+      // For example, remove the notification from the list
+      const updatedNotifications = notification.filter((notification) => {
+        return (
+          notification.inviterId !== ownerId ||
+          notification.documentId !== documentId 
+        );
+      });
+
+      setNotification(updatedNotifications);
+    } else {
+      // Handle the case where declining the invitation was not successful
+      console.error("Failed to decline invitation");
+    }
+  } catch (error) {
+    console.error("Error declining invitation:", error);
+  }
+};
+
 
   if(location.pathname ==='/')
   {
@@ -80,6 +150,14 @@ const Navbar = ({ isMenuOpen, handleToggleClick, scrollToSection }) => {
             <li className={`item button ${getItemClassName()}`}>
               <a onClick={handleLogoutClick}>Log Out</a>
             </li>
+            <NotificationSidebar
+      isOpen={showNotifications}
+      onClose={toggleNotifications}
+      notifications={notification}
+      sendInvitation={acceptInvitation}
+      declineInvitation={declineInvitation}
+      email={cookies.user.email}
+    />
           </>
         ) : (
           <>
@@ -95,14 +173,13 @@ const Navbar = ({ isMenuOpen, handleToggleClick, scrollToSection }) => {
           <span className="bars"></span>
         </li>
         <li className={`item`}>
-            <button onClick={toggleNotifications}>Notifications</button>
+            <button  onClick={toggleNotifications}>Notifications</button>
           </li>
       </ul>
-      <NotificationSidebar
-        isOpen={showNotifications}
-        onClose={toggleNotifications}
-        notifications={notification}
-      />
+      
+
+      
+      
     </nav>
     )
   }
@@ -131,6 +208,7 @@ const Navbar = ({ isMenuOpen, handleToggleClick, scrollToSection }) => {
               <a onClick={handleLogoutClick}>Log Out</a>
             </li>
           </>
+          
         ) : (
           <>
         <li className={`item button ${getItemClassName()}`}>

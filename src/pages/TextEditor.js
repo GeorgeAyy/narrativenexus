@@ -145,12 +145,14 @@ export default function TextEditor() {
   }, []);
 
   useEffect(() => {
+   
     if (socket == null || !cookies.user) return;
 
     const userId = cookies.user._id;
 
     socket.emit('get-document', { documentId, userId: cookies.user._id }); // Pass userId to the server
     loadDocument(); // Load the document immediately when socket is available
+    
   }, [socket, documentId, loadDocument, cookies.user]);
 
   useEffect(() => {
@@ -177,7 +179,33 @@ export default function TextEditor() {
     return () => {
       socket.off('receive-history');
     };
-  }, [socket]);
+
+
+}, [socket]);
+
+useEffect(() => {
+  if(! cookies.user) return;
+  
+  console.log("Fetching documents for user ID:", cookies.user._id);
+
+  // Make a fetch or axios request to retrieve documents from your backend
+  fetch(`http://${config.ip}:5000/history/retrieveDocuments`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ userId: cookies.user._id }), // Replace with the actual user ID
+  })
+    .then((response) => {
+      if (!response.ok) {
+        console.error('Response not ok:', response.status, response.statusText);
+        return Promise.reject('Fetch failed');
+      }
+      return response.json();
+    })
+    .then((data) => {
+      console.log("Data received from server:", data);
+
 
   useEffect(() => {
     console.log("Fetching documents for user ID:", cookies.user._id);
@@ -190,6 +218,7 @@ export default function TextEditor() {
       },
       body: JSON.stringify({ userId: cookies.user._id }), // Replace with the actual user ID
     })
+
       .then((response) => {
         if (!response.ok) {
           console.error('Response not ok:', response.status, response.statusText);
@@ -199,6 +228,7 @@ export default function TextEditor() {
       })
       .then((data) => {
         console.log("Data received from server:", data);
+
 
         if (data.documents) {
           setDocuments(data.documents);
