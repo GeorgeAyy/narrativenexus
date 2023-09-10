@@ -3,18 +3,25 @@ import React from "react";
 import {useLocation} from 'react-router-dom';
 import { useCookies,removeCookie } from "react-cookie";
 import image from "../images/logo.png";
+import NotificationSidebar from "./NotificationSidebar";
+import { useState } from "react";
 const Navbar = ({ isMenuOpen, handleToggleClick, scrollToSection }) => {
   const getItemClassName = () => {
     return isMenuOpen ? "active" : "";
   };
   const location = useLocation();
   const [cookies, setCookie, removeCookie] = useCookies(['user']);
+  const [showNotifications, setShowNotifications] = useState(false); // Add state to manage notification sidebar visibility
   const handleLogoutClick = (e) => {
     e.preventDefault();
     removeCookie('user', { path: '/' });
     window.location.href = '/';
   };
-  
+  const toggleNotifications = () => {
+    console.log("Toggling notifications");
+    setShowNotifications(!showNotifications);
+  };
+
 
   if(location.pathname ==='/')
   {
@@ -60,7 +67,14 @@ const Navbar = ({ isMenuOpen, handleToggleClick, scrollToSection }) => {
         <li className={`toggle ${getItemClassName()}`} onClick={handleToggleClick}>
           <span className="bars"></span>
         </li>
+        <li className={`item`}>
+            <button onClick={toggleNotifications}>Notifications</button>
+          </li>
       </ul>
+      <NotificationSidebar
+        isOpen={showNotifications}
+        onClose={toggleNotifications}
+      />
     </nav>
     )
   }
