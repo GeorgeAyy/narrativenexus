@@ -1,0 +1,41 @@
+/* CSS for NotificationSidebar */
+.notification-sidebar {
+  position: fixed;
+  top: 0;
+  right: -300px; /* Start with the sidebar off-screen */
+  width: 300px;
+  height: 100%;
+  background-color: #fff;
+  transition: right 0.3s ease-in-out;
+  z-index: 1000; /* Adjust the z-index value as needed */
+  
+}
+
+.notification-sidebar.open {
+  right: 0; /* Slide the sidebar into view when it's open */
+}
+
+.notification-sidebar button {
+  background-color: #ff5733;
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  cursor: pointer;
+  margin-top: 20px;
+}
+
+.notification-sidebar button:hover {
+  background-color: #ff4525;
+}
+
+.notification-content {
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2); /* Add a box shadow to the content */
+  padding: 20px;
+  margin-top: 20px;
+  border-radius: 10px;
+}
+.notification-sidebar h3 {
+  font-size: 18px;
+  margin: 10px 0 0 10px;
+  color: #333;
+}
