@@ -266,7 +266,7 @@ const wrapperRef = useCallback((wrapper) => {                        // using ca
       const data = {
         text: text,
       };
-      const response = await fetch(`http://127.0.0.1:8000/api/autocomplete/`, {
+      const response = await fetch(`http://${config.ip}:8000/api/autocomplete/`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -365,7 +365,7 @@ const wrapperRef = useCallback((wrapper) => {                        // using ca
                       text: selection,
                     };
                     const response = await fetch(
-                      `http://127.0.0.1:8000/api/grammar-correction/`,
+                      `http://${config.ip}:8000/api/grammar-correction/`,
                       {
                         method: "POST", // *GET, POST, PUT, DELETE, etc.
                         headers: {
@@ -432,7 +432,7 @@ const wrapperRef = useCallback((wrapper) => {                        // using ca
                       action: 'summarize',
                     };
                     const response = await fetch(
-                      `http://127.0.0.1:8000/api/process_text/`, // Change the URL to your summarization API endpoint
+                      `http://${config.ip}:8000/api/process_text/`, // Change the URL to your summarization API endpoint
                       {
                         method: "POST",
                         headers: {
@@ -467,7 +467,7 @@ const wrapperRef = useCallback((wrapper) => {                        // using ca
                       action: 'paraphrase',
                     };
                     const response = await fetch(
-                      `http://127.0.0.1:8000/api/process_text/`, // Change the URL to your summarization API endpoint
+                      `http://${config.ip}:8000/api/process_text/`, // Change the URL to your summarization API endpoint
                       {
                         method: "POST",
                         headers: {

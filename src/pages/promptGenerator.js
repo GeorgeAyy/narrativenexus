@@ -41,7 +41,7 @@ const [cookies, setCookie, removeCookie] = useCookies(["user"]);
     console.log(promptText);
     try {
       const response = await fetch(
-        `http://127.0.0.1:8000/api/generate_prompt/`,
+        `http://${config.ip}:8000/api/generate_prompt/`,
         {
           method: "POST",
           headers: {

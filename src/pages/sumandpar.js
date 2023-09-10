@@ -52,7 +52,7 @@ export default function SumAndPar() {
 
   const processText = async (text, action) => {
     try {
-      const response = await fetch(`http://127.0.0.1:8000/api/process_text/`, {
+      const response = await fetch(`http://${config.ip}:8000/api/process_text/`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
