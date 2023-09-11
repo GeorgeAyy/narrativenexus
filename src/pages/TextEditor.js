@@ -60,6 +60,7 @@ export default function TextEditor() {
   const [documentOwner, setDocumentOwner] = useState(null); // To store the document owner
   const [documentContent, setDocumentContent] = useState('');
   const [hasControl, setHasControl] = useState(null); // To store the document owner
+  const [documentCollaborators, setDocumentCollaborators] = useState([]); // To store the document owner
   const toggleSidebar = () => {
     setSidebarOpen(!sidebarOpen);
   };
@@ -74,13 +75,18 @@ export default function TextEditor() {
   const loadDocument = useCallback(() => {
     if (socket == null) return;
 
-    socket.once('load-document', ({ document, owner,hasControl }) => { // Receive document and owner
+    socket.once('load-document', ({ document, owner, hasControl, collaborators }) => { // Receive document and owner
       console.log(`Loaded document: ${document}`);
       setEditorLoad(document);
       setHasControl(hasControl)
       // Now you have access to both document and owner in your state
       setDocumentOwner(owner); // Assuming you have a state variable to store the owner
       setDocumentContent(document);
+      console.log("Owner: " + owner)
+      collaborators.push(owner);
+      console.log("updatedCollaborators: " + collaborators)
+      setDocumentCollaborators(collaborators);
+
     });
   }, [socket]);
 
@@ -216,12 +222,6 @@ export default function TextEditor() {
       .catch((error) => console.error('Error fetching documents:', error));
   }, [document]);
 
-  const wrapperRef = useCallback((wrapper) => {                        // using callback and passing it to our ref
-    // disable the editor until we load the document
-
-
-
-  }, [])
 
   const handleEditorChange = (content) => {
     console.log('Content was updated:', content);
@@ -338,13 +338,22 @@ export default function TextEditor() {
     }
   };
 
-  if (!cookies.user) {
+
+
+  const isUserCollaborator = documentCollaborators.includes(cookies.user._id);
+  console.log("isUserCollaborator: " + isUserCollaborator)
+  console.log("cookies.user._id: " + cookies.user._id)
+  console.log("documentCollaborators: " + documentCollaborators)
+  console.log("hasControl: " + hasControl)
+  if ((!cookies.user || !isUserCollaborator)) {
+
     return (
       <div className="divcontainer">
         <Navbar />
         <InvalidAccessPage />
       </div>
     );
+
   } else {
     return (
       <div>
@@ -385,7 +394,7 @@ export default function TextEditor() {
           </span>
           <div className="editor-page">
             {console.log("the document owner is: " + cookies.user._id)}
-            {hasControl === cookies.user._id ?(
+            {hasControl === cookies.user._id ? (
               <Editor
                 apiKey="bw59pp70ggqha1u9xgyiva27d1vrdvvdar1elkcj2gd51r3q"
                 initialValue={editorLoad}
