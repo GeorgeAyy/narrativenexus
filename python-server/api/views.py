@@ -19,10 +19,10 @@ openai.api_base = "https://trippee.openai.azure.com"
 openai.api_version = "2023-03-15-preview"
 openai.api_key = config_data['apikey']
 
-@csrf_exempt
+
 class GrammarCorrectionView(APIView):
     def post(self, request):
-        data = json.loads(request.body)
+        data=json.loads(request.body)
         text = data['text']
         soup = BeautifulSoup(text, 'html.parser')
         plain_text = soup.get_text()
@@ -46,7 +46,6 @@ class GrammarCorrectionView(APIView):
             'matches': matches
         }
         return Response(response_data, status=status.HTTP_200_OK)
-
 
 @csrf_exempt
 def process_text(request):
