@@ -18,7 +18,7 @@ const Section = ({ id, title, content,href,button }) => {
         <div className="image-container">
           
           <a href={href} style={{textDecoration:"none"}}>
-          <li id="listItem" style={{width:"60%"}}>
+          <li id="listItem" style={{width:"60%", margin:"auto"}}>
               <a>{button}</a>
             </li>
           </a>
