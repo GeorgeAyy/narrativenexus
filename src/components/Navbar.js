@@ -174,7 +174,7 @@ const declineInvitation = async (ownerId, documentId, inviteeEmail) => {
           <span className="bars"></span>
         </li>
         <li className={`item`}>
-            <button  onClick={toggleNotifications}>Notifications</button>
+            <button  class="NotificationBtn" onClick={toggleNotifications}>Notifications</button>
           </li>
       </ul>
       

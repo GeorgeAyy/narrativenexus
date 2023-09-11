@@ -18,7 +18,7 @@ const NotificationSidebar = ({ isOpen, onClose, notifications, sendInvitation, d
 
   return (
     <div className={`notification-sidebar ${isOpen ? "open" : ""}`}>
-  <button onClick={onClose}>Close</button>
+  <button className= "closeButton"onClick={onClose}>Close</button>
   <h3>Notifications</h3>
   <div className="notification-content">
     <ul className="notification-list">
@@ -29,7 +29,7 @@ const NotificationSidebar = ({ isOpen, onClose, notifications, sendInvitation, d
           </span>
           <div className="notification-buttons">
             <button
-              className="notification-button"
+              className="acceptBtn"
               onClick={() => handleAcceptClick({
                 documentId: notification.documentId,
                 ownerId: notification.inviterId, // Assuming inviterId contains the owner's ID
@@ -38,7 +38,7 @@ const NotificationSidebar = ({ isOpen, onClose, notifications, sendInvitation, d
             >
               Accept
             </button>
-            <button className="notification-button" onClick={() => handleDeclineClick(notification)}>Decline</button>
+            <button className="declineBtn" onClick={() => handleDeclineClick(notification)}>Decline</button>
           </div>
         </li>
       ))}

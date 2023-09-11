@@ -155,7 +155,7 @@ export default function TextEditor() {
     }
   };
   
-  const snatchControl = async (userId) => {
+  const snatchControl = async () => {
     
     try {
       const response = await fetch(`http://${config.ip}:5000/documentRoute/snatchControl`, {
