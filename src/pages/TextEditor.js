@@ -217,7 +217,7 @@ export default function TextEditor() {
     socket.emit('get-document', { documentId, userId: cookies.user._id }); // Pass userId to the server
     loadDocument(); // Load the document immediately when socket is available
 
-  }, [socket, documentId, loadDocument, cookies.user._id]);
+  }, [socket, documentId, loadDocument]);
 
   useEffect(() => {
     console.log('saving document');
@@ -396,14 +396,32 @@ export default function TextEditor() {
     }
   };
 
+  var isUserCollaborator = false;
+  if (!cookies.user) {
+
+    return (
+      <div className="divcontainer">
+        <Navbar />
+        <InvalidAccessPage />
+      </div>
+    );
+  }
+  else {
+
+    isUserCollaborator = documentCollaborators.includes(cookies.user._id);
+    console.log("isUserCollaborator: " + isUserCollaborator)
+    console.log("cookies.user._id: " + cookies.user._id)
+    console.log("documentCollaborators: " + documentCollaborators)
+    console.log("hasControl: " + hasControl)
+
+  }
 
 
-  const isUserCollaborator = documentCollaborators.includes(cookies.user._id);
-  console.log("isUserCollaborator: " + isUserCollaborator)
-  console.log("cookies.user._id: " + cookies.user._id)
-  console.log("documentCollaborators: " + documentCollaborators)
-  console.log("hasControl: " + hasControl)
-  if ((!cookies.user || !isUserCollaborator)) {
+
+
+  if (!isUserCollaborator) {
+
+
 
     return (
       <div className="divcontainer">
