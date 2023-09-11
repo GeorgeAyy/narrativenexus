@@ -18,24 +18,34 @@ const NotificationSidebar = ({ isOpen, onClose, notifications, sendInvitation, d
 
   return (
     <div className={`notification-sidebar ${isOpen ? "open" : ""}`}>
-      <button onClick={onClose}>Close</button>
-      <h3>Notifications</h3>
-      <div className="notification-content">
-        <ul className="notification-list">
-          {notifications && notifications.map((notification) => (
-            <li key={notification._id} className="notification-item">
-              <span className="notification-text">
-                {notification.inviterId} has invited you to edit document {notification.documentId}
-              </span>
-              <div className="notification-buttons">
-                <button className="notification-button" onClick={() => handleAcceptClick({documentId: notification.documentId,  ownerId: notification.inviterId, inviteeEmail: email})}>Accept</button>
-                <button className="notification-button" onClick={() => handleDeclineClick(notification)}>Decline</button>
-              </div>
-            </li>
-          ))}
-        </ul>
-      </div>
-    </div>
+  <button onClick={onClose}>Close</button>
+  <h3>Notifications</h3>
+  <div className="notification-content">
+    <ul className="notification-list">
+      {notifications && notifications.map((notification) => (
+        <li key={notification._id} className="notification-item">
+          <span className="notification-text">
+            {notification.inviterName} has invited you to edit document {notification.documentId}
+          </span>
+          <div className="notification-buttons">
+            <button
+              className="notification-button"
+              onClick={() => handleAcceptClick({
+                documentId: notification.documentId,
+                ownerId: notification.inviterId, // Assuming inviterId contains the owner's ID
+                inviteeEmail: email // Assuming email contains the invitee's email
+              })}
+            >
+              Accept
+            </button>
+            <button className="notification-button" onClick={() => handleDeclineClick(notification)}>Decline</button>
+          </div>
+        </li>
+      ))}
+    </ul>
+  </div>
+</div>
+
   );
 };
 

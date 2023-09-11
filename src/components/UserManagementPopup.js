@@ -3,7 +3,7 @@ import '../styles/App.css';
 import config from '../config.json';
 import { useCookies, removeCookie } from "react-cookie";
 
-const UserManagementPopup = ({ ownerId, documentId, closeUserManagementPopup }) => {
+const UserManagementPopup = ({ ownerId, documentId, closeUserManagementPopup,giveControl,snatchControl }) => {
   const [users, setUsers] = useState([]);
   const [newUsername, setNewUsername] = useState('');
   const [invitationMessage, setInvitationMessage] = useState('');
@@ -12,7 +12,15 @@ const UserManagementPopup = ({ ownerId, documentId, closeUserManagementPopup }) 
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const response = await fetch(`http://${config.ip}:5000/invites/${documentId}/users`);
+        const response = await fetch(`http://${config.ip}:5000/invites/fetchUsers`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ documentId }), // Include documentId in the request body
+            });
+            
+            
         if (response.ok) {
           const data = await response.json();
           setUsers(data.collaborators); // Assuming the collaborators data is returned from the API
@@ -80,11 +88,20 @@ const UserManagementPopup = ({ ownerId, documentId, closeUserManagementPopup }) 
     <div className="user-management-popup">
       <h2>User Management</h2>
       <ul>
+        
+        {console.log("Users are:" + users)}
+
         {users.map((user) => (
-          <li key={user.id}>
-            <span className="username">{user.username}</span>
+          <li key={user._id}>
+            <span className="username">{user.name}</span>
             <button className="delete-button" onClick={() => deleteUser(user.id)}>
               Remove
+            </button>
+            <button className="give-control-button" onClick={() => giveControl(user.id)}>
+              Give Control
+            </button>
+            <button className="snatch-control-button" onClick={() => snatchControl(user.id)}>
+              Snatch Control
             </button>
           </li>
         ))}
