@@ -111,7 +111,46 @@ export default function TextEditor() {
   }, [socket]);
 
 
-
+  const giveControl = async (userId) => {
+    try {
+      const response = await fetch(`http://${config.ip}:5000/documents/giveControl`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ documentId, userId }),
+      });
+  
+      if (response.ok) {
+        
+      } else {
+        console.error('Failed to give control');
+      }
+    } catch (error) {
+      console.error('Error giving control:', error);
+    }
+  };
+  
+  const snatchControl = async (userId) => {
+    try {
+      const response = await fetch(`http://${config.ip}:5000/documents/snatchControl`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ documentId, userId }),
+      });
+  
+      if (response.ok) {
+        
+      } else {
+        console.error('Failed to snatch control');
+      }
+    } catch (error) {
+      console.error('Error snatching control:', error);
+    }
+  };
+  
 
   const openUserManagementPopup = () => {
     setIsUserManagementPopupOpen(true);
@@ -560,7 +599,7 @@ export default function TextEditor() {
 
         {
           isUserManagementPopupOpen && (
-            <UserManagementPopup ownerId={cookies.user._id} documentId={documentId} closeUserManagementPopup={closeUserManagementPopup} />
+            <UserManagementPopup ownerId={cookies.user._id} documentId={documentId} closeUserManagementPopup={closeUserManagementPopup} giveControl={giveControl}  snatchControl={snatchControl}/>
           )
         }
       </div >

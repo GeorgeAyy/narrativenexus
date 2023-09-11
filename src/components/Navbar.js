@@ -40,6 +40,7 @@ const Navbar = ({ isMenuOpen, handleToggleClick, scrollToSection }) => {
             }
           );
           const data = await response.json();
+          console.log("Notifications loaded: " + data.receivedInvitations)
           setNotification(data.receivedInvitations);
           console.log(data);
         } catch (error) {

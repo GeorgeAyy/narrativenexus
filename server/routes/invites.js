@@ -20,7 +20,7 @@ router.post("/deleteInvitation", deleteInvitation);
 router.delete("/deleteUser", deleteUser);
 
 // Route for fetching collaborators for a document
-router.get("/:documentId/users", fetchUsers);
+router.post("/fetchUsers", fetchUsers);
 
 router.post("/getNotifications",receivedInvitations);
 

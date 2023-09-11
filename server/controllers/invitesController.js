@@ -101,7 +101,6 @@ exports.deleteInvitation = async (req, res) => {
   }
 };
 
-// Function to delete a user from the collaborators list in the Document model
 exports.deleteUser = async (req, res) => {
   try {
     const { documentId, userId } = req.body;
@@ -116,20 +115,44 @@ exports.deleteUser = async (req, res) => {
     // Remove the user from the collaborators list
     document.collaborators = document.collaborators.filter((collaborator) => collaborator !== userId);
 
+    const user = await User.findById(userId);
+
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    const matchingInvitation = user.receivedInvitations.find(invitation => invitation.documentId === documentId);
+    console.log("Owner Id: "+ matchingInvitation.inviterId);
+    const owner = await User.findById(matchingInvitation.inviterId);
+    console.log("Owner: "+ owner);
+    // Remove the invitation from the user's receivedInvitations
+    user.receivedInvitations = user.receivedInvitations.filter((invitation) => invitation.documentId !== documentId);
+
+    // Remove the invitation from the owner's sentInvitations
+    owner.sentInvitations = owner.sentInvitations.filter((invitation) => invitation.documentId !== documentId);
+
+    // Save the updated users
+    await user.save();
+    await owner.save();
     // Save the updated document
     await document.save();
 
-    res.status(200).json({ message: 'User removed from collaborators list' });
+
+
+
+    res.status(200).json({ message: 'User removed from collaborators list, and invitations removed' });
   } catch (error) {
-    console.error('Error removing user from collaborators list:', error);
-    res.status(500).json({ error: 'An error occurred while removing the user' });
+    console.error('Error removing user and invitations:', error);
+    res.status(500).json({ error: 'An error occurred while removing the user and invitations' });
   }
 };
+
+
 
 // Function to fetch collaborators for a document
 exports.fetchUsers = async (req, res) => {
   try {
-    const { documentId } = req.params;
+    const { documentId } = req.body;
 
     // Find the document by its ID
     const document = await Document.findById(documentId);
@@ -138,8 +161,20 @@ exports.fetchUsers = async (req, res) => {
       return res.status(404).json({ error: 'Document not found' });
     }
 
-    // Return the list of collaborators
-    res.status(200).json({ collaborators: document.collaborators });
+    // Get the IDs of collaborators from the document
+    const collaboratorIds = document.collaborators;
+
+    // Fetch the users based on the collaborator IDs
+    const users = await User.find({ _id: { $in: collaboratorIds } }, 'name');
+
+    // Create an array of collaborator objects with names
+    const collaboratorsWithNames = users.map(user => ({
+      id: user._id,
+      name: user.name,
+    }));
+
+    // Return the list of collaborators with names
+    res.status(200).json({ collaborators: collaboratorsWithNames });
   } catch (error) {
     console.error('Error fetching collaborators:', error);
     res.status(500).json({ error: 'An error occurred while fetching collaborators' });
@@ -151,18 +186,33 @@ exports.receivedInvitations = async (req, res) => {
   try {
     const { userId } = req.body;
     const user = await User.findById(userId);
+
     if (!user) {
       return res.status(404).json({ error: "User not found" });
     }
+
     const receivedInvitations = user.receivedInvitations;
-    res.status(200).json({ receivedInvitations });
+    const inviterIds = receivedInvitations.map(invitation => invitation.inviterId);
+
+    // Fetch the names of the inviters
+    const inviters = await User.find({ _id: { $in: inviterIds } }, 'name');
+
+    // Combine received invitations with inviter names
+    const invitationsWithNames = receivedInvitations.map(invitation => {
+      const inviter = inviters.find(user => user._id.toString() === invitation.inviterId.toString());
+      return {
+        ...invitation.toObject(),
+        inviterName: inviter ? inviter.name : 'Unknown', // Set to 'Unknown' if inviter not found
+      };
+    });
+
+    res.status(200).json({ receivedInvitations: invitationsWithNames });
   } catch (error) {
     console.error("Error fetching invitations:", error);
-    res
-      .status(500)
-      .json({ error: "An error occurred while fetching invitations" });
+    res.status(500).json({ error: "An error occurred while fetching invitations" });
   }
 };
+
 
 // invitesController.js
 
