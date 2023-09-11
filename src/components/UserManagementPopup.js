@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import '../styles/App.css';
 import config from '../config.json';
+import { useCookies, removeCookie } from "react-cookie";
 
-
-const UserManagementPopup = ({ ownerId, documentId, closeUserManagementPopup, giveControl, snatchControl }) => {
+const UserManagementPopup = ({ ownerId, documentId, closeUserManagementPopup,giveControl,snatchControl }) => {
   const [users, setUsers] = useState([]);
+  const [newUsername, setNewUsername] = useState('');
   const [invitationMessage, setInvitationMessage] = useState('');
-
+  const [cookies, setCookie, removeCookie] = useCookies(['user']);
   // Fetch users from the backend when the component mounts
   useEffect(() => {
     const fetchUsers = async () => {
@@ -15,11 +16,11 @@ const UserManagementPopup = ({ ownerId, documentId, closeUserManagementPopup, gi
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ documentId }), // Include documentId in the request body
-        });
-
-
+            },
+            body: JSON.stringify({ documentId }), // Include documentId in the request body
+            });
+            
+            
         if (response.ok) {
           const data = await response.json();
           setUsers(data.collaborators); // Assuming the collaborators data is returned from the API
@@ -30,10 +31,10 @@ const UserManagementPopup = ({ ownerId, documentId, closeUserManagementPopup, gi
         console.error('Error fetching users:', error);
       }
     };
-
+  
     fetchUsers();
   }, [documentId]);
-
+  
 
 
   const deleteUser = async (userId) => {
@@ -45,7 +46,7 @@ const UserManagementPopup = ({ ownerId, documentId, closeUserManagementPopup, gi
         },
         body: JSON.stringify({ documentId, userId }), // Include documentId and userId in the request body
       });
-
+  
       if (response.ok) {
         const updatedUsers = users.filter((user) => user.id !== userId);
         setUsers(updatedUsers);
@@ -57,7 +58,7 @@ const UserManagementPopup = ({ ownerId, documentId, closeUserManagementPopup, gi
       console.error('Error deleting user:', error);
     }
   };
-
+  
 
   const inviteUserByEmail = async () => {
     try {
@@ -87,7 +88,7 @@ const UserManagementPopup = ({ ownerId, documentId, closeUserManagementPopup, gi
     <div className="user-management-popup">
       <h2>User Management</h2>
       <ul>
-
+        
         {console.log("Users are:" + users)}
 
         {users.map((user) => (
@@ -99,13 +100,13 @@ const UserManagementPopup = ({ ownerId, documentId, closeUserManagementPopup, gi
             <button className="give-control-button" onClick={() => giveControl(user.id)}>
               Give Control
             </button>
-
+            
           </li>
-
+          
         ))}
         <button className="snatch-control-button" onClick={() => snatchControl()}>
-          Snatch Control
-        </button>
+              Snatch Control
+            </button>
       </ul>
       <div className="invite-section">
         <input
