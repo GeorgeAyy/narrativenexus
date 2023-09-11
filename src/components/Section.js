@@ -10,17 +10,19 @@ const Section = ({ id, title, content,href,button }) => {
         </div>
         <div className="lowersection">
           <p>{content.lower}</p>
-          <a href={href}>
-          <button className="btn" style={{ marginTop: '25px', fontSize: '17px'  }}>{button}</button>
-          </a>
+          
           
         </div>
       </div>
       <div className="leftpart">
         <div className="image-container">
-          <a href={href}>
-            <img className="sectionimage" src={title} alt={id} />
+          
+          <a href={href} style={{textDecoration:"none"}}>
+          <li id="listItem" style={{width:"60%"}}>
+              <a>{button}</a>
+            </li>
           </a>
+          
         </div>
       </div>
     </div>
