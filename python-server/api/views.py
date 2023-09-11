@@ -22,37 +22,30 @@ openai.api_key = config_data['apikey']
 @csrf_exempt
 class GrammarCorrectionView(APIView):
     def post(self, request):
-        try:
-            text = request.data.get('text')
-            
-            # Debugging: Print the received text
-            print(f'Received text: {text}')
-            
-            soup = BeautifulSoup(text, 'html.parser')
-            plain_text = soup.get_text()
+        data = json.loads(request.body)
+        text = data['text']
+        soup = BeautifulSoup(text, 'html.parser')
+        plain_text = soup.get_text()
 
-            # Perform grammar correction
-            language_tool = language_tool_python.LanguageTool('en-US')
-            matches = language_tool.check(plain_text)
-            correctText = language_tool.correct(plain_text)
+        # Perform grammar correction
+        language_tool = language_tool_python.LanguageTool(
+            'en-US')
+        # text = 'A sentence with a error in the Hitchhiker’s Guide tot he Galaxy'
+        matches = language_tool.check(plain_text)
+        correctText = language_tool.correct(plain_text)
 
-            # Print out the values of variables
-            print(f'text: {text}')
-            print(f'matches: {matches}')
-            print(f'correctText: {correctText}')
+        # Print out the values of variables
+        print(f'text: {text}')
+        print(f'matches: {matches}')
+        print(f'correctText: {correctText}')
 
-            # Return the corrected text in the response
-            response_data = {
-                'text': text,
-                'corrected_text': correctText,
-                'matches': matches
-            }
-            return Response(response_data, status=status.HTTP_200_OK)
-        
-        except Exception as e:
-            # Debugging: Print any exceptions that occur
-            print(f'An error occurred: {str(e)}')
-            return Response({'error': 'An error occurred'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        # Return the corrected text in the response
+        response_data = {
+            'text': text,
+            'corrected_text': correctText,
+            'matches': matches
+        }
+        return Response(response_data, status=status.HTTP_200_OK)
 
 
 @csrf_exempt
@@ -131,24 +124,24 @@ def generate_prompt(request):
 @csrf_exempt
 def autocomplete(request):
 
-    data = json.loads(request.body)
-    text = data['text']
-    print(f'text: {text}')
-    soup = BeautifulSoup(text, 'html.parser')
-    plain_text = soup.get_text()
-    # Debugging: Print the received text before sending it to OpenAI
-    print(f'Received text: {plain_text}')
+        data = json.loads(request.body)
+        text = data['text']
+        print(f'text: {text}')
+        soup = BeautifulSoup(text, 'html.parser')
+        plain_text = soup.get_text()
+        # Debugging: Print the received text before sending it to OpenAI
+        print(f'Received text: {plain_text}')
 
-    response = openai.ChatCompletion.create(
-        engine="gpt-35-turbo",
-        temperature=1,  # You can set the temperature to control the randomness of the story
-        max_tokens=50,
-        messages=[
-            {"role": "system", "content": "your job is to be an auto complete engine. complete the following with a 7 words max and if you encounter any kind of error or something that you can't complete or something that you do not understand just return nothing. Never answer with more than 7 words. DO NOT ASK FOR MORE CONTEXT be creative"},
-            {"role": "user", "content": plain_text}
-        ]
-    )
+        response = openai.ChatCompletion.create(
+            engine="gpt-35-turbo",
+            temperature=1,  # You can set the temperature to control the randomness of the story
+            max_tokens=50,
+            messages=[
+                {"role": "system", "content": "you are an autocomplete engine, give me a word only one word and not more that would autocomplete this text "},
+                {"role": "user", "content": plain_text}
+            ]
+        )
 
-    # Debugging: Print the generated response from OpenAI
-    print(f'Response from OpenAI: {response.choices[0].message.content}')
-    return HttpResponse(json.dumps(response.choices[0].message.content + "\n"))
+        # Debugging: Print the generated response from OpenAI
+        print(f'Response from OpenAI: {response.choices[0].message.content}')
+        return HttpResponse(json.dumps(response.choices[0].message.content + "\n"))
