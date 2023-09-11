@@ -19,32 +19,40 @@ openai.api_base = "https://trippee.openai.azure.com"
 openai.api_version = "2023-03-15-preview"
 openai.api_key = config_data['apikey']
 
-
+@csrf_exempt
 class GrammarCorrectionView(APIView):
     def post(self, request):
-        text = request.data.get('text')
-        soup = BeautifulSoup(text, 'html.parser')
-        plain_text = soup.get_text()
+        try:
+            text = request.data.get('text')
+            
+            # Debugging: Print the received text
+            print(f'Received text: {text}')
+            
+            soup = BeautifulSoup(text, 'html.parser')
+            plain_text = soup.get_text()
 
-        # Perform grammar correction
-        language_tool = language_tool_python.LanguageTool(
-            'en-US')
-        # text = 'A sentence with a error in the Hitchhiker’s Guide tot he Galaxy'
-        matches = language_tool.check(plain_text)
-        correctText = language_tool.correct(plain_text)
+            # Perform grammar correction
+            language_tool = language_tool_python.LanguageTool('en-US')
+            matches = language_tool.check(plain_text)
+            correctText = language_tool.correct(plain_text)
 
-        # Print out the values of variables
-        print(f'text: {text}')
-        print(f'matches: {matches}')
-        print(f'correctText: {correctText}')
+            # Print out the values of variables
+            print(f'text: {text}')
+            print(f'matches: {matches}')
+            print(f'correctText: {correctText}')
 
-        # Return the corrected text in the response
-        response_data = {
-            'text': text,
-            'corrected_text': correctText,
-            'matches': matches
-        }
-        return Response(response_data, status=status.HTTP_200_OK)
+            # Return the corrected text in the response
+            response_data = {
+                'text': text,
+                'corrected_text': correctText,
+                'matches': matches
+            }
+            return Response(response_data, status=status.HTTP_200_OK)
+        
+        except Exception as e:
+            # Debugging: Print any exceptions that occur
+            print(f'An error occurred: {str(e)}')
+            return Response({'error': 'An error occurred'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 @csrf_exempt
