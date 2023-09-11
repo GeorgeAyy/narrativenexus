@@ -24,7 +24,7 @@ class GrammarCorrectionView(APIView):
     def post(self, request):
         try:
             data = json.loads(request.body)
-            text = data['text']
+            text = data.get('text')
             
             # Debugging: Print the received text
             print(f'Received text: {text}')
@@ -35,11 +35,22 @@ class GrammarCorrectionView(APIView):
             # Perform grammar correction
             language_tool = language_tool_python.LanguageTool('en-US')
             matches = language_tool.check(plain_text)
+            
+            # Debugging: Print the type and length of matches
+            print(f'Type of matches: {type(matches)}')
+            print(f'Number of matches: {len(matches)}')
+
             correctText = language_tool.correct(plain_text)
 
             # Debugging: Print out the values of variables
             print(f'text: {text}')
-            print(f'matches: {matches}')
+            
+            # Check if matches is iterable before trying to access it
+            if isinstance(matches, list):
+                print(f'matches: {matches}')
+            else:
+                print(f'matches is not a list: {matches}')
+
             print(f'correctText: {correctText}')
 
             # Return the corrected text in the response
