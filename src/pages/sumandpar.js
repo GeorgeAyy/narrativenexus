@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from "react";
 import TextForm from "./TextForm";
 import Output from "../components/Output";
-import axios from "axios";
+
 import Navbar from "../components/Navbar";
 import "../styles/sumandpar.css";
-import { useCookies, removeCookie } from "react-cookie";
+import { useCookies } from "react-cookie";
 import InvalidAccessPage from "../components/invalidaccesspage";
 import config from "../config.json";
 export default function SumAndPar() {
-  const [cookies, setCookie, removeCookie] = useCookies(["user"]);
+  const [cookies] = useCookies(["user"]);
   const [isMenuOpen, setMenuOpen] = useState(false);
 
   const handleToggleClick = () => {
