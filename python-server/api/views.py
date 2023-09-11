@@ -44,14 +44,6 @@ class GrammarCorrectionView(APIView):
 
             # Debugging: Print out the values of variables
             print(f'text: {text}')
-            
-            # Check if matches is iterable before trying to access it
-            if isinstance(matches, list):
-                print(f'matches: {matches}')
-            else:
-                print(f'matches is not a list: {matches}')
-
-            print(f'correctText: {correctText}')
 
             # Return the corrected text in the response
             response_data = {

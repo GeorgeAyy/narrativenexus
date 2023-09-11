@@ -510,6 +510,10 @@ export default function TextEditor() {
                           );
                           response.json().then((response) => {
                             setGrammerChecker(false);
+                            {
+                              
+                            console.log(response.matches);
+                            }
                             let correctedText = response.corrected_text;
                             let matches = response.matches;
                             let grammarMistakes = [];
