@@ -614,3 +614,35 @@ input[type="text"] {
 .snatch-control-button:hover {
   background-color: #0077A3;
 }
+
+#listItem{
+  padding: 10px 25px;
+  background: rgb(251, 249, 249);
+  border: 1px #0d0d0d solid;
+  border-radius: 50px;
+  list-style: none;
+  text-align: center;
+  font-family: 'Copper Hewitt Book', sans-serif;
+  transition: all .6s;
+
+}
+#listItem a{
+  text-decoration: none;
+  color: black;
+  font-size: 16px;
+  
+}
+
+#listItem:hover {
+  background-color: black;
+}
+
+#listItem:hover a {
+  
+  color: #ddd;
+}
+@media (max-width: 400px) {
+  #listItem {
+    width: 100% !important;
+  }
+}
