@@ -1,108 +1,108 @@
 import React, { useState } from 'react';
 import '../styles/signup.css'; // Import your custom CSS
-import axios from 'axios';
+
 import { useHistory, Link } from 'react-router-dom';
 import config from '../config.json';
 const SignUp = () => {
-    const history = useHistory();
-    const [name, setName] = useState('');
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const [nameError, setNameError] = useState('');
-    const [emailError, setEmailError] = useState('');
-    const [passwordError, setPasswordError] = useState('');
-    const [showPassword, setShowPassword] = useState(false);
-  
-    const handleSubmit = async (e) => {
-      e.preventDefault();
-  
-      // Validation checks
-      let isValid = true;
-  
-      if (name.length < 5) {
-        setNameError('Name must be at least 5 characters.');
-        isValid = false;
-      } else {
-        setNameError('');
-      }
-  
-      const emailPattern = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;
-      if (!emailPattern.test(email)) {
-        setEmailError('Invalid email format.');
-        isValid = false;
-      } else {
-        setEmailError('');
-      }
-  
-      if (password.length < 8) {
-        setPasswordError('Password must be at least 8 characters.');
-        isValid = false;
-      } else if (!/[A-Z]/.test(password)) {
-        setPasswordError('Password must include at least one capital letter.');
-        isValid = false;
-      } else if (!/\d/.test(password)) {
-        setPasswordError('Password must include at least one number.');
-        isValid = false;
-      } else {
-        setPasswordError('');
-      }
-  
-      if (isValid) {
-        try {
-          const data = {
-            name: name,
-            email: email,
-            password: password,
-          };
-      
-          // Create the user using the UserService
-          fetch(`http://${config.ip}:5000/auth/signup`, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(data),
+  const history = useHistory();
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [nameError, setNameError] = useState('');
+  const [emailError, setEmailError] = useState('');
+  const [passwordError, setPasswordError] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    // Validation checks
+    let isValid = true;
+
+    if (name.length < 5) {
+      setNameError('Name must be at least 5 characters.');
+      isValid = false;
+    } else {
+      setNameError('');
+    }
+
+    const emailPattern = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;
+    if (!emailPattern.test(email)) {
+      setEmailError('Invalid email format.');
+      isValid = false;
+    } else {
+      setEmailError('');
+    }
+
+    if (password.length < 8) {
+      setPasswordError('Password must be at least 8 characters.');
+      isValid = false;
+    } else if (!/[A-Z]/.test(password)) {
+      setPasswordError('Password must include at least one capital letter.');
+      isValid = false;
+    } else if (!/\d/.test(password)) {
+      setPasswordError('Password must include at least one number.');
+      isValid = false;
+    } else {
+      setPasswordError('');
+    }
+
+    if (isValid) {
+      try {
+        const data = {
+          name: name,
+          email: email,
+          password: password,
+        };
+
+        // Create the user using the UserService
+        fetch(`http://${config.ip}:5000/auth/signup`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(data),
+        })
+          .then((response) => {
+            if (!response.ok) {
+              throw new Error('Registration failed. Please try again.');
+            }
+            return response.json();
           })
-            .then((response) => {
-              if (!response.ok) {
-                throw new Error('Registration failed. Please try again.');
-              }
-              return response.json();
-            })
-            .then((data) => {
-              console.log(data);
-      
-              // Optionally, you can redirect the user to a different page
-              // or display a success message in your component.
-      
-              // Reset the form fields (as shown in comments).
-              setName('');
-              setEmail('');
-              setPassword('');
-            })
-            .catch((error) => {
-              // Handle registration error and set the corresponding error state
-              if (error.message === 'Name must be at least 5 characters.') {
-                setNameError(error.message);
-              } else if (error.message === 'Invalid email format.') {
-                setEmailError(error.message);
-              } else if (
-                error.message === 'Password must be at least 8 characters.' ||
-                error.message === 'Password must include at least one capital letter.' ||
-                error.message === 'Password must include at least one number.'
-              ) {
-                setPasswordError(error.message);
-              } else {
-                // Handle other errors, if needed
-                setEmailError('Email already taken.');
-              }
-            });
-        } catch (error) {
-          // Handle other errors, if needed
-          setEmailError('Email already taken.');
-        }
+          .then((data) => {
+            console.log(data);
+
+            // Optionally, you can redirect the user to a different page
+            // or display a success message in your component.
+
+            // Reset the form fields (as shown in comments).
+            setName('');
+            setEmail('');
+            setPassword('');
+          })
+          .catch((error) => {
+            // Handle registration error and set the corresponding error state
+            if (error.message === 'Name must be at least 5 characters.') {
+              setNameError(error.message);
+            } else if (error.message === 'Invalid email format.') {
+              setEmailError(error.message);
+            } else if (
+              error.message === 'Password must be at least 8 characters.' ||
+              error.message === 'Password must include at least one capital letter.' ||
+              error.message === 'Password must include at least one number.'
+            ) {
+              setPasswordError(error.message);
+            } else {
+              // Handle other errors, if needed
+              setEmailError('Email already taken.');
+            }
+          });
+      } catch (error) {
+        // Handle other errors, if needed
+        setEmailError('Email already taken.');
       }
-    };
+    }
+  };
 
   return (
     <div className="signup-container">
@@ -112,7 +112,7 @@ const SignUp = () => {
       <form className="signup-form" onSubmit={handleSubmit}>
         <div className="input-container">
           <input
-            
+
             value={name}
             onChange={(e) => setName(e.target.value)}
             placeholder="Your Name"

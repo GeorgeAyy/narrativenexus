@@ -1,7 +1,7 @@
 import TextEditor from "./pages/TextEditor";
 import SumAndPar from "./pages/sumandpar";
 import SignUp from "./pages/signup";
-import React, { useState, useEffect } from "react";
+import React from "react";
 import LogIn from "./pages/login";
 import NotFound from "./pages/notfound";
 import Home from "./pages/Home";

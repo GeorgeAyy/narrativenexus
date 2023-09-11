@@ -39,7 +39,7 @@ const authRouter = require("./routes/auth.js");
 const historyRouter = require("./routes/history.js");
 const invitesRouter = require("./routes/invites.js");
 const documentRouter = require("./routes/documents.js");
-const { findById } = require("./models/User");
+// const { findById } = require("./models/User");
 app.use("/auth", authRouter);
 app.use("/history", historyRouter);
 app.use("/invites", invitesRouter);
@@ -60,7 +60,7 @@ const defaultValue = "";
 
 io.on('connection', (socket) => {
 
-  
+
 
   socket.on('get-user-documents', async (userId) => {
     console.log('entered the get documents')
@@ -175,7 +175,7 @@ io.on('connection', (socket) => {
     socket.emit('load-document', { document: document.data, owner: document.owner, hasControl: document.hasControl, collaborators: document.collaborators }); // Send the document to the client
     socket.on('control-snatched', ({ documentId }) => {
       // Broadcast the event to all connected clients except the sender
-      socket.broadcast.emit('control-snatched', { documentId});
+      socket.broadcast.emit('control-snatched', { documentId });
     });
     socket.on('send-changes', (delta) => {
       socket.broadcast.to(documentId).emit('receive-changes', delta);
