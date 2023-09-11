@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import TextForm from "./TextForm";
 import Output from "../components/Output";
-import axios from "axios";
 import Navbar from "../components/Navbar";
 import "../styles/sumandpar.css";
 import { useCookies, removeCookie } from "react-cookie";

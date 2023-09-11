@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEdit, faTrash } from '@fortawesome/free-solid-svg-icons';
-import { Link } from 'react-router-dom';
+
 
 const ITEMS_PER_PAGE = 10;
 
@@ -40,7 +40,7 @@ const HistorySidebar = ({ documents, isOpen, toggleSidebar }) => {
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ documentId:documentId , editedData: updatedName }), // Send the updated name to the server
+      body: JSON.stringify({ documentId: documentId, editedData: updatedName }), // Send the updated name to the server
     })
       .then((response) => {
         if (response.ok) {
@@ -109,7 +109,7 @@ const HistorySidebar = ({ documents, isOpen, toggleSidebar }) => {
     <div className={`history-sidebar ${isOpen ? 'open' : ''}`}>
       <h2 className="history-heading">Previous History</h2>
       <ul className="history-list">
-      {documentsToDisplay.map((document) => (
+        {documentsToDisplay.map((document) => (
           <a href={`/documents/${document._id}`} className="history-anchor" key={document.data}>
             <li className="history-item">
               {isEditing && editedDocumentId === document._id ? (
@@ -121,8 +121,8 @@ const HistorySidebar = ({ documents, isOpen, toggleSidebar }) => {
                     onChange={(e) => setEditData(e.target.value)} // Update the edited data
                     autoFocus // Automatically focus the input field
                   />
-                  <button 
-                  className='save-button'
+                  <button
+                    className='save-button'
                     onClick={(e) => {
                       e.preventDefault();
                       saveEditedDataToServer(document._id, editData); // Save the edited data to the server
@@ -138,11 +138,11 @@ const HistorySidebar = ({ documents, isOpen, toggleSidebar }) => {
                   {document.name
                     ? document.name
                     : document.data
-                    ? stripHtmlTags(document.data)
+                      ? stripHtmlTags(document.data)
                         .split(' ')
                         .slice(0, 5)
                         .join(' ')
-                    : 'Empty'}
+                      : 'Empty'}
                 </span>
               )}
               <span className="history-icons">

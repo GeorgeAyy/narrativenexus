@@ -18,10 +18,7 @@ const SpectatePage = () => {
     const [cookies] = useCookies(["user"]);
     const [documentContent, setDocumentContent] = useState('');
 
-    var userId = null;
-    if (cookies.user) {
-        userId = cookies.user._id;
-    }
+
 
 
     useEffect(() => {

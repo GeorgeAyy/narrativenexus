@@ -15,13 +15,12 @@ const genres = [
 const characterTypes = ["Hero", "Villain", "Detective", "Alien", "Princess"];
 
 const PromptGenerator = () => {
-const [cookies, setCookie, removeCookie] = useCookies(["user"]);
-  const [selectedGenre, setSelectedGenre] = useState("");
-  const [selectedCharacterType, setSelectedCharacterType] = useState("");
-  const [prompt, setPrompt] = useState("");
+  const [cookies, setCookie, removeCookie] = useCookies(["user"]);
+
+
   const [outputText, setOutputText] = useState("");
 
-  
+
   useEffect(() => {
     const generateButton = document.getElementById("generateButton");
     if (generateButton) {
@@ -76,7 +75,7 @@ const [cookies, setCookie, removeCookie] = useCookies(["user"]);
             <label>Select Genre:</label>
             <select
               id="genre"
-              onChange={(e) => setSelectedGenre(e.target.value)}
+
             >
               <option></option>
               {genres.map((genre, index) => (
@@ -88,7 +87,7 @@ const [cookies, setCookie, removeCookie] = useCookies(["user"]);
             <label>Select Character Type:</label>
             <select
               id="character"
-              onChange={(e) => setSelectedCharacterType(e.target.value)}
+
             >
               <option></option>
               {characterTypes.map((type, index) => (
