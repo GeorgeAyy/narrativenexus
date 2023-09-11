@@ -44,7 +44,9 @@
     "start": "react-scripts start",
     "devStart": "nodemon server/server.js",
     "pythonApp": "python python-server/manage.py runserver 127.0.0.1:3002",
+    "pythonApp2": "python3 python-server/manage.py runserver 0.0.0.0:3002",
     "devBoth": "concurrently \"npm run pythonApp\" \"npm start\"",
+    "devBoth2": "concurrently \"npm run pythonApp2\" \"npm start\"",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
