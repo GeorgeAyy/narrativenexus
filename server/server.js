@@ -60,10 +60,7 @@ const defaultValue = "";
 
 io.on('connection', (socket) => {
 
-  socket.on('control-snatched', ({ documentId }) => {
-    // Broadcast the event to all connected clients except the sender
-    socket.broadcast.emit('control-snatched', { documentId});
-  });
+  
 
   socket.on('get-user-documents', async (userId) => {
     console.log('entered the get documents')
@@ -176,7 +173,10 @@ io.on('connection', (socket) => {
 
     socket.join(documentId); // Join the room for the document
     socket.emit('load-document', { document: document.data, owner: document.owner, hasControl: document.hasControl, collaborators: document.collaborators }); // Send the document to the client
-
+    socket.on('control-snatched', ({ documentId }) => {
+      // Broadcast the event to all connected clients except the sender
+      socket.broadcast.emit('control-snatched', { documentId});
+    });
     socket.on('send-changes', (delta) => {
       socket.broadcast.to(documentId).emit('receive-changes', delta);
     });
