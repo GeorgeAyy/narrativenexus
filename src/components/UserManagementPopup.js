@@ -100,11 +100,13 @@ const UserManagementPopup = ({ ownerId, documentId, closeUserManagementPopup,giv
             <button className="give-control-button" onClick={() => giveControl(user.id)}>
               Give Control
             </button>
-            <button className="snatch-control-button" onClick={() => snatchControl(user.id)}>
+            
+          </li>
+          
+        ))}
+        <button className="snatch-control-button" onClick={() => snatchControl()}>
               Snatch Control
             </button>
-          </li>
-        ))}
       </ul>
       <div className="invite-section">
         <input

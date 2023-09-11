@@ -15,18 +15,7 @@
   right: 0; /* Slide the sidebar into view when it's open */
 }
 
-.notification-sidebar button {
-  background-color: #ff5733;
-  color: #fff;
-  border: none;
-  padding: 10px 20px;
-  cursor: pointer;
-  margin-top: 20px;
-}
 
-.notification-sidebar button:hover {
-  background-color: #ff4525;
-}
 
 .notification-content {
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.2); /* Add a box shadow to the content */
@@ -38,4 +27,49 @@
   font-size: 18px;
   margin: 10px 0 0 10px;
   color: #333;
+}
+
+/* NotificationSidebar.css */
+
+/* Add styles for the accept button */
+.acceptBtn {
+  background-color: #4CAF50; /* Green background color */
+  color: white; /* White text color */
+  padding: 10px 20px; /* Add padding to the button */
+  border: none; /* Remove the button border */
+  cursor: pointer; /* Add a pointer cursor on hover */
+  margin-right: 10px; /* Add some spacing to the right of the button */
+}
+
+/* Style the button on hover */
+.acceptBtn:hover {
+  background-color: #45a049;
+}
+
+/* Add styles for the decline button */
+.declineBtn {
+  background-color: #f44336; /* Red background color */
+  color: white; /* White text color */
+  padding: 10px 20px; /* Add padding to the button */
+  border: none; /* Remove the button border */
+  cursor: pointer; /* Add a pointer cursor on hover */
+}
+
+/* Style the button on hover */
+.declineBtn:hover {
+  background-color: #d32f2f;
+}
+
+/* Add styles for the close button */
+.closeButton {
+  background-color: #f44336; /* Red background color */
+  color: white; /* White text color */
+  padding: 10px 20px; /* Add padding to the button */
+  border: none; /* Remove the button border */
+  cursor: pointer; /* Add a pointer cursor on hover */
+}
+
+/* Style the button on hover */
+.closeButton:hover {
+  background-color: #d32f2f;
 }

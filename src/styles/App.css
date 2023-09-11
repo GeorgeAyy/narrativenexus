@@ -551,3 +551,66 @@ input[type="text"] {
   z-index: 999; /* Ensure the overlay is above other content */
   pointer-events: auto; /* Block user interactions with the underlying content */
 }
+
+/* NotificationSidebar.css */
+
+/* Add styles for the Notifications button */
+.NotificationBtn {
+  background-color: #008CBA; /* Blue background color */
+  color: white; /* White text color */
+  padding: 10px 20px; /* Add padding to the button */
+  border: none; /* Remove the button border */
+  cursor: pointer; /* Add a pointer cursor on hover */
+}
+
+/* Style the button on hover */
+.NotificationBtn:hover {
+  background-color: #0077A3;
+}
+
+/* Your CSS file */
+
+/* Add styles for the "Delete" button */
+.delete-button {
+  background-color: #f44336; /* Red background color */
+  color: white; /* White text color */
+  padding: 10px 20px; /* Add padding to the button */
+  border: none; /* Remove the button border */
+  cursor: pointer; /* Add a pointer cursor on hover */
+  margin-right: 10px; /* Add some spacing to the right of the button */
+}
+
+/* Style the "Delete" button on hover */
+.delete-button:hover {
+  background-color: #d32f2f;
+}
+
+/* Add styles for the "Give Control" button */
+.give-control-button {
+  background-color: #4CAF50; /* Green background color */
+  color: white; /* White text color */
+  padding: 10px 20px; /* Add padding to the button */
+  border: none; /* Remove the button border */
+  cursor: pointer; /* Add a pointer cursor on hover */
+  margin-right: 10px; /* Add some spacing to the right of the button */
+}
+
+/* Style the "Give Control" button on hover */
+.give-control-button:hover {
+  background-color: #45a049;
+}
+
+/* Add styles for the "Snatch Control" button */
+.snatch-control-button {
+  margin-top: 10px;
+  background-color: #008CBA; /* Blue background color */
+  color: white; /* White text color */
+  padding: 10px 20px; /* Add padding to the button */
+  border: none; /* Remove the button border */
+  cursor: pointer; /* Add a pointer cursor on hover */
+}
+
+/* Style the "Snatch Control" button on hover */
+.snatch-control-button:hover {
+  background-color: #0077A3;
+}
