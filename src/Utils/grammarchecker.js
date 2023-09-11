@@ -6,6 +6,13 @@ export function openPopupGrammarChecker(
   correctedText,
   count
 ) {
+  // Create the overlay element
+  const overlay = document.createElement("div");
+  overlay.className = "overlay";
+
+  // Append the overlay to the body
+  document.body.appendChild(overlay);
+
   // Create the popup element
   let popup = document.createElement("div");
   popup.id = "popup-grammar-checker-panel";
@@ -44,10 +51,11 @@ export function openPopupGrammarChecker(
     correctionButton.onclick = function () {
       editor.selection.setContent(correctedText);
       popup.remove();
+      overlay.remove(); // Remove the overlay when closing the popup
       return false;
     };
 
-    // Append the re correct button element to the popup
+    // Append the re-correct button element to the popup
     popup.appendChild(correctionButton);
   }
 
@@ -57,6 +65,7 @@ export function openPopupGrammarChecker(
   closeButton.innerHTML = "Close";
   closeButton.onclick = function () {
     popup.remove();
+    overlay.remove(); // Remove the overlay when closing the popup
     return false;
   };
   // Append the close button element to the popup
@@ -64,10 +73,20 @@ export function openPopupGrammarChecker(
   // Append the popup element to the body
   document.body.appendChild(popup);
 
+  // Prevent clicks on the overlay from closing the popup
+  overlay.addEventListener("click", function (event) {
+    event.stopPropagation(); // Stop the event from propagating to document click
+  });
+
   // Close the popup when clicked outside
   document.addEventListener("click", function (event) {
-    if (!popup.contains(event.target) && popup.parentNode) {
-      popup.parentNode.removeChild(popup);
+    if (popup.contains(event.target) && event.target !== closeButton) {
+      // Clicking inside the popup (except for the close button) does nothing
+      return;
     }
+
+    // Clicking outside the popup or on the close button closes the popup
+    popup.remove();
+    overlay.remove(); // Remove the overlay when closing the popup
   });
 }
