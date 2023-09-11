@@ -11,6 +11,7 @@ const Document = new Schema({
   collaborators: [{
     type: String,
   }],
+  hasControl: String
 });
 
 module.exports = model('Document', Document);

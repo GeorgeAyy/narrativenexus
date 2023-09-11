@@ -58,9 +58,8 @@ export default function TextEditor() {
   const [history, setHistory] = useState([]); // To store history entries
   const [isUserManagementPopupOpen, setIsUserManagementPopupOpen] = useState(false);
   const [documentOwner, setDocumentOwner] = useState(null); // To store the document owner
-  const [isHasControl, setIsHasControl] = useState(true); // To store whether the user has control of the document
   const [documentContent, setDocumentContent] = useState('');
-
+  const [hasControl, setHasControl] = useState(null); // To store the document owner
   const toggleSidebar = () => {
     setSidebarOpen(!sidebarOpen);
   };
@@ -75,9 +74,10 @@ export default function TextEditor() {
   const loadDocument = useCallback(() => {
     if (socket == null) return;
 
-    socket.once('load-document', ({ document, owner }) => { // Receive document and owner
+    socket.once('load-document', ({ document, owner,hasControl }) => { // Receive document and owner
       console.log(`Loaded document: ${document}`);
       setEditorLoad(document);
+      setHasControl(hasControl)
       // Now you have access to both document and owner in your state
       setDocumentOwner(owner); // Assuming you have a state variable to store the owner
       setDocumentContent(document);
@@ -384,7 +384,8 @@ export default function TextEditor() {
             </button>
           </span>
           <div className="editor-page">
-            {isHasControl && (
+            {console.log("the document owner is: " + cookies.user._id)}
+            {hasControl === cookies.user._id ?(
               <Editor
                 apiKey="bw59pp70ggqha1u9xgyiva27d1vrdvvdar1elkcj2gd51r3q"
                 initialValue={editorLoad}
@@ -538,17 +539,8 @@ export default function TextEditor() {
                 }}
               />
 
-
-
-            )}
-
-            {!isHasControl && (
-
-
+            ) : (
               <div>
-
-
-
                 <div className="center-container">
                   {/* Replace the textarea with a span */}
                   <span

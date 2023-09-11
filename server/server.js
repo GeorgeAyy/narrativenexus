@@ -174,7 +174,7 @@ io.on('connection', (socket) => {
     const document = await findOrCreateDocument(documentId, userId); // Pass userId to findOrCreateDocument
   
     socket.join(documentId); // Join the room for the document
-    socket.emit('load-document', {document: document.data, owner: document.owner}); // Send the document to the client
+    socket.emit('load-document', {document: document.data, owner: document.owner,hasControl:document.hasControl}); // Send the document to the client
   
     socket.on('send-changes', (delta) => {
       socket.broadcast.to(documentId).emit('receive-changes', delta);
@@ -200,7 +200,7 @@ async function findOrCreateDocument(documentId, userId) {
   }
 
   // Create the document with userId as the owner
-  const newDocument = await Document.create({ _id: documentId, data: defaultValue, owner: userId });
+  const newDocument = await Document.create({ _id: documentId, data: defaultValue, owner: userId,hasControl:userId });
   console.log(`[MONGO] Document created:`, newDocument);
   return newDocument;
 }
