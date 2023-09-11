@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEdit, faTrash } from '@fortawesome/free-solid-svg-icons';
-
+import config from '../config.json';
 
 const ITEMS_PER_PAGE = 10;
 
@@ -35,7 +35,7 @@ const HistorySidebar = ({ documents, isOpen, toggleSidebar }) => {
   };
 
   const saveEditedDataToServer = (documentId, updatedName) => {
-    fetch(`http://localhost:5000/history/saveEditedData`, {
+    fetch(`http://${config.ip}:5000/history/saveEditedData`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -62,7 +62,7 @@ const HistorySidebar = ({ documents, isOpen, toggleSidebar }) => {
   };
 
   const handleDelete = (documentId) => {
-    fetch('http://localhost:5000/history/deleteDocument', {
+    fetch(`http://${config.ip}:5000/history/deleteDocument`, {
       method: 'DELETE',
       headers: {
         'Content-Type': 'application/json',
