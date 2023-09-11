@@ -2,7 +2,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 
 import { io } from 'socket.io-client'
-import { useParams } from 'react-router-dom'
+import { useParams, useHistory } from 'react-router-dom'
 import { Editor } from '@tinymce/tinymce-react';
 import ReactLoading from "react-loading";
 import { openPopupGrammarChecker } from "../Utils/grammarchecker";
@@ -35,7 +35,7 @@ const SAAVE_INTERVAL_MS = 2000 // save every 2 seconds
 // ...
 
 export default function TextEditor() {
-
+  
   const { id: documentId } = useParams();
   const [socket, setSocket] = useState();
   const [editorContent, setEditorContent] = useState();
@@ -61,6 +61,23 @@ export default function TextEditor() {
   const [documentContent, setDocumentContent] = useState('');
   const [hasControl, setHasControl] = useState(null); // To store the document owner
   const [documentCollaborators, setDocumentCollaborators] = useState([]); // To store the document owner
+ 
+  useEffect(() => {
+    if (socket == null) return;
+    // Listen for control-snatched event
+    socket.on('control-snatched', ({ documentId}) => {
+      window.location.href = `/documents/${documentId}`;
+    });
+  
+    return () => {
+      // Clean up the event listener when the component unmounts
+      socket.off('control-snatched');
+    };
+  }, [socket]);
+  
+
+  
+
   const toggleSidebar = () => {
     setSidebarOpen(!sidebarOpen);
   };
@@ -119,16 +136,17 @@ export default function TextEditor() {
 
   const giveControl = async (userId) => {
     try {
-      const response = await fetch(`http://${config.ip}:5000/documents/giveControl`, {
+      const response = await fetch(`http://${config.ip}:5000/documentRoute/giveControl`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ documentId, userId }),
+        body: JSON.stringify({ documentId, userId, ownerId: cookies.user._id }),
       });
   
       if (response.ok) {
-        
+        socket.emit('control-snatched', { documentId});
+        window.location.href = `/documents/${documentId}`;
       } else {
         console.error('Failed to give control');
       }
@@ -138,16 +156,19 @@ export default function TextEditor() {
   };
   
   const snatchControl = async (userId) => {
+    
     try {
-      const response = await fetch(`http://${config.ip}:5000/documents/snatchControl`, {
+      const response = await fetch(`http://${config.ip}:5000/documentRoute/snatchControl`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ documentId, userId }),
+        body: JSON.stringify({ documentId, userId, ownerId: cookies.user._id }),
       });
   
       if (response.ok) {
+        socket.emit('control-snatched', { documentId});
+        window.location.href = `/documents/${documentId}`;
         
       } else {
         console.error('Failed to snatch control');
@@ -193,12 +214,10 @@ export default function TextEditor() {
 
     if (socket == null || !cookies.user) return;
 
-    const userId = cookies.user._id;
-
     socket.emit('get-document', { documentId, userId: cookies.user._id }); // Pass userId to the server
     loadDocument(); // Load the document immediately when socket is available
 
-  }, [socket, documentId, loadDocument, cookies.user]);
+  }, [socket, documentId, loadDocument, cookies.user._id]);
 
   useEffect(() => {
     console.log('saving document');

@@ -38,14 +38,12 @@ mongoose
 const authRouter = require("./routes/auth.js");
 const historyRouter = require("./routes/history.js");
 const invitesRouter = require("./routes/invites.js");
+const documentRouter = require("./routes/documents.js");
 const { findById } = require("./models/User");
-const deleteDocumentRouter = require("./routes/history.js");
-const editDocumentRouter = require("./routes/history.js");
 app.use("/auth", authRouter);
 app.use("/history", historyRouter);
 app.use("/invites", invitesRouter);
-app.use("/history", deleteDocumentRouter);
-app.use("/history", editDocumentRouter);
+app.use("/documentRoute", documentRouter);
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
@@ -62,7 +60,10 @@ const defaultValue = "";
 
 io.on('connection', (socket) => {
 
-
+  socket.on('control-snatched', ({ documentId }) => {
+    // Broadcast the event to all connected clients except the sender
+    socket.broadcast.emit('control-snatched', { documentId});
+  });
 
   socket.on('get-user-documents', async (userId) => {
     console.log('entered the get documents')
