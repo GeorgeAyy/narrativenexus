@@ -645,4 +645,13 @@ input[type="text"] {
   #listItem {
     width: 100% !important;
   }
+  .section .image-container{
+    width:80% !important;
+    max-width: 80% !important;
+  }
 }
+.section .leftpart{
+  width: 100%;
+  margin-top: 30px;
+}
+
