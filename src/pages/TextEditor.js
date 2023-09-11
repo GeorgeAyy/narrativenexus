@@ -435,11 +435,11 @@ export default function TextEditor() {
         ) : (
           <></>
         )}
+          <div className="editor-page">
 
-
-
-        <div className={`editor-container ${sidebarOpen ? '' : 'full-width'}`}>
           <HistorySidebar documents={documents} isOpen={sidebarOpen} toggleSidebar={toggleSidebar} />
+        <div className={`editor-container ${sidebarOpen ? '' : 'full-width'}`}>
+          
 
           <h1>Narrative Nexus Editor</h1>
           <span style={{ display: "flex" }}>
@@ -450,7 +450,7 @@ export default function TextEditor() {
               Invite/Edit Users
             </button>
           </span>
-          <div className="editor-page">
+          
             {console.log("the document owner is: " + cookies.user._id)}
             {hasControl === cookies.user._id ? (
               <Editor
