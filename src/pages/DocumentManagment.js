@@ -42,9 +42,9 @@ const DocumentPage = () => {
     };
   }, []);
   useEffect(() => {
-    if(!cookies.user) return;
+    if (!cookies.user) return;
     console.log("Fetching documents for user ID:", cookies.user._id);
-  
+
     // Make a fetch or axios request to retrieve documents from your backend
     fetch(`http://${config.ip}:5000/history/retrieveDocuments`, {
       method: 'POST',
@@ -62,14 +62,14 @@ const DocumentPage = () => {
       })
       .then((data) => {
         console.log("Data received from server:", data);
-  
+
         if (data.documents) {
           setDocuments(data.documents);
         }
       })
       .catch((error) => console.error('Error fetching documents:', error));
-  }, []);
-  
+  }, [cookies]);
+
 
   // Calculate the index range for the current page
   const startIndex = (currentPage - 1) * documentsPerPage;
@@ -87,9 +87,8 @@ const DocumentPage = () => {
     tmp.innerHTML = html;
     return tmp.textContent || tmp.innerText || "";
   }
-  if(!cookies.user)
-  {
-    return(
+  if (!cookies.user) {
+    return (
       <div className="divcontainer">
         <Navbar />
         <InvalidAccessPage />
@@ -127,9 +126,8 @@ const DocumentPage = () => {
               <button
                 key={index}
                 onClick={() => handlePageChange(index + 1)}
-                className={`pagination-button ${
-                  currentPage === index + 1 ? "active" : ""
-                }`}
+                className={`pagination-button ${currentPage === index + 1 ? "active" : ""
+                  }`}
               >
                 {index + 1}
               </button>
