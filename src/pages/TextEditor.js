@@ -446,9 +446,11 @@ export default function TextEditor() {
             <button className="toggle-history-button" onClick={toggleSidebar}>
               {sidebarOpen ? 'Close History' : 'Open History'}
             </button>
+            {cookies.user._id === documentOwner && (
             <button className="toggle-history-button" onClick={openUserManagementPopup}>
               Invite/Edit Users
             </button>
+          )}
           </span>
           <div className="editor-page">
             {console.log("the document owner is: " + cookies.user._id)}
