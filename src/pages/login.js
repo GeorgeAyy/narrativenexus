@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import "../styles/login.css"; // Import your custom CSS
-
-import { useHistory } from "react-router-dom";
+import axios from "axios";
+import { useHistory,Link } from "react-router-dom";
 import { useCookies } from "react-cookie";
 import config from '../config.json';
 const LogIn = () => {
@@ -59,7 +59,7 @@ const LogIn = () => {
           const user = responseData.user;
           console.log(responseData);
           setCookie("user", user, { path: "/" });
-          history.push("/", { user }); // Assuming you have imported 'useHistory' from react-router-dom
+          history.push("/", {user}); // Assuming you have imported 'useHistory' from react-router-dom
 
           // Optionally, you can also set some user-related state
           // or perform other actions upon successful login.
@@ -76,7 +76,7 @@ const LogIn = () => {
 
   return (
     <div className="signin-container">
-
+      
       <button className="btn1" onClick={() => history.push("/")}>
         Home
       </button>
