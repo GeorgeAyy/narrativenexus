@@ -455,7 +455,7 @@ export default function TextEditor() {
         )}
         <div className="editor-page">
 
-          <HistorySidebar documents={documents} isOpen={sidebarOpen} toggleSidebar={toggleSidebar} />
+          <HistorySidebar documents={documents} isOpen={sidebarOpen} toggleSidebar={toggleSidebar} owner={documentOwner}/>
           <div className={`editor-container ${sidebarOpen ? '' : 'full-width'}`}>
 
 
@@ -512,12 +512,12 @@ export default function TextEditor() {
                             setGrammerChecker(false);
                             {
                               
-                            console.log(response.matches);
+                            console.log(`response: ${response.matches}`);
                             }
                             let correctedText = response.corrected_text;
                             let matches = response.matches;
                             let grammarMistakes = [];
-                            for (let match of matches) {
+                            for (let match of response.matches) {
                               let mistakes = [];
 
                               let incorrectText = match[4];

@@ -275,9 +275,9 @@ exports.acceptInvitation = async (req, res) => {
       await document.save();
 
       // Add the documentId to the list of documentIds for the user
-      if (!owner.documentIds.includes(documentId)) {
-        owner.documentIds.push(documentId);
-        await owner.save();
+      if (!invitee.documentIds.includes(documentId)) {
+        invitee.documentIds.push(documentId);
+        await invitee.save();
         console.log(`Added Document - ${documentId} to the user's documentIds.`);
       }
     }
@@ -291,6 +291,7 @@ exports.acceptInvitation = async (req, res) => {
     res.status(500).json({ error: errorMessage });
   }
 };
+
 
 
 // Function to decline an invitation

@@ -1,14 +1,15 @@
-import React, { useState, useEffect } from 'react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEdit, faTrash } from '@fortawesome/free-solid-svg-icons';
-import config from '../config.json';
-
+import React, { useState, useEffect } from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faEdit, faTrash } from "@fortawesome/free-solid-svg-icons";
+import config from "../config.json";
+import { useCookies, removeCookie } from "react-cookie";
 const ITEMS_PER_PAGE = 10;
 
-const HistorySidebar = ({ documents, isOpen, toggleSidebar }) => {
+const HistorySidebar = ({ documents, isOpen, toggleSidebar, owner }) => {
+  const [cookies, setCookie, removeCookie] = useCookies(["user"]);
   const [currentPage, setCurrentPage] = useState(1);
   const [localDocuments, setLocalDocuments] = useState(documents);
-  const [editData, setEditData] = useState('');
+  const [editData, setEditData] = useState("");
   const [editedDocumentId, setEditedDocumentId] = useState(null);
   const [isEditing, setIsEditing] = useState(false); // Add state to track editing mode
 
@@ -36,9 +37,9 @@ const HistorySidebar = ({ documents, isOpen, toggleSidebar }) => {
 
   const saveEditedDataToServer = (documentId, updatedName) => {
     fetch(`http://${config.ip}:5000/history/saveEditedData`, {
-      method: 'PUT',
+      method: "PUT",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
       body: JSON.stringify({ documentId: documentId, editedData: updatedName }), // Send the updated name to the server
     })
@@ -58,14 +59,14 @@ const HistorySidebar = ({ documents, isOpen, toggleSidebar }) => {
           console.error(`Error updating document with ID ${documentId}`);
         }
       })
-      .catch((error) => console.error('Error updating document:', error));
+      .catch((error) => console.error("Error updating document:", error));
   };
 
   const handleDelete = (documentId) => {
     fetch(`http://${config.ip}:5000/history/deleteDocument`, {
-      method: 'DELETE',
+      method: "DELETE",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
       body: JSON.stringify({ documentId: documentId }),
     })
@@ -79,13 +80,13 @@ const HistorySidebar = ({ documents, isOpen, toggleSidebar }) => {
           setLocalDocuments(updatedDocuments);
         }
       })
-      .catch((error) => console.error('Error fetching documents:', error));
+      .catch((error) => console.error("Error fetching documents:", error));
   };
 
   function stripHtmlTags(html) {
-    const tmp = document.createElement('div');
+    const tmp = document.createElement("div");
     tmp.innerHTML = html;
-    return tmp.textContent || tmp.innerText || '';
+    return tmp.textContent || tmp.innerText || "";
   }
 
   const renderPaginationButtons = () => {
@@ -94,23 +95,25 @@ const HistorySidebar = ({ documents, isOpen, toggleSidebar }) => {
 
     return (
       <div className="pagination">
-        {!isPreviousDisabled && (
-          <button onClick={prevPage}>Previous</button>
-        )}
-        <span>Page {currentPage} of {totalPages}</span>
-        {!isNextDisabled && (
-          <button onClick={nextPage}>Next</button>
-        )}
+        {!isPreviousDisabled && <button onClick={prevPage}>Previous</button>}
+        <span>
+          Page {currentPage} of {totalPages}
+        </span>
+        {!isNextDisabled && <button onClick={nextPage}>Next</button>}
       </div>
     );
   };
 
   return (
-    <div className={`history-sidebar ${isOpen ? 'open' : ''}`}>
+    <div className={`history-sidebar ${isOpen ? "open" : ""}`}>
       <h2 className="history-heading">Previous History</h2>
       <ul className="history-list">
         {documentsToDisplay.map((document) => (
-          <a href={`/documents/${document._id}`} className="history-anchor" key={document.data}>
+          <a
+            href={`/documents/${document._id}`}
+            className="history-anchor"
+            key={document.data}
+          >
             <li className="history-item">
               {isEditing && editedDocumentId === document._id ? (
                 // Display an input field for editing
@@ -122,7 +125,7 @@ const HistorySidebar = ({ documents, isOpen, toggleSidebar }) => {
                     autoFocus // Automatically focus the input field
                   />
                   <button
-                    className='save-button'
+                    className="save-button"
                     onClick={(e) => {
                       e.preventDefault();
                       saveEditedDataToServer(document._id, editData); // Save the edited data to the server
@@ -138,35 +141,37 @@ const HistorySidebar = ({ documents, isOpen, toggleSidebar }) => {
                   {document.name
                     ? document.name
                     : document.data
-                      ? stripHtmlTags(document.data)
-                        .split(' ')
+                    ? stripHtmlTags(document.data)
+                        .split(" ")
                         .slice(0, 5)
-                        .join(' ')
-                      : 'Empty'}
+                        .join(" ")
+                    : "Empty"}
                 </span>
               )}
-              <span className="history-icons">
-                {!isEditing && (
+              {document.owner === cookies.user._id && (
+                <span className="history-icons">
+                  {!isEditing && (
+                    <FontAwesomeIcon
+                      icon={faEdit}
+                      className="edit-icon"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setIsEditing(true); // Enter edit mode
+                        setEditedDocumentId(document._id);
+                        setEditData(document.name || ""); // Initialize editData with the current name or an empty string
+                      }}
+                    />
+                  )}
                   <FontAwesomeIcon
-                    icon={faEdit}
-                    className="edit-icon"
+                    icon={faTrash}
+                    className="delete-icon"
                     onClick={(e) => {
                       e.preventDefault();
-                      setIsEditing(true); // Enter edit mode
-                      setEditedDocumentId(document._id);
-                      setEditData(document.name || ''); // Initialize editData with the current name or an empty string
+                      handleDelete(document._id);
                     }}
                   />
-                )}
-                <FontAwesomeIcon
-                  icon={faTrash}
-                  className="delete-icon"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    handleDelete(document._id);
-                  }}
-                />
-              </span>
+                </span>
+              )}
             </li>
           </a>
         ))}
