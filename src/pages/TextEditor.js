@@ -513,9 +513,8 @@ export default function TextEditor() {
                             {console.log("the response is: " + response)}
                             let correctedText = response.corrected_text;
                             let matches = response.matches;
-                            let matchStrings = matches.split(',');
                             let grammarMistakes = [];
-                            for (let match of matchStrings) {
+                            for (let match of matches) {
                               let mistakes = [];
 
                               let incorrectText = match[4];
@@ -547,7 +546,7 @@ export default function TextEditor() {
                               grammarMistakes,
                               editor,
                               correctedText,
-                              matchStrings.length
+                              matches.length
                             );
                           });
                         } else {
