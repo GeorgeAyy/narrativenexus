@@ -510,14 +510,12 @@ export default function TextEditor() {
                           );
                           response.json().then((response) => {
                             setGrammerChecker(false);
-                            {
-                              
-                            console.log(`response: ${response.matches}`);
-                            }
+                            {console.log("the response is: " + response)}
                             let correctedText = response.corrected_text;
                             let matches = response.matches;
+                            let matchStrings = matches.split(',');
                             let grammarMistakes = [];
-                            for (let match of response.matches) {
+                            for (let match of matchStrings) {
                               let mistakes = [];
 
                               let incorrectText = match[4];
@@ -549,7 +547,7 @@ export default function TextEditor() {
                               grammarMistakes,
                               editor,
                               correctedText,
-                              matches.length
+                              matchStrings.length
                             );
                           });
                         } else {
